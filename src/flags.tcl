@@ -2,7 +2,7 @@
 #
 # Tcl translation of flags.l
 # Verify, in a trigger, that sccs.h doesn't have duplicate flag defines.
-# Usage: tclsh flags.l.tcl < sccs.h
+# Usage: tclsh flags.tcl < sccs.h
 
 set plist {INIT GET CLEAN DELTA ADMIN PRS}
 set reserved {1 2 4 8}

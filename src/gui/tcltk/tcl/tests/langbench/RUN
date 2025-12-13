@@ -13,7 +13,7 @@ test X$TCLSH = X && {
 test X$PERL = X && PERL=perl
 test X$PYTHON = X && PYTHON=python
 test X$RUBY = X && RUBY=ruby
-test "X$LANGS" = X && LANGS="pl py rb tcl l"
+test "X$LANGS" = X && LANGS="pl py rb tcl"
 test "X$TESTS" = X && TESTS="cat grep hash loop proc fib sort wc"
 export TCL_REGEXP_PCRE=1
 echo "langbench version 0.6 results:"
@@ -29,7 +29,6 @@ do
             py) CMD=$PYTHON; EXT=py;;
             rb) CMD=$RUBY; EXT=rb;;
             tcl) CMD=$TCLSH; EXT=tcl;;
-            l) CMD=$TCLSH; EXT="l.tcl";;
         esac
         N=1
         test X$RUNS = X || N=$RUNS
