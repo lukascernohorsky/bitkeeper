@@ -14,31 +14,15 @@
 
 # Test the bk L command.
 
-echo $N Test bk tclsh script.l ......................................$NL
-cat >script.l <<EOF
-void main()
-{
-	puts("in L");
-}
+echo $N Test bk tclsh script.l.tcl ..................................$NL
+cat >script.l.tcl <<'EOF'
+puts "in Tcl"
 EOF
-bk L script.l >OUT || fail
-bk grep -q "in L" OUT || fail -f OUT
+bk tclsh script.l.tcl >OUT || fail
+bk grep -q "in Tcl" OUT || fail -f OUT
 echo OK
 
-echo $N Test bk tclsh --L script.x ..................................$NL
-# The --L should interpret the given file as L regardless of the file extension
-cat >script.x <<EOF
-void main()
-{
-	puts("in L");
-}
-EOF
-bk tclsh --L script.x >OUT || fail
-bk grep -q "in L" OUT || fail -f OUT
-echo OK
-
-echo $N Test bk L script.x ..........................................$NL
-# bk L should interpret the given file as L regardless of the file extension
-bk L script.x >OUT || fail
-bk grep -q "in L" OUT || fail -f OUT
+echo $N Test bk L compatibility on Tcl script ........................$NL
+bk L script.l.tcl >OUT || fail
+bk grep -q "in Tcl" OUT || fail -f OUT
 echo OK

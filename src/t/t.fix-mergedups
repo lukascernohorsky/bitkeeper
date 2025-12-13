@@ -20,7 +20,7 @@ _BK_LEAVE_DUPS=1
 export _BK_LEAVE_DUPS
 commercial bk-format
 bk clone $Q . ../takepatch
-SYNTH="`bk bin`/t/synth.l"
+SYNTH="`bk bin`/t/synth.l.tcl"
 for f in 0 1 2 3 4 5 6 7 8 9
 do	file=foo$f
 	bk tclsh "$SYNTH" -s100 $file | bk undos > .bk/SCCS/$file,s

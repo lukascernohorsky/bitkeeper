@@ -1678,11 +1678,10 @@ launch_L(char *script, char **av)
 		exit(1);
 	}
 
-	sprintf(cmd, "%s/lscripts/%s.l", bin, script);
+        sprintf(cmd, "%s/lscripts/%s.l.tcl", bin, script);
 
-	argv[i++] = tclcmd;
-	argv[i++] = "--L";
-	argv[i++] = cmd;
+        argv[i++] = tclcmd;
+        argv[i++] = cmd;
 	for (j = 0; av[j]; i++, j++) {
 		if (i >= (MAXARGS-10)) {
 			fprintf(stderr, "bk: too many args\n");
