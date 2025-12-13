@@ -6,7 +6,7 @@
 - `man/man2html/man2html.tcl` and `man/man2html/mkdb.tcl` — documentation generators driven by `man/man2html/Makefile` through `$(BK) tclsh`.
 - `src/contrib/git2bk.l` — CLI importer advertised for `bk little ...`; packaged via `CONTRIB` in `src/Makefile`.
 - GUI Little components referenced by `src/gui/Makefile`: `src/gui/citool.l` is still embedded into generated Tk tools with an `L { ... }` block. Tcl shims (`common-l.tcl`, `search-l.tcl`, `listbox.tcl`, `outputtool.tcl`) are concatenated alongside the Tcl sources so the launcher logic stays Little-free.
-- `src/gui/tcltk/tcl/generic/Lscanner.l` — flex grammar for Little inside the bundled Tcl tree; compiled in the Tcl makefiles for Unix/Win32 builds.
+- `src/gui/tcltk/tcl/generic/Lscanner.l` — flex grammar for the bundled L interpreter inside the Tcl tree; it is a lex source rather than a Little script and remains part of the Tcl build.
 - Little doc/support sources under `src/gui/tcltk/tcl/doc/L`; the `src/gui/tcltk/tcl/doc/l-paper` samples now ship as Tcl (`*.tcl`) alongside support files like `bkfix.awk`.
 - Langbench suite in `src/gui/tcltk/tcl/tests/langbench` now runs the Tcl implementations (`*.tcl`) for the former Little benchmarks after removing the `.l.tcl` variants.
 - Packaging/utility scripts: Tcl-backed `src/macosx/scripts/postinstall.tcl` (invoked by the package postinstall shell wrapper), `src/utils/rcversion.tcl` (used by `src/utils/Makefile` to emit Windows resource metadata), `src/flags.tcl` (duplicate-flag checker used via `bk tclsh`), Little sample `src/t/t.L`, helpers `src/t/failed.tcl` (regression log filtering), `src/t/synth.tcl` (synthetic sfile generation in regression tests), and benchmark/test fixtures under `src/t` that generate or run `.l` files.
@@ -58,6 +58,6 @@
 - Iteration 20: Rescanned (`rg -n "bk little|bk L|_little|_little_gui|little_gui" . | head`) to confirm the remaining Little surface is confined to `src/gui/citool.l`, `src/contrib/git2bk.l`, and the flex `src/gui/tcltk/tcl/generic/Lscanner.l`. Gate hits remain documentation strings and the noted sources pending migration.
 - Iteration 21: Rescanned (`rg -n "\\.l\\.tcl" .`) and renamed all remaining `.l.tcl` assets to plain `.tcl`, updating Makefiles, launchers, and tests (`t.bk-L`, `t.no-dup-flags`, `t.fix-mergedups`) alongside the `lscripts` paths in `bk.c`. Removed the langbench `.l.tcl` fixtures and dropped the `l` harness entry in `RUN`; macOS installer, rcversion metadata, and documentation builds now call the `.tcl` filenames. Gate check now reports `.l.tcl` only in this migration log.
 - Iteration 22: Full rescan (`find . -name "*.l"`) confirmed remaining Little sources are `src/contrib/git2bk.l`, `src/gui/citool.l`, and `src/gui/tcltk/tcl/generic/Lscanner.l`. Gate check (`rg -n "bk little|bk L|_little|_little_gui|little_gui" . | head`) still reports documentation occurrences plus these sources pending conversion.
-
+- Iteration 23: Rescanned (`find . -name "*.l"`) and confirmed only `src/contrib/git2bk.l`, `src/gui/citool.l`, and the lex-based `src/gui/tcltk/tcl/generic/Lscanner.l` remain. Gate check (`rg -n "bk little|bk L|_little|_little_gui|little_gui" . | head`) reports only documentation hits and the tracked Little sources for upcoming conversions.
 ## Final verification
 - Pending (to be completed after migration and final build/test run).
