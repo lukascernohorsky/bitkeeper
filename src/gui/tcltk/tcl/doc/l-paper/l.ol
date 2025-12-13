@@ -98,7 +98,7 @@ Language details
 				the other end gets the object into it's 
 				variable name.
 Code examples
-        printenv.l.tcl
+	printenv.l
 Status or what doesn't work yet
 	Well there are issues
 Future directions

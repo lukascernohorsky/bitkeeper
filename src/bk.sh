@@ -1262,7 +1262,15 @@ _tclsh() {
 }
 
 _L() {
-_tclsh "$@"
+	_tclsh --L "$@"
+}
+
+_little() {
+	_tclsh --L "$@"
+}
+
+_little_gui() {
+	_wish "$@"
 }
 
 _wish() {
