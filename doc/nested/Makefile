@@ -3,8 +3,8 @@ BK=../../src/bk
 
 ../www/nested.html: nested.doc ../www/template.html ../bin/pod2html.tcl
 $(BK) tclsh ../bin/pod2html.tcl \
-		--title="BitKeeper Nested Overview" \
-	    --template=../www/template.html -- nested.doc > ../www/nested.html
+--title="BitKeeper Nested Overview" \
+--template=../www/template.html nested.doc > ../www/nested.html
 
 install: ../www/nested.html
 	-test -d "$(HTML)/images" || mkdir -p "$(HTML)/images"
