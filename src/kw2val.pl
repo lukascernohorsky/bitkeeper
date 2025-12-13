@@ -34,13 +34,16 @@
 # is taken from the source.  The enumname can be different from
 # the keyword name (e.g., KW_UTC_FUDGE for keyword "UTC-FUDGE").
 
-$gperf = '/usr/local/bin/gperf';
+my $gperf = '/usr/local/bin/gperf';
 $gperf = 'gperf' unless -x $gperf;
 
+my $use_sizet = 1;
+my $gperf_ok = 0;
 $_ = `$gperf --version`;
-die "mk-cmd.pl: Requires gperf version >3\n" unless /^GNU gperf 3/;
-
-$use_sizet = 1 if /^GNU gperf 3\.[1-9]/;
+if (/^GNU gperf 3/) {
+    $gperf_ok = 1;
+    $use_sizet = 1 if /^GNU gperf 3\.[1-9]/;
+}
 
 open(C, '>kw2val_lookup.c') or die;
 if ($use_sizet) {
@@ -49,9 +52,6 @@ if ($use_sizet) {
     print C "struct kwval *kw2val_lookup(const char *str, unsigned int len);\n";
 }
 close(C);
-
-
-open(C, "| $gperf -c >> kw2val_lookup.c") or die;
 
 my $in = 0;
 my @keywords;
@@ -71,16 +71,19 @@ while (<>) {
     }
 }
 
-print C "%{\n";
-print C "enum {\n";
-foreach (@keywords) {
-    my ($enum,$kw) = @$_;
-    print C "\tKW_$enum,\n";
-}
-print C "};\n";
-print C "%}\n";
+if ($gperf_ok) {
+    open(C, "| $gperf -c >> kw2val_lookup.c") or die;
 
-print C <<EOF;
+    print C "%{\n";
+    print C "enum {\n";
+    foreach (@keywords) {
+        my ($enum,$kw) = @$_;
+        print C "\tKW_$enum,\n";
+    }
+    print C "};\n";
+    print C "%}\n";
+
+    print C <<EOF;
 %struct-type
 %language=ANSI-C
 %define lookup-function-name kw2val_lookup
@@ -90,8 +93,35 @@ struct kwval { char *name; int kwnum; };
 %%
 EOF
 
-foreach (@keywords) {
-    my ($enum,$kw) = @$_;
-    print C "$kw,\tKW_$enum\n";
+    foreach (@keywords) {
+        my ($enum,$kw) = @$_;
+        print C "$kw,\tKW_$enum\n";
+    }
+    close(C);
+} else {
+    open(C, '>>kw2val_lookup.c') or die;
+    print C "/* !!! automatically generated file !!! Do not edit. */\n";
+    print C "#include \"system.h\"\n";
+    print C "struct kwval { char *name; int kwnum; };\n";
+    print C "enum {\n";
+    foreach (@keywords) {
+        my ($enum,$kw) = @$_;
+        print C "    KW_$enum,\n";
+    }
+    print C "};\n\n";
+    print C "static struct kwval kw_table[] = {\n";
+    foreach (@keywords) {
+        my ($enum,$kw) = @$_;
+        print C "    { \"$kw\", KW_$enum },\n";
+    }
+    print C "};\n\n";
+    my $len_type = $use_sizet ? 'size_t' : 'unsigned int';
+    print C "static unsigned int kw2val_hash(const char *str, $len_type len) {\n";
+    print C "    unsigned int h = 0;\n    for ($len_type i = 0; i < len; i++) h = (h * 33) + (unsigned char)str[i];\n    return h;\n}\n\n";
+    print C "struct kwval *kw2val_lookup(const char *str, $len_type len) {\n";
+    print C "    size_t n = sizeof(kw_table)/sizeof(kw_table[0]);\n";
+    print C "    for (size_t i = 0; i < n; i++) {\n";
+    print C "        if (strlen(kw_table[i].name) == len && !memcmp(kw_table[i].name, str, len)) return &kw_table[i];\n";
+    print C "    }\n    return 0;\n}\n";
+    close(C);
 }
-close(C);
