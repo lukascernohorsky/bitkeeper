@@ -19,7 +19,8 @@ little.man: little.doc pod2man
 	awk -f manfix.awk > little.man
 
 little.html: little.doc pod2html.tcl template.html
-	-$(BK) tclsh ./pod2html.tcl --title=$(TITLE) \
+
+-$(BK) tclsh ./pod2html.tcl --title=$(TITLE) \
             --template=template.html $< > $@
 
 %.1: %.man

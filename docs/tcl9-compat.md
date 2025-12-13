@@ -81,10 +81,8 @@
 - **Cycle B (pod2html call-site recheck)**
   - Rescanned Makefiles for `pod2html.tcl` invocations; only `doc/nested/Makefile` and `src/gui/tcltk/tcl/doc/L/Makefile` use it and both now pass the POD filename directly with no stray `--` delimiters.
   - Attempted `make -C src image` to validate the overall doc build path; run stalled while configuring PCRE due to missing `/usr/bin/file` in the environment, so the full image build remains unverified here.
-
 - **Cycle B (doc/L Makefile separator fix)**
   - Added the missing tab before the `pod2html.tcl` recipe line in `src/gui/tcltk/tcl/doc/L/Makefile` so GNU make parses the rule and the L documentation install step can proceed.
   - Full `make -C src image` still blocked in this environment by Tcl/Tk vendor build requiring `/usr/bin/file`; upstream build should succeed once the tool is available.
-
 ## Final verification
 - To be completed after Tcl 9 toolchain bootstrapping, static checks, and runtime smoke tests are added.
