@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Filter failed bk tests: ./build t | bk tclsh t/failed.l.tcl 2>&1 | tee BUGS
+# Filter failed bk tests: ./build t | bk tclsh t/failed.tcl 2>&1 | tee BUGS
 #
 # This will filter all the failed tests out of the regressions, keeping
 # the title and subtitle of test the failure happened.  This is

@@ -1678,7 +1678,7 @@ launch_L(char *script, char **av)
 		exit(1);
 	}
 
-        sprintf(cmd, "%s/lscripts/%s.l.tcl", bin, script);
+        sprintf(cmd, "%s/lscripts/%s.tcl", bin, script);
 
         argv[i++] = tclcmd;
         argv[i++] = cmd;

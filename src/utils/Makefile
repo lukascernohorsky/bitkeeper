@@ -127,7 +127,7 @@ rcver.h: FORCE
 $(if $(Q),@echo Building $@,)
 $(Q)echo '#define VER_INTERNALNAME_STR "$(IMAGE_NAME)\0"' > $@
 $(Q)echo '#define VER_ORIGINALFILENAME_STR "$(IMAGE)\0"' >> $@
-$(Q)../bk$(EXE) tclsh ./rcversion.l.tcl >> $@
+    $(Q)../bk$(EXE) tclsh ./rcversion.tcl >> $@
 
 count.h: FORCE
 	echo "#define NUMFILES " \
