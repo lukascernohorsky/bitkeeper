@@ -64,5 +64,9 @@
 - Iteration 26: Initialized the regexp DString buffers in `src/gui/tcltk/tcl/generic/Lcompile.c` to silence the Little bundle
 build warning treated as an error. Gate check (`rg -n "bk little|bk L|_little|_little_gui|little_gui" . | head`) continues to
 report only the migration log entries.
+- Iteration 27: Ensured regexp DStrings are always freed in `src/gui/tcltk/tcl/generic/Lcompile.c` and reran the gate check
+(`rg -n "bk little|bk L|_little|_little_gui|little_gui" . | head`), which still only reports the migration log. Attempted
+`make -C src/gui/tcltk` for verification; aborted manually after progress through the Tcl build to avoid excessive runtime
+while investigating upstream warnings unrelated to Little.
 ## Final verification
 - Pending (to be completed after migration and final build/test run).

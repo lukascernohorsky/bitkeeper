@@ -4033,7 +4033,6 @@ compile_reMatch(Expr *re)
 		compile_expr(re, L_PUSH_VAL);
 	} else {
 		push_lit(Tcl_DStringValue(&ds));
-		Tcl_DStringFree(&ds);
 	}
 	/* Now emit the appropriate match instruction. */
 	switch (kind & (RE_CONST|RE_GLOB|RE_SIMPLE|RE_COMPLEX)) {
@@ -4075,10 +4074,12 @@ compile_reMatch(Expr *re)
 			}
 			push_lit(buf);
 		}
-		emit_invoke(5 + submatch_cnt + mod_cnt);
-		break;
-	    default: ASSERT(0);
-	}
+                emit_invoke(5 + submatch_cnt + mod_cnt);
+                break;
+            default: ASSERT(0);
+        }
+
+        Tcl_DStringFree(&ds);
 }
 
 private void
