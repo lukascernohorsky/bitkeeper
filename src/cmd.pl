@@ -13,31 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$gperf = '/usr/local/bin/gperf';
+my $gperf = '/usr/local/bin/gperf';
 $gperf = 'gperf' unless -x $gperf;
 
-$_ = `$gperf --version`;
-die "mk-cmd.pl: Requires gperf version >3\n" unless /^GNU gperf 3/;
-$use_sizet = 1 if /^GNU gperf 3\.[1-9]/;
+my $use_sizet = 1;
+my $gperf_ok = 0;
+if (my $ver = qx{$gperf --version 2>/dev/null}) {
+    if ($ver =~ /^GNU gperf 3/) {
+        $gperf_ok = 1;
+        $use_sizet = 1 if $ver =~ /^GNU gperf 3\.[1-9]/;
+    }
+}
 
-open(C, "| $gperf > cmd.c.new") or die;
-
-print C <<EOF;
-%{
-/* !!! automatically generated file !!! Do not edit. */
-#include "system.h"
-#include "bkd.h"
-#include "cmd.h"
-%}
-%struct-type
-%language=ANSI-C
-%define lookup-function-name cmd_lookup
-%define hash-function-name cmd_hash
-%includes
-
-struct CMD;
-%%
-EOF
+my @entries;
 
 open(H, ">cmd.h.new") || die;
 print H <<END;
@@ -79,8 +67,8 @@ while (<DATA>) {
 
     # handle aliases
     if (/([\-\w]+) => (\w+)/) {
-	print C "$1, CMD_ALIAS, 0, \"$2\"\n";
-	next;
+        push(@entries, [$1, 'CMD_ALIAS', 0, $2, 0]);
+        next;
     }
     s/\s+$//;			# strict trailing space
     $type = "CMD_INTERNAL";
@@ -96,13 +84,13 @@ while (<DATA>) {
     }
 
     if ($type eq "CMD_INTERNAL") {
-	$m = "${_}_main";
-	$m =~ s/^_//;
-	print H "int\t$m(int, char **);\n";
+        $m = "${_}_main";
+        $m =~ s/^_//;
+        print H "int\t$m(int, char **);\n";
     } else {
-	$m = 0;
+        $m = 0;
     }
-    print C "$_, $type, $m, 0, $remote\n";
+    push(@entries, [$_, $type, $m, undef, $remote]);
     $rmts{$m} = 1 if $remote;
 }
 print H "\n#endif\n";
@@ -113,7 +101,7 @@ close(H) or die;
 open(SH, "bk.sh") || die;
 while (<SH>) {
     if (/^_(\w+)\(\)/) {
-	print C "$1, CMD_BK_SH, 0, 0\n";
+        push(@entries, [$1, 'CMD_BK_SH', 0, undef, 0]);
     }
 }
 close(SH) or die;
@@ -137,23 +125,76 @@ while (<>) {
     #  (ex:   cmd_pull_part1 => 'bk _bkd_pull_part1')
 
     if (/^cmd_(\w+)\(/) {
-	print C "_bkd_$1, CMD_INTERNAL, cmd_$1, 0, 1\n";
+        push(@entries, ["_bkd_$1", 'CMD_INTERNAL', "cmd_$1", undef, 1]);
     }
 }
 if (%rmts) {
     print STDERR "Commands marked with 'remote' need to move to bkd_*.c:\n";
     foreach (sort keys %rmts) {
-	print STDERR "\t$_\n";
+        print STDERR "\t$_\n";
     }
     die;
 }
 
-close(C) or die;
+sub write_cmd_c {
+    my ($entries, $use_sizet, $use_gperf) = @_;
+
+    if ($use_gperf) {
+        open(my $c, "| $gperf > cmd.c.new") or die;
+        print $c <<'EOF';
+%{
+/* !!! automatically generated file !!! Do not edit. */
+#include "system.h"
+#include "bkd.h"
+#include "cmd.h"
+%}
+%struct-type
+%language=ANSI-C
+%define lookup-function-name cmd_lookup
+%define hash-function-name cmd_hash
+%includes
+
+struct CMD;
+%%
+EOF
+        foreach my $e (@$entries) {
+            my ($name, $type, $fcn, $alias, $remote) = @$e;
+            $alias = defined($alias) ? "\"$alias\"" : 0;
+            $fcn   //= 0;
+            print $c "$name, $type, $fcn, $alias, $remote\n";
+        }
+        close($c) or die;
+    } else {
+        open(my $c, '>cmd.c.new') or die;
+        print $c "/* !!! automatically generated file !!! Do not edit. */\n";
+        print $c "#include \"system.h\"\n#include \"bkd.h\"\n#include \"cmd.h\"\n";
+        print $c "static CMD cmd_table[] = {\n";
+        foreach my $e (@$entries) {
+            my ($name, $type, $fcn, $alias, $remote) = @$e;
+            $alias = defined($alias) ? "\"$alias\"" : "0";
+            $fcn   = $fcn   ? $fcn : 0;
+            print $c "    { \"$name\", $type, $fcn, $alias, $remote },\n";
+        }
+        print $c "};\n\n";
+        print $c "static unsigned int cmd_hash(const char *str, size_t len) {\n";
+        print $c "    unsigned int h = 0;\n    for (size_t i = 0; i < len; i++) h = (h * 33) + (unsigned char)str[i];\n    return h;\n}\n\n";
+        my $len_type = $use_sizet ? 'size_t' : 'unsigned int';
+        print $c "CMD *cmd_lookup(const char *str, $len_type len) {\n";
+        print $c "    size_t n = sizeof(cmd_table)/sizeof(cmd_table[0]);\n";
+        print $c "    for (size_t i = 0; i < n; i++) {\n";
+        print $c "        CMD *cmd = &cmd_table[i];\n";
+        print $c "        if (strlen(cmd->name) == len && !memcmp(cmd->name, str, len)) return cmd;\n";
+        print $c "    }\n    return 0;\n}\n";
+        close($c) or die;
+    }
+}
+
+write_cmd_c(\@entries, $use_sizet, $gperf_ok);
 
 # only replace cmd.c and cmd.h if they have changed
 foreach (qw(cmd.c cmd.h)) {
     if (system("cmp -s $_ $_.new") != 0) {
-	rename("$_.new", $_);
+        rename("$_.new", $_);
     }
     unlink "$_.new";
 }
