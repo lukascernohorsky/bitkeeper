@@ -61,5 +61,8 @@
 - Iteration 23: Rescanned (`find . -name "*.l"`) and confirmed only `src/contrib/git2bk.l`, `src/gui/citool.l`, and the lex-based `src/gui/tcltk/tcl/generic/Lscanner.l` remain. Gate check (`rg -n "bk little|bk L|_little|_little_gui|little_gui" . | head`) reports only documentation hits and the tracked Little sources for upcoming conversions.
 - Iteration 24: Full rescan (`find . -name "*.l"`) reaffirmed the remaining Little sources are `src/contrib/git2bk.l`, `src/gui/citool.l`, and the flex grammar `src/gui/tcltk/tcl/generic/Lscanner.l`. Gate check (`rg -n "bk little|bk L|_little|_little_gui|little_gui" . | head`) continues to show only the migration log entries, leaving the two Little scripts as the final migration targets.
 - Iteration 25: Addressed the `src/gui/tcltk/tcl/doc/L/Makefile` `little.html` rule to use `$(BK) tclsh` with proper Make tabs, unblocking the Little manual install target. Gate check (`rg -n "bk little|bk L|_little|_little_gui|little_gui" . | head`) still reports only migration log references.
+- Iteration 26: Initialized the regexp DString buffers in `src/gui/tcltk/tcl/generic/Lcompile.c` to silence the Little bundle
+build warning treated as an error. Gate check (`rg -n "bk little|bk L|_little|_little_gui|little_gui" . | head`) continues to
+report only the migration log entries.
 ## Final verification
 - Pending (to be completed after migration and final build/test run).
