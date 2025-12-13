@@ -13,7 +13,7 @@
 # limitations under the License.
 
 echo $N Look for duplicate flag defines in a file like sccs.h .......$NL
-PROG="`bk bin`"/flags.l.tcl
+PROG="`bk bin`"/flags.l
 bk tclsh "$PROG" <<EOF 2> GOT
 #define	INIT_NOGCHK	0x00800000	/* do not fail on gfile checks */
 #define	INIT_CHK_STIME	0x00010000	/* check that s.file <= gfile */
