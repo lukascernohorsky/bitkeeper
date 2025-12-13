@@ -33,7 +33,7 @@ BK	= $(REPO)/src/bk
 T	= $(REPO)/src/t
 COMMON	= ../port/$(SYS)_platform.tcl config.tcl bktheme.tcl tooltip.tcl \
 	  common.tcl
-LCOMMON = common.l search.l
+LCOMMON = common.l.tcl search.l.tcl listbox.l.tcl
 SRC	= appState.tcl ciedit.tcl citool.tcl \
 	  common.tcl config.tcl csettool.tcl difflib.tcl difftool.tcl \
 	  fm3tool.tcl fmtool.tcl helptool.tcl msgtool.tcl \
@@ -109,10 +109,10 @@ bugform: $(COMMON) search.tcl appState.tcl buglib.tcl bugform.tcl
 supportform: $(COMMON) search.tcl appState.tcl supportlib.tcl supportform.tcl
 	@(echo 'wm withdraw .' ;  cat $^)  > $(LIBDIR)/supportform
 
-citool: $(COMMON) appState.tcl ciedit.tcl $(LCOMMON) listbox.l citool.l
+citool: $(COMMON) appState.tcl ciedit.tcl $(LCOMMON) citool.l
 	@(	echo 'wm withdraw .' ;		\
 		echo 'set ::tool_name $@' ;	\
-		cat $(filter %.tcl,$^) ;	\
+		cat $(filter %.tcl,$^) $(filter %.l.tcl,$^) ;	\
 		echo ; echo 'L {' ; echo ;	\
 		for f in $(filter %.l,$^) ; do	\
 			echo "#line 1 \"$$f\"";	\
@@ -154,13 +154,7 @@ installtool: ../port/$(SYS)_platform.tcl ../utils/installtool.tcl \
 	 echo "image create photo bklogo -data {`$(BK) base64<../gui/imgsrc/bklogo.gif`}";\
 	 echo 'main') > $(LIBDIR)/installtool
 
-outputtool: $(COMMON) outputtool.l
+outputtool: $(COMMON) outputtool.l.tcl
 	@(	echo 'wm withdraw .' ;		\
-		cat $(filter %.tcl,$^) ;	\
-		echo ; echo 'L {' ; echo ;	\
-		for f in $(filter %.l,$^) ; do	\
-			echo "#line 1 \"$$f\"";	\
-			cat $$f ;		\
-		done ;				\
-		echo '}' ; 		\
+		cat $(filter %.tcl,$^) $(filter %.l.tcl,$^) ;	\
 	) > $(LIBDIR)/outputtool

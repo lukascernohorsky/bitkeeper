@@ -14,8 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-bk L --version > /tmp/L$$ 2>/dev/null 
-grep -q 'L version' /tmp/L$$ 
-EXIT=$? 
+bk tclsh - <<'EOF' > /tmp/L$$ 2>/dev/null
+puts "tcl [info patchlevel]"
+EOF
+grep -q '^tcl ' /tmp/L$$
+EXIT=$?
 rm -f /tmp/L$$
 exit $EXIT
