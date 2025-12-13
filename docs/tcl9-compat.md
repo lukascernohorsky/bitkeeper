@@ -72,6 +72,15 @@
   - Counted 331 tracked `*.tcl` files via `rg --files -g '*.tcl'`; cataloged shebang entrypoints (tclsh/wish) and mapped key call sites (build docs, lscript dispatchers, installers, tests).
   - Recorded Tcl/Tk version constraints (`package require Tk/Tcl 8.x`) for future relaxation to 9.0 compatibility; flagged vendored upstream sources as likely containing deprecated constructs (trace variable, nonewline syntax, octal literals).
   - Added plan to bootstrap Tcl 9 locally and vendor `tcl9-migrate` checker once networking permits; will wire wrappers to prefer Tcl 9 interpreters while retaining Tcl 8 fallback.
+- **Cycle B (doc build unblocker)**
+  - Fixed `doc/nested/Makefile` invocation of `pod2html.tcl` by dropping an erroneous `--` so the filename argument is passed (Tcl 9 checklists: argument parsing and CLI parity). Verified with `tclsh ../bin/pod2html.tcl --title="BitKeeper Nested Overview" --template=../www/template.html nested.doc > /tmp/nested.html`.
+
+- **Cycle B (doc/L pod2html invocation cleanup)**
+  - Removed an unnecessary `--` before the POD filename in `src/gui/tcltk/tcl/doc/L/Makefile` so `pod2html.tcl` receives its required argument instead of exiting with usage.
+
+- **Cycle B (pod2html call-site recheck)**
+  - Rescanned Makefiles for `pod2html.tcl` invocations; only `doc/nested/Makefile` and `src/gui/tcltk/tcl/doc/L/Makefile` use it and both now pass the POD filename directly with no stray `--` delimiters.
+  - Attempted `make -C src image` to validate the overall doc build path; run stalled while configuring PCRE due to missing `/usr/bin/file` in the environment, so the full image build remains unverified here.
 
 ## Final verification
 - To be completed after Tcl 9 toolchain bootstrapping, static checks, and runtime smoke tests are added.
