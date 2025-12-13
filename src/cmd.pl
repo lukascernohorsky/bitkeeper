@@ -159,7 +159,7 @@ struct CMD;
 EOF
         foreach my $e (@$entries) {
             my ($name, $type, $fcn, $alias, $remote) = @$e;
-            $alias //= 0;
+            $alias = defined($alias) ? "\"$alias\"" : 0;
             $fcn   //= 0;
             print $c "$name, $type, $fcn, $alias, $remote\n";
         }
