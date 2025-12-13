@@ -15,11 +15,11 @@
 
 #
 # Post-install script for BitKeeper's OS X package installer.
-# This script must be named "postinstall". It calls an L
-# script "postinstall.l" to do all the work.
+# This script must be named "postinstall". It calls a Tcl
+# script "postinstall.tcl" to do all the work.
 
 BK="$DSTROOT/BitKeeper.app/Contents/Resources/bitkeeper/bk"
-BK_GUI="yes" "$BK" wish postinstall.l >OUT 2>&1 || {
+BK_GUI="yes" "$BK" wish postinstall.tcl >OUT 2>&1 || {
 	mv OUT /tmp/bk-install-failure.txt
 	exit 1
 }
