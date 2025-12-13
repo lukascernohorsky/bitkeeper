@@ -14,15 +14,15 @@
 
 # Test the bk L command.
 
-echo $N Test bk tclsh script.l.tcl ..................................$NL
-cat >script.l.tcl <<'EOF'
+echo $N Test bk tclsh script.tcl ....................................$NL
+cat >script.tcl <<'EOF'
 puts "in Tcl"
 EOF
-bk tclsh script.l.tcl >OUT || fail
+bk tclsh script.tcl >OUT || fail
 bk grep -q "in Tcl" OUT || fail -f OUT
 echo OK
 
 echo $N Test bk L compatibility on Tcl script ........................$NL
-bk L script.l.tcl >OUT || fail
+bk L script.tcl >OUT || fail
 bk grep -q "in Tcl" OUT || fail -f OUT
 echo OK
