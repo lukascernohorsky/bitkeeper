@@ -161,6 +161,15 @@ set argvCopy $argv
 set idx 0
 while {$idx < [llength $argvCopy]} {
     set arg [lindex $argvCopy $idx]
+
+    # End-of-options marker (common POSIX/GNU convention).
+    # Example from make:
+    #   pod2html.tcl --title="..." --template=... -- nested.doc
+    if {$arg eq "--"} {
+        incr idx
+        break
+    }
+
     if {$arg eq "--TOC"} {
         set TOC 1
         incr idx
@@ -206,8 +215,8 @@ set filename [lindex $argvCopy $idx]
 if {$filename eq ""} {
     usage [file tail [info script]] ""
 }
-if {[catch {open $filename r} f]} {
-    usage [file tail [info script]] "usage: [file tail [info script]] <filename>"
+if {[catch {open $filename r} f err]} {
+    die "cannot open input file '$filename': $err"
 }
 if {$title eq ""} {
     set title $filename
