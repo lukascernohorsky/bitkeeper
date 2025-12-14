@@ -136,6 +136,11 @@ if (%rmts) {
     die;
 }
 
+sub cstr {
+    my ($s) = @_;
+    return defined($s) ? "\"$s\"" : undef;
+}
+
 sub write_cmd_c {
     my ($entries, $use_sizet, $use_gperf) = @_;
 
@@ -159,9 +164,10 @@ struct CMD;
 EOF
         foreach my $e (@$entries) {
             my ($name, $type, $fcn, $alias, $remote) = @$e;
-            $alias = defined($alias) ? "\"$alias\"" : 0;
+
+            $alias = cstr($alias) // 0;
             $fcn   //= 0;
-            my $qname = "\"$name\"";
+            my $qname = cstr($name);
             print $c "$qname, $type, $fcn, $alias, $remote\n";
         }
         close($c) or die;
@@ -172,7 +178,7 @@ EOF
         print $c "static CMD cmd_table[] = {\n";
         foreach my $e (@$entries) {
             my ($name, $type, $fcn, $alias, $remote) = @$e;
-            $alias = defined($alias) ? "\"$alias\"" : "0";
+            $alias = cstr($alias) // "0";
             $fcn   = $fcn   ? $fcn : 0;
             print $c "    { \"$name\", $type, $fcn, $alias, $remote },\n";
         }
