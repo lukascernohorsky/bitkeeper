@@ -161,7 +161,8 @@ EOF
             my ($name, $type, $fcn, $alias, $remote) = @$e;
             $alias = defined($alias) ? "\"$alias\"" : 0;
             $fcn   //= 0;
-            print $c "$name, $type, $fcn, $alias, $remote\n";
+            my $qname = "\"$name\"";
+            print $c "$qname, $type, $fcn, $alias, $remote\n";
         }
         close($c) or die;
     } else {
