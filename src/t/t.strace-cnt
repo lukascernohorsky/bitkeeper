@@ -18,7 +18,8 @@
 #   STRACE_CNT_SAVE=1 ./doit t.strace-cnt
 # to reset the baseline
 
-DO_CNT="`bk bin`"/t/strace-cnt.pl
+DO_CNT="`bk bin`"/t/strace-cnt.tcl
+test -x "$DO_CNT" || DO_CNT="`bk bin`"/t/strace-cnt.pl
 FILE="$HERE"/OUT
 
 echo $N Create initial repository ...................................$NL
