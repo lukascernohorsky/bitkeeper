@@ -1,5 +1,5 @@
 FILES=man1/*.1
-VER=`./bkver.pl`
+VER=`./bkver.tcl`
 BK=../src/bk
 SOELIM?=$(shell command -v soelim)
 
