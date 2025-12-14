@@ -1,6 +1,7 @@
 FILES=man1/*.1
 VER=`./bkver.pl`
 BK=../src/bk
+SOELIM?=$(shell command -v soelim)
 
 PS:
 	@make get
@@ -21,7 +22,14 @@ get:
 manball: get
 	rm -rf bk-man; mkdir -p bk-man/man1
 	cp -f man.tmac bk-macros man1
-	cd man1; for i in *.1; do soelim $$i > ../bk-man/man1/$$i; done
+	cd man1; for i in *.1; do \
+	if [ -n "$(SOELIM)" ]; then \
+	$(SOELIM) $$i > ../bk-man/man1/$$i; \
+	else \
+	cat $$i > ../bk-man/man1/$$i; \
+	printf 'soelim not found, copied %s as-is\n' "$$i"; \
+	fi; \
+	done
 	rm -f man1/man.tmac man1/bk-macros
 	cd bk-man/man1; \
 	ls -1 bk-* | sed s/bk-// | while read x; \
