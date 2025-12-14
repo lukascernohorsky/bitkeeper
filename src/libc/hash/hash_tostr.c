@@ -48,7 +48,7 @@ hash_fromStr(hash *h, char *str)
 {
 	char	*p = str;
 	char	*k = 0, *v = 0;
-	u32	klen, vlen;
+	int	klen, vlen;
 
 	while (*p) {
 		unless (p = webdecode(p, &k, &klen)) {
