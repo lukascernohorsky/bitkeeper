@@ -164,6 +164,7 @@ struct CMD;
 EOF
         foreach my $e (@$entries) {
             my ($name, $type, $fcn, $alias, $remote) = @$e;
+
             $alias = cstr($alias) // 0;
             $fcn   //= 0;
             my $qname = cstr($name);
