@@ -66,7 +66,12 @@ sub man2help
 	}
 	close(D);
 	close(F);
-	$cmd = "groff -I.. -dBKVER=$BKVER -rhelpdoc=1 -rNESTED=1 -P-u -P-b -Tascii < tmp";
+    if (system("command -v groff >/dev/null 2>&1") == 0) {
+        $cmd = "groff -I.. -dBKVER=$BKVER -rhelpdoc=1 -rNESTED=1 -P-u -P-b -Tascii < tmp";
+    } else {
+        warn "groff not found, copying man page content for $basename\n";
+        $cmd = "cat tmp";
+    }
 	open(G, "$cmd |");
 	$nl = 0;
 	$lines = 0;

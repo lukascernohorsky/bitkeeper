@@ -19,18 +19,29 @@ little.man: little.doc pod2man
 	awk -f manfix.awk > little.man
 
 little.html: little.doc pod2html.tcl template.html
+	-$(BK) tclsh ./pod2html.tcl --title=$(TITLE) \
+		--template=template.html $< > $@
 
--$(BK) tclsh ./pod2html.tcl --title=$(TITLE) \
-            --template=template.html $< > $@
+GROFF   ?= $(shell command -v groff)
 
 %.1: %.man
-	groff -man -Tascii $< > $@
+	@if [ -n "$(GROFF)" ]; then \
+	$(GROFF) -man -Tascii $< > $@; \
+	else \
+	cat $< > $@; \
+	printf 'groff not found, copied %s to %s\n' "$<" "$@"; \
+	fi
 
 %.txt: %.1
 	-colcrt $< > $@
 
 %.ps: %.man
-	groff -man $< > $@
+	@if [ -n "$(GROFF)" ]; then \
+	$(GROFF) -man $< > $@; \
+	else \
+	cp $< $@; \
+	printf 'groff not found, copied %s to %s\n' "$<" "$@"; \
+	fi
 
 x: little.ps
 	gv little.ps
