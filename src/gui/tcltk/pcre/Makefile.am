@@ -284,7 +284,7 @@ EXTRA_DIST += \
   testdata/testoutput10 \
   testdata/wintestinput3 \
   testdata/wintestoutput3 \
-  perltest.pl
+  perltest.tcl
 
 CLEANFILES += \
 	testsavedregex \

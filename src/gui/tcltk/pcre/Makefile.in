@@ -446,7 +446,7 @@ EXTRA_DIST = doc/perltest.txt NON-UNIX-USE HACKING PrepareRelease \
 	testdata/testoutput3 testdata/testoutput4 testdata/testoutput5 \
 	testdata/testoutput6 testdata/testoutput7 testdata/testoutput8 \
 	testdata/testoutput9 testdata/testoutput10 \
-	testdata/wintestinput3 testdata/wintestoutput3 perltest.pl \
+    testdata/wintestinput3 testdata/wintestoutput3 perltest.tcl \
 	pcredemo.c $(pcrecpp_man) cmake/COPYING-CMAKE-SCRIPTS \
 	cmake/FindPackageHandleStandardArgs.cmake \
 	cmake/FindReadline.cmake CMakeLists.txt config-cmake.h.in

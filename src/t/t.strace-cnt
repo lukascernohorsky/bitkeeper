@@ -19,7 +19,11 @@
 # to reset the baseline
 
 DO_CNT="`bk bin`"/t/strace-cnt.tcl
-test -x "$DO_CNT" || DO_CNT="`bk bin`"/t/strace-cnt.pl
+<<<<<<< HEAD
+test -x "$DO_CNT" || {
+        echo "missing strace-cnt.tcl in \`bk bin\`" >&2
+        exit 1
+}
 FILE="$HERE"/OUT
 
 echo $N Create initial repository ...................................$NL

@@ -307,7 +307,7 @@ HDRS	= bam.h bkd.h bk-features.h config.h configvars.def diff.h fsfuncs.h \
 	  cmd.h poly.h proj.h redblack.h libc/system.h xfile.h
 
 # list of non-C sources in bk
-SCRSRCS	= bk.sh import.sh kwextract.pl uuwrap.sh unuuwrap.sh \
+SCRSRCS	= bk.sh import.sh uuwrap.sh unuuwrap.sh \
 	  port/unix_platform.sh port/win32_platform.sh \
 	  gzip_uuwrap.sh ungzip_uuwrap.sh \
 	  substvars.sh b64wrap.sh gzip_b64wrap.sh \

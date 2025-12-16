@@ -3,9 +3,9 @@ stubs = map(lambda x: "fslayer/fslayer_" + x + "_stub.c",
       	       link symlink _getdir access utime mkdir rmdir realBasename'''))
 
 Command(stubs + ['fslayer/fslayer.h'],
-	'fslayer/gen_fslayer.pl',
-	"perl gen_fslayer.pl",
-	chdir=1)
+        'fslayer/gen_fslayer.tcl',
+        "tclsh gen_fslayer.tcl",
+        chdir=1)
 
 libc = Library("libc", stubs + Split('''
 	hash/hash.c

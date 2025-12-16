@@ -12,7 +12,7 @@ test X$TCLSH = X && {
 }
 test X$PYTHON = X && PYTHON=python
 test X$RUBY = X && RUBY=ruby
-test "X$LANGS" = X && LANGS="pl py rb tcl"
+test "X$LANGS" = X && LANGS="py rb tcl"
 test "X$TESTS" = X && TESTS="cat grep hash loop proc fib sort wc"
 export TCL_REGEXP_PCRE=1
 echo "langbench version 0.6 results:"
@@ -24,7 +24,6 @@ echo ""
 for lang in $LANGS
 do
         case $lang in
-            pl) CMD=$TCLSH; EXT=pl;;
             py) CMD=$PYTHON; EXT=py;;
             rb) CMD=$RUBY; EXT=rb;;
             tcl) CMD=$TCLSH; EXT=tcl;;
@@ -42,13 +41,8 @@ do
                         for run in 1 2 3
                         do      time $CMD $LANGBENCH/${test}.${EXT} $DATA > /dev/null
                         done 2>&1 |
-                        perl -e '$min = 1000000;
-                        while (<>) {
-                                if (/real.*0m(.*)s/) {
-                                        $min = $1 if $1 < $min;
-                                }
-                        }
-                        printf "%-8.2f", $min;'
+                        awk '/^real/ { val=$2; sub(/^[0-9]+m/,"",val); sub(/s$/, "", val); if(min=="" || val+0 < min) min=val+0 }
+                             END { if (min=="") min=0; printf "%-8.2f", min }'
                 done
                 printf "\n"
                 N=`expr $N - 1`
