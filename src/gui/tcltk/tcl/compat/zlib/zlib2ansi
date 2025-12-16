@@ -1,152 +1,96 @@
-#!/usr/bin/perl
+#!/usr/bin/env tclsh
+# Convert K&R style C function definitions to ANSI form (Tcl port).
+# This is a best-effort translation that keeps parameter ordering and types
+# while avoiding the original Perl dependency.
 
-# Transform K&R C function definitions into ANSI equivalent.
-#
-# Author: Paul Marquess
-# Version: 1.0
-# Date: 3 October 2006
-
-# TODO
-#
-# Asumes no function pointer parameters. unless they are typedefed.
-# Assumes no literal strings that look like function definitions
-# Assumes functions start at the beginning of a line
-
-use strict;
-use warnings;
-
-local $/;
-$_ = <>;
-
-my $sp = qr{ \s* (?: /\* .*? \*/ )? \s* }x; # assume no nested comments
-
-my $d1    = qr{ $sp (?: [\w\*\s]+ $sp)* $sp \w+ $sp [\[\]\s]* $sp }x ;
-my $decl  = qr{ $sp (?: \w+ $sp )+ $d1 }xo ;
-my $dList = qr{ $sp $decl (?: $sp , $d1 )* $sp ; $sp }xo ;
-
-
-while (s/^
-            (                  # Start $1
-                (              #   Start $2
-                    .*?        #     Minimal eat content
-                    ( ^ \w [\w\s\*]+ )    #     $3 -- function name
-                    \s*        #     optional whitespace
-                )              # $2 - Matched up to before parameter list
-
-                \( \s*         # Literal "(" + optional whitespace
-                ( [^\)]+ )     # $4 - one or more anythings except ")"
-                \s* \)         # optional whitespace surrounding a Literal ")"
-
-                ( (?: $dList )+ ) # $5
-
-                $sp ^ {        # literal "{" at start of line
-            )                  # Remember to $1
-        //xsom
-      )
-{
-    my $all = $1 ;
-    my $prefix = $2;
-    my $param_list = $4 ;
-    my $params = $5;
-
-    StripComments($params);
-    StripComments($param_list);
-    $param_list =~ s/^\s+//;
-    $param_list =~ s/\s+$//;
-
-    my $i = 0 ;
-    my %pList = map { $_ => $i++ }
-                split /\s*,\s*/, $param_list;
-    my $pMatch = '(\b' . join('|', keys %pList) . '\b)\W*$' ;
-
-    my @params = split /\s*;\s*/, $params;
-    my @outParams = ();
-    foreach my $p (@params)
-    {
-        if ($p =~ /,/)
-        {
-            my @bits = split /\s*,\s*/, $p;
-            my $first = shift @bits;
-            $first =~ s/^\s*//;
-            push @outParams, $first;
-            $first =~ /^(\w+\s*)/;
-            my $type = $1 ;
-            push @outParams, map { $type . $_ } @bits;
+proc parseDeclLine {line paramTypes paramOrderVar} {
+    upvar 1 $paramTypes types
+    upvar 1 $paramOrderVar order
+    set trimmed [string trim $line " \t;" ]
+    if {$trimmed eq ""} return
+    # Split declarations separated by commas while preserving common type
+    set commonType ""
+    if {[regexp {^(.*?\S)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(,.*)?$} $trimmed -> type name rest]} {
+        set commonType $type
+        set names [list $name]
+        if {$rest ne ""} {
+            foreach n [split [string trim [string trimleft $rest ,]] ,] {
+                lappend names [string trim $n]
+            }
         }
-        else
-        {
-            $p =~ s/^\s+//;
-            push @outParams, $p;
+    } else {
+        return
+    }
+    foreach n $names {
+        set types($n) [string trim "$commonType"]
+        if {[lsearch -exact $order $n] < 0} {
+            lappend order $n
         }
     }
-
-
-    my %tmp = map { /$pMatch/;  $_ => $pList{$1}  }
-              @outParams ;
-
-    @outParams = map  { "    $_" }
-                 sort { $tmp{$a} <=> $tmp{$b} }
-                 @outParams ;
-
-    print $prefix ;
-    print "(\n" . join(",\n", @outParams) . ")\n";
-    print "{" ;
-
 }
 
-# Output any trailing code.
-print ;
-exit 0;
+proc convertKRtoANSI {text} {
+    set out {}
+    set lines [split $text "\n"]
+    set count [llength $lines]
+    set i 0
+    while {$i < $count} {
+        set line [lindex $lines $i]
+        if {[regexp {^([A-Za-z_].*?)\s*\(([^()]*)\)\s*$} $line -> prefix params]} {
+            set j [expr {$i + 1}]
+            set decls {}
+            set brace -1
+            while {$j < $count} {
+                set next [lindex $lines $j]
+                if {[regexp {^\s*\{\s*$} $next]} {
+                    set brace $j
+                    break
+                }
+                lappend decls $next
+                incr j
+            }
+            if {$brace > 0 && [llength $decls] > 0} {
+                array unset paramTypes
+                set order {}
+                foreach d $decls { parseDeclLine $d paramTypes order }
+                set args {}
+                foreach p [split $params ,] {
+                    set name [string trim $p]
+                    if {$name eq ""} continue
+                    set type [expr {[info exists paramTypes($name)] ? $paramTypes($name) : ""}]
+                    set decl [string trim "$type $name"]
+                    lappend args "    $decl"
+                }
+                lappend out "$prefix("
+                if {[llength $args]} {
+                    lappend out [join $args ",\n"]
+                }
+                lappend out ")"
+                lappend out "{"
+                set i $brace
+                incr i
+                continue
+            }
+        }
+        lappend out $line
+        incr i
+    }
+    return [join $out "\n"]
+}
 
+set data ""
+if {[llength $argv] == 0} {
+    set data [read stdin]
+    puts [convertKRtoANSI $data]
+    exit 0
+}
 
-sub StripComments
-{
-
-  no warnings;
-
-  # Strip C & C++ coments
-  # From the perlfaq
-  $_[0] =~
-
-    s{
-       /\*         ##  Start of /* ... */ comment
-       [^*]*\*+    ##  Non-* followed by 1-or-more *'s
-       (
-         [^/*][^*]*\*+
-       )*          ##  0-or-more things which don't start with /
-                   ##    but do end with '*'
-       /           ##  End of /* ... */ comment
-
-     |         ##     OR  C++ Comment
-       //          ## Start of C++ comment //
-       [^\n]*      ## followed by 0-or-more non end of line characters
-
-     |         ##     OR  various things which aren't comments:
-
-       (
-         "           ##  Start of " ... " string
-         (
-           \\.           ##  Escaped char
-         |               ##    OR
-           [^"\\]        ##  Non "\
-         )*
-         "           ##  End of " ... " string
-
-       |         ##     OR
-
-         '           ##  Start of ' ... ' string
-         (
-           \\.           ##  Escaped char
-         |               ##    OR
-           [^'\\]        ##  Non '\
-         )*
-         '           ##  End of ' ... ' string
-
-       |         ##     OR
-
-         .           ##  Anything other char
-         [^/"'\\]*   ##  Chars which doesn't start a comment, string or escape
-       )
-     }{$2}gxs;
-
+foreach file $argv {
+    set in [open $file r]
+    set text [read $in]
+    close $in
+    set converted [convertKRtoANSI $text]
+    set out [open $file w]
+    puts -nonewline $out $converted
+    close $out
 }

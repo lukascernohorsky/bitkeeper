@@ -18,7 +18,11 @@ proc summary {section} {
     set macros [open "../bk-macros" r]
     puts -nonewline $out [read $macros]
     close $macros
+    # Ensure the injected macros end with a separator so the following
+    # requests always start on a fresh line, even if bk-macros lacks a
+    # trailing newline.
     puts $out ""
+
     puts $out ".pl 1000i"
     puts $out ".TH \"$section\" sum \"\" \"\\*(BC\" \"\\*(UM\""
     puts $out ".SH NAME"
@@ -71,10 +75,10 @@ proc summary {section} {
         set nl 0
     }
     puts $done "\\$"
-
+    # The Perl version ignored groff's exit status; mirror that behavior so
+    # warnings don't break the build.
     catch { close $g }
-    close $g
-
+    close $done
 }
 
 set current ""

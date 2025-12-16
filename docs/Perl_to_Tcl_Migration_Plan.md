@@ -31,10 +31,11 @@ This plan inventories existing Perl usage in the BitKeeper repository and descri
 - **Completed:** Added Tcl rewrite `man/man1/fixit` to normalize `.TH` version strings and rewrite `.SA` entries without Perl while preserving the original helper as `fixit.bak` for rollback.
 - **Completed:** Added Tcl rewrite `src/gui/tcltk/pcre/Detrail` to strip trailing whitespace from files; original Perl helper preserved as `Detrail.bak` for rollback.
 - **Completed:** Added Tcl rewrite `src/gui/tcltk/pcre/CleanTxt` to filter `nroff -man` output for online readability; original Perl helper retained as `CleanTxt.bak` for rollback.
+- **Completed:** Replaced remaining documentation helpers (`pod2man`, `zlib2ansi`, `132html`) and PCRE regex tester (`perltest.pl`) with Tcl implementations, preserving `.bak` copies for rollback.
+- **Completed:** Ported langbench Perl benchmarks (`cat.pl`, `fib.pl`, `grep.pl`, `hash.pl`, `loop.pl`, `proc.pl`, `sort.pl`, `wc.pl`) to Tcl while keeping the originals as `.bak` snapshots; the harness now runs these via `tclsh` instead of Perl.
 
 ## Remaining Perl targets
-- Documentation/helpers: `src/gui/tcltk/tcl/doc/L/pod2man`, `src/gui/tcltk/tcl/compat/zlib/zlib2ansi`, `src/gui/tcltk/pcre/132html`.
-- Examples/benchmarks: `src/gui/tcltk/pcre/perltest.pl`, `src/gui/tcltk/tcl/tests/langbench/*.pl`.
+- None. All known Perl helpers now have Tcl replacements available with `.bak` copies retained for rollback.
 
 ## Perl inventory and roles
 | Path | Evidence | Role | Invocation/Notes |

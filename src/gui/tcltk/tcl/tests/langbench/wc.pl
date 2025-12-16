@@ -1,23 +1,28 @@
-sub wordsplit
-{
-	chomp($_[0]);
-	@list = ();
-	$word = "";
-	foreach $c (split(//, $_[0])) {
-		if ($c =~ /\s/o) {
-			push(@list, $word) if $word ne "";
-			$word = "";
-		} else {
-			$word .= $c;
-		}
-	}
-	push(@list, $word) if $word ne "";
-	return @list;
+#!/usr/bin/env tclsh
+proc wordsplit {str} {
+    set list {}
+    set word {}
+    foreach char [split $str {}] {
+        if {[string is space $char]} {
+            if {[string length $word] > 0} { lappend list $word }
+            set word {}
+        } else {
+            append word $char
+        }
+    }
+    if {[string length $word] > 0} { lappend list $word }
+    return $list
 }
-
-$n = 0;
-while (<>) {
-	@words = &wordsplit($_);
-	$n += $#words + 1;
+proc doit {file} {
+    set f [open $file r]
+    fconfigure $f -translation binary
+    set n 0
+    while {[gets $f buf] >= 0} {
+        incr n [llength [wordsplit $buf]]
+    }
+    close $f
+    return $n
 }
-printf "%d\n", $n;
+set total 0
+foreach file $argv { incr total [doit $file] }
+puts $total

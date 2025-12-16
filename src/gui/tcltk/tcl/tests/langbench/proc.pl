@@ -1,13 +1,17 @@
-sub a { return &b($_[0]); }
-sub b { return &c($_[0]); }
-sub c { return &d($_[0]); }
-sub d { return &e($_[0]); }
-sub e { return &f($_[0]); }
-sub f { return &g($_[0], 2); }
-sub g { return &h($_[0], $_[1], 3); }
-sub h { return &i($_[0], $_[1], $_[2], 4); }
-sub i { return &j($_[0], $_[1], $_[2], $_[3], 5); }
-sub j { return $_[0] + $_[1] + $_[2] + $_[3] + $_[4]; }
-$n = 100000;
-while ($n > 0) { $x = &a($n); $n--; }
-print "$x\n";
+#!/usr/bin/env tclsh
+proc a {val} { return [b $val] }
+proc b {val} { return [c $val] }
+proc c {val} { return [d $val] }
+proc d {val} { return [e $val] }
+proc e {val} { return [f $val] }
+proc f {val} { return [g $val 2] }
+proc g {v1 v2} { return [h $v1 $v2 3] }
+proc h {v1 v2 v3} { return [i $v1 $v2 $v3 4] }
+proc i {v1 v2 v3 v4} { return [j $v1 $v2 $v3 $v4 5] }
+proc j {v1 v2 v3 v4 v5} { return [expr $v1 + $v2 + $v3 + $v4 + $v5] }
+proc main {} {
+    set n 100000
+    while {$n > 0} { set x [a $n]; incr n -1 }
+    puts $x
+}
+main
