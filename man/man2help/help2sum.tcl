@@ -18,6 +18,13 @@ proc summary {section} {
     set macros [open "../bk-macros" r]
     puts -nonewline $out [read $macros]
     close $macros
+<<<<<<< codex/create-migration-plan-from-perl-to-tcl-4b4k6a
+    # Ensure the injected macros end with a separator so the following
+    # requests always start on a fresh line, even if bk-macros lacks a
+    # trailing newline.
+    puts $out ""
+=======
+>>>>>>> master
 
     puts $out ".pl 1000i"
     puts $out ".TH \"$section\" sum \"\" \"\\*(BC\" \"\\*(UM\""
@@ -71,7 +78,13 @@ proc summary {section} {
         set nl 0
     }
     puts $done "\\$"
+<<<<<<< codex/create-migration-plan-from-perl-to-tcl-4b4k6a
+    # The Perl version ignored groff's exit status; mirror that behavior so
+    # warnings don't break the build.
+    catch { close $g }
+=======
     close $g
+>>>>>>> master
     close $done
 }
 
