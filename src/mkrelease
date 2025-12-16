@@ -40,7 +40,11 @@ test -d $S || {
 # setup upgrade information
 save=`pwd`
 cd $S
-$save/build_upgrade_index.pl $ver ${ver}-* || exit 1
+if command -v tclsh >/dev/null 2>&1; then
+        $save/build_upgrade_index.tcl $ver ${ver}-* || exit 1
+else
+        $save/build_upgrade_index.pl $ver ${ver}-* || exit 1
+fi
 # Wayne's magic line to get windows to get 'bk upgrade' to work on windows
 echo "ForceType application/octet-stream" > .htaccess
 cd "$save"

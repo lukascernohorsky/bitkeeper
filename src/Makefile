@@ -701,16 +701,16 @@ endif
 
 $(OBJ) bk.o: $(HDRS)
 
-cmd.c cmd.h: cmd.pl bk.sh $(filter bkd_%,$(SRCS))
+cmd.c cmd.h: cmd.tcl bk.sh $(filter bkd_%,$(SRCS))
 	$(if $(Q),@echo Building $@,)
-	$(Q)perl cmd.pl || (rm -f cmd.c cmd.h; exit 1)
+	$(Q)tclsh cmd.tcl || (rm -f cmd.c cmd.h; exit 1)
 
 # This parses slib.c and extracts the meta-data keywords expanded
 # by kw2val() and passes them to gperf to generate hash lookup code.
 slib.o:	kw2val_lookup.c
-kw2val_lookup.c: slib.c kw2val.pl
+kw2val_lookup.c: slib.c kw2val.tcl
 	$(if $(Q),@echo Building $@,)
-	$(Q)perl kw2val.pl slib.c || (rm -f kw2val_lookup.c; exit 1)
+	$(Q)tclsh kw2val.tcl slib.c || (rm -f kw2val_lookup.c; exit 1)
 
 check-syntax:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -S ${CHK_SOURCES} -o /dev/null
