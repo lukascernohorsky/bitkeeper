@@ -1,4 +1,4 @@
-#!/usr/bin/perl -sw
+#!/usr/bin/env tclsh
 # Copyright 1998,2015-2016 BitMover, Inc
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,112 +13,155 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$n = $d = $v = 0 if 0; # lint
-if ($v) { $s = ""; $q = ""; } else { $s = "-s"; $q = "-q"; }
-$co = "echo";
-$ci = "echo";
-$co = "/usr/bin/co" if -x "/usr/bin/co";
-$ci = "/usr/bin/ci" if -x "/usr/bin/ci";
-$co = "/usr/sbin/co" if -x "/usr/sbin/co";
-$ci = "/usr/sbin/ci" if -x "/usr/sbin/ci";
-open(SH, "|sh");
-&sh("mkdir RCS\n");
-while (<>) {
-	chop;
-	unless (m|SCCS/s\.|) {
-		warn "Bad filename: $_, skipping it.\n";
-		next;
-	}
-	unless (-f $_) {
-		warn "Not readable: $_, skipping it.\n";
-		next;
-	}
-	&doit($file = $_);
+# Command-line flags modeled after the Perl original (-v verbose, -d debug, -n no-op)
+set v 0
+set d 0
+set n 0
+set argvCopy {}
+foreach arg $argv {
+    if {$arg eq "-v"} {
+        set v 1
+    } elseif {$arg eq "-d"} {
+        set d 1
+    } elseif {$arg eq "-n"} {
+        set n 1
+    } else {
+        lappend argvCopy $arg
+    }
 }
-exit 0;
+set argv $argvCopy
 
-sub sh
-{
-	print STDERR "@_" if $d || $n;
-	return if $n;
-	print SH "@_";
+if {$v} {
+    set s ""
+    set q ""
+} else {
+    set s "-s"
+    set q "-q"
 }
 
-sub doit
-{
-	local(@sids);
-
-	chop($_ = `sids -p $file`);
-	@sids = reverse(split);
-	pop(@sids);
-	$deltas = $#sids + 1;
-	$deltas /= 2;
-	&sh("echo ==== $file $deltas revisions ====\n");
-	@branches = ();
-	$gfile = &gfile($file);
-	$base = &basename($gfile);
-	# Get all the deltas and create the other file.
-	&sh("echo $file gets\n");
-	for ($i = 0; $i <= $#sids; $i += 2) {
-		$rev = "$sids[$i]";
-		&sh("get $s -k -p -r$rev $file > $rev\n");
-	}
-
-	# check in all the stuff on the trunk.
-	&sh("echo $file ci\n");
-	for ($i = 0; $i <= $#sids; $i += 2) {
-		if ($sids[$i] =~ /\d+\.\d+\.\d/) {
-			push(@branches, $sids[$i], $sids[$i+1]);
-			next;
-		}
-		$rev = "$sids[$i]";
-		&sh("mv $rev $base\n");
-		&sh("$ci -f $q -mfoo -l$rev $base < /dev/null\n");
-	}
-
-	# Unlock it.
-	&sh("rcs -u $q $base\n/bin/rm $base\n");
-
-	# do the branches.
-	# XXX  - this works only sometimes.
-	for ($i = 0; $i <= $#branches; $i += 2) {
-		$rev = "$branches[$i]";
-		$parent = "$branches[$i+1]";
-		&sh("$co -l $q -r$parent $base\n");
-		&sh("mv $rev $base\n");
-		&sh("$ci -f $q -mfoo -l$rev $base < /dev/null\n");
-	}
-
-	# Unlock it.
-	&sh("rcs -u $q $base\n") if $i;
+# Locate co/ci commands, falling back to echo when absent.
+set co "echo"
+set ci "echo"
+if {[file executable "/usr/bin/co"]} {
+    set co "/usr/bin/co"
+}
+if {[file executable "/usr/bin/ci"]} {
+    set ci "/usr/bin/ci"
+}
+if {[file executable "/usr/sbin/co"]} {
+    set co "/usr/sbin/co"
+}
+if {[file executable "/usr/sbin/ci"]} {
+    set ci "/usr/sbin/ci"
 }
 
-sub gfile 
-{
-	local($file) = $_[0];
+# Pipe commands through /bin/sh just like the Perl script.
+set sh [open "|sh" "w"]
+chan configure $sh -buffering line
 
-	$file =~ s|SCCS/s\.||;
-	$file;
+proc sh {line} {
+    global d n sh
+    if {$d || $n} {
+        puts stderr $line
+    }
+    if {!$n} {
+        puts $sh $line
+    }
 }
 
-sub dirname
-{
-	local($c);
-	local($dir) = $_[0];
-
-	if ($dir =~ m|/|) {
-		do {
-			$c = chop($dir);
-		} while ($c ne '/');
-	}
-	$dir;
+proc gfile {file} {
+    return [string map {"SCCS/s." ""} $file]
 }
 
-sub basename
-{
-	local($c);
-	local($file) = $_[0];
-
-	$file =~ s|.*/||;
-	$file;
+proc basename {path} {
+    return [file tail $path]
 }
+
+proc lrev {listValue} {
+    set out {}
+    foreach item $listValue {
+        set out [linsert $out 0 $item]
+    }
+    return $out
+}
+
+proc processFile {file} {
+    global s q co ci
+    if {[catch {set sidsRaw [exec sids -p $file]} err]} {
+        puts stderr $err
+        return
+    }
+    set lines [split [string trimright $sidsRaw] "\n"]
+    set sids [lrev $lines]
+    if {[llength $sids]} {
+        set sids [lreplace $sids end end]
+    }
+    set deltas [expr {[llength $sids] / 2}]
+    sh "echo ==== $file $deltas revisions ===="
+
+    set branches {}
+    set gfile [gfile $file]
+    set base [basename $gfile]
+
+    sh "echo $file gets"
+    for {set i 0} {$i < [llength $sids]} {incr i 2} {
+        set rev [lindex $sids $i]
+        sh "get $s -k -p -r$rev $file > $rev"
+    }
+
+    sh "echo $file ci"
+    for {set i 0} {$i < [llength $sids]} {incr i 2} {
+        set rev [lindex $sids $i]
+        set parent [lindex $sids [expr {$i + 1}]]
+        if {[regexp {\d+\.\d+\.\d} $rev]} {
+            lappend branches $rev $parent
+            continue
+        }
+        sh "mv $rev $base"
+        sh "$ci -f $q -mfoo -l$rev $base < /dev/null"
+    }
+
+    sh "rcs -u $q $base\n/bin/rm $base"
+
+    for {set i 0} {$i < [llength $branches]} {incr i 2} {
+        set rev [lindex $branches $i]
+        set parent [lindex $branches [expr {$i + 1}]]
+        sh "$co -l $q -r$parent $base"
+        sh "mv $rev $base"
+        sh "$ci -f $q -mfoo -l$rev $base < /dev/null"
+    }
+
+    if {[llength $branches]} {
+        sh "rcs -u $q $base"
+    }
+}
+
+sh "mkdir RCS"
+
+set inputs {}
+if {[llength $argv]} {
+    set inputs $argv
+} else {
+    while {[gets stdin line] >= 0} {
+        lappend inputs $line
+    }
+}
+
+foreach file $inputs {
+    set file [string trim $file]
+    if {$file eq ""} {
+        continue
+    }
+    if {![string match "*SCCS/s.*" $file]} {
+        puts stderr "Bad filename: $file, skipping it."
+        continue
+    }
+    if {![file readable $file]} {
+        puts stderr "Not readable: $file, skipping it."
+        continue
+    }
+    processFile $file
+}
+
+close $sh
+exit 0
