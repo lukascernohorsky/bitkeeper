@@ -13,7 +13,7 @@ little.man: little.doc pod2man
 	    -e 's/=option/=item/' \
 	    -e 's/=proto/=item/' \
 	    -e 's/^#.*//' | \
-	perl ./pod2man \
+        tclsh ./pod2man \
 	    -c"BitKeeper Users Manual" \
 	    -n"bk little" -s1 -ross | \
 	awk -f manfix.awk > little.man

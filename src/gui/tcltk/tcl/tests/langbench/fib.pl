@@ -1,11 +1,7 @@
-sub fib
-{
-	my($n) = @_[0];
-
-	return $n if $n < 2;
-	return &fib($n - 1) + &fib($n - 2);
+#!/usr/bin/env tclsh
+proc fib {n} {
+    expr {$n < 2 ? 1 : [fib [expr {$n -2}]] + [fib [expr {$n -1}]]}
 }
-
-for ($i = 0; $i <= 30; ++$i) {
-	printf "n=%d => %d\n", $i, &fib($i);
+for {set i 0} {$i <= 30} {incr i} {
+    puts "n=$i => [fib $i]"
 }

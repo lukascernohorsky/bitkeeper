@@ -1,2 +1,3 @@
-$n = 1000000;
-while ($n > 0) { $n--; }
+#!/usr/bin/env tclsh
+proc doit {n} { while {$n > 0} { incr n -1 } }
+doit 1000000

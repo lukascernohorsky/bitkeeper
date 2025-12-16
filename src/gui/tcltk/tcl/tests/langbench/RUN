@@ -10,7 +10,6 @@ test X$TCLSH = X && {
         echo Please set TCLSH
         exit 1
 }
-test X$PERL = X && PERL=perl
 test X$PYTHON = X && PYTHON=python
 test X$RUBY = X && RUBY=ruby
 test "X$LANGS" = X && LANGS="pl py rb tcl"
@@ -25,7 +24,7 @@ echo ""
 for lang in $LANGS
 do
         case $lang in
-            pl) CMD=$PERL; EXT=pl;;
+            pl) CMD=$TCLSH; EXT=pl;;
             py) CMD=$PYTHON; EXT=py;;
             rb) CMD=$RUBY; EXT=rb;;
             tcl) CMD=$TCLSH; EXT=tcl;;

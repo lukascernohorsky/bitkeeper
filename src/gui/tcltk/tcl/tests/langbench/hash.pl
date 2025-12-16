@@ -1,5 +1,15 @@
-while (<>) {
-	$hash{$_} = 1;
+#!/usr/bin/env tclsh
+proc main {} {
+    global argv
+    set d [dict create]
+    foreach file $argv {
+        set f [open $file rb]
+        while {[gets $f buf] >= 0} { dict set d $buf 1 }
+        close $f
+    }
 }
-open(FD, "/proc/$$/status");
-while (<FD>) { print if /^Vm[RD]/; }
+main
+set f [open "/proc/[pid]/status"]
+while {[gets $f buf] >= 0} {
+    if {[regexp {^Vm[RD]} $buf]} { puts $buf }
+}

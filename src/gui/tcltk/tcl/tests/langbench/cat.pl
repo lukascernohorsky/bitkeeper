@@ -1,10 +1,8 @@
-# One could argue this should be
-# while ($foo = <>) { chomp($foo); print $foo . "\n"; }
-# to match what tcl does.
-# That slows it down by a factor of 2.
-foreach $file (@ARGV) {
-	open(FD, $file);
-	while ($buf = <FD>) {
-		print $buf;
-	}
+#!/usr/bin/env tclsh
+fconfigure stdout -buffering full -translation binary
+proc cat {file} {
+    set f [open $file rb]
+    while {[gets $f buf] >= 0} { puts $buf }
+    close $f
 }
+foreach file $argv { cat $file }
