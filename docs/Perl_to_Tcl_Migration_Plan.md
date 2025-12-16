@@ -33,6 +33,12 @@ This plan inventories existing Perl usage in the BitKeeper repository and descri
 
 ## Remaining Perl targets
 - Documentation/helpers: `src/gui/tcltk/tcl/doc/L/pod2man`, `src/gui/tcltk/tcl/compat/zlib/zlib2ansi`, `src/gui/tcltk/pcre/CleanTxt`, `src/gui/tcltk/pcre/132html`.
+
+## Remaining Perl targets
+- Runtime/build helpers: `src/sccs2rcs`.
+- Crypto/math generators: `src/tomcrypt/filter.pl`, `src/tomcrypt/parsenames.pl`, `src/tomcrypt/import.bk/build.pl`, `src/tomcrypt/import.bk/splitc`, `src/tomcrypt/import.bk/splitc.ltm`, `src/tommath/booker.pl`, `src/tommath/dep.pl`, `src/tommath/gen.pl`.
+- Libc generators: `src/libc/fslayer/gen_fslayer.pl`, `src/libc/string/mk_str_cfg.pl`.
+- Documentation/helpers: `man/man1/fixit`, `src/gui/tcltk/tcl/doc/L/pod2man`, `src/gui/tcltk/tcl/compat/zlib/zlib2ansi`, `src/gui/tcltk/pcre/Detrail`, `src/gui/tcltk/pcre/CleanTxt`, `src/gui/tcltk/pcre/132html`.
 - Examples/benchmarks: `src/gui/tcltk/pcre/perltest.pl`, `src/gui/tcltk/tcl/tests/langbench/*.pl`.
 
 ## Perl inventory and roles
