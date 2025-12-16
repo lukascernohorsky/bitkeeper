@@ -1,35 +1,56 @@
-#!/usr/bin/perl
+#!/usr/bin/env tclsh
+# Remove trailing whitespace from the lines of each file provided on the
+# command line. Mirrors the original Perl helper's behavior by only
+# trimming whitespace that precedes an existing newline and leaving
+# non-newline-terminated final lines untouched.
 
-# This is a script for removing trailing whitespace from lines in files that
-# are listed on the command line.
+proc detrail {file} {
+    set fh [open $file r]
+    fconfigure $fh -translation binary -encoding binary
+    set data [read $fh]
+    close $fh
 
-# This subroutine does the work for one file.
-
-sub detrail {
-my($file) = $_[0];
-my($changed) = 0;
-open(IN, "$file") || die "Can't open $file for input";
-@lines = <IN>;
-close(IN);
-foreach (@lines)
-  {
-  if (/\s+\n$/)
-    {
-    s/\s+\n$/\n/;
-    $changed = 1;
+    set hasTrailingNL [string match *\n $data]
+    set rawLines [split $data "\n"]
+    if {$hasTrailingNL} {
+        # Drop the empty element produced by split when the file ends in a newline.
+        set rawLines [lrange $rawLines 0 end-1]
     }
-  }
-if ($changed)
-  {
-  open(OUT, ">$file") || die "Can't open $file for output";
-  print OUT @lines;
-  close(OUT);
-  }
+
+    set changed 0
+    set output {}
+    set count [llength $rawLines]
+    for {set i 0} {$i < $count} {incr i} {
+        set line [lindex $rawLines $i]
+        set needsNL 1
+        if {$i == $count - 1 && !$hasTrailingNL} {
+            set needsNL 0
+        }
+        if {$needsNL && [regexp {\s+$} $line]} {
+            regsub {\s+$} $line "" line
+            set changed 1
+        }
+        if {$needsNL} {
+            append line "\n"
+        }
+        lappend output $line
+    }
+
+    if {$changed} {
+        set out [open $file w]
+        fconfigure $out -translation binary -encoding binary
+        foreach line $output {
+            puts -nonewline $out $line
+        }
+        close $out
+    }
 }
 
-# This is the main program
-
-$, = "";   # Output field separator
-for ($i = 0; $i < @ARGV; $i++) { &detrail($ARGV[$i]); }
-
-# End
+set status 0
+foreach file $argv {
+    if {[catch {detrail $file} err]} {
+        puts stderr "Detrail: $file: $err"
+        set status 1
+    }
+}
+exit $status

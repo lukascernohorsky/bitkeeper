@@ -113,7 +113,7 @@ profiled:
 
 #make a single object profiled library 
 profiled_single:
-	perl gen.pl
+	tclsh gen.tcl
 	$(CC) $(CFLAGS) -fprofile-arcs -DTESTING -c mpi.c -o mpi.o
 	$(CC) $(CFLAGS) -DTESTING -DTIMER demo/timing.c mpi.o -o ltmtest
 	./ltmtest
@@ -137,11 +137,11 @@ mtest: test
 timing: $(LIBNAME)
 	$(CC) $(CFLAGS) -DTIMER demo/timing.c $(LIBNAME) -o ltmtest
 
-# makes the LTM book DVI file, requires tetex, perl and makeindex [part of tetex I think]
+# makes the LTM book DVI file, requires tetex, tclsh and makeindex [part of tetex I think]
 docdvi: tommath.src
-	cd pics ; MAKE=${MAKE} ${MAKE} 
+	cd pics ; MAKE=${MAKE} ${MAKE}
 	echo "hello" > tommath.ind
-	perl booker.pl
+	tclsh booker.tcl
 	latex tommath > /dev/null
 	latex tommath > /dev/null
 	makeindex tommath
@@ -171,8 +171,8 @@ manual:	mandvi
 	pdflatex bn >/dev/null
 	rm -f bn.aux bn.dvi bn.log bn.idx bn.lof bn.out bn.toc
 
-pretty: 
-	perl pretty.build
+pretty:
+	tclsh pretty.build
 
 clean:
 	$(if $(Q),@echo Cleaning tommath,)
@@ -191,7 +191,7 @@ no_oops: clean
 	find . -type f | grep -v CVS | xargs -n 1 bash mess.sh
 
 zipup: clean manual poster docs
-	perl gen.pl ; mv mpi.c pre_gen/ ; \
+	tclsh gen.tcl ; mv mpi.c pre_gen/ ; \
 	cd .. ; rm -rf ltm* libtommath-$(VERSION) ; mkdir libtommath-$(VERSION) ; \
 	cp -R ./libtommath/* ./libtommath-$(VERSION)/ ; \
 	tar -c libtommath-$(VERSION)/* | bzip2 -9vvc > ltm-$(VERSION).tar.bz2 ; \
