@@ -151,8 +151,8 @@ if command -v tclsh >/dev/null 2>&1; then
         bk get $Q -S "$BKSRC"/build_upgrade_index.tcl
         tclsh "$BKSRC"/build_upgrade_index.tcl bk-3.2.6 $INSTALLER
 else
-        bk get $Q -S "$BKSRC"/build_upgrade_index.pl
-        "$BKSRC"/build_upgrade_index.pl  bk-3.2.6 $INSTALLER
+        echo "tclsh is required for build_upgrade_index.tcl" >&2
+        exit 1
 fi
 cd ..
 cd junk2
