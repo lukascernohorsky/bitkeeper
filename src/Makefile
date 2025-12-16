@@ -687,7 +687,7 @@ depend: $(SRCS)
 
 # for system.h we need to actually run libc's makefile because it includes
 # calculated header files
-libc/system.h: FORCE
+libc/system.h: cmd.h FORCE
 	$(MAKE) -C libc system.h
 
 libc/libc.a: libc/system.h
