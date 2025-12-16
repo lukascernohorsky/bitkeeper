@@ -78,6 +78,16 @@ foreach line $prototypes {
     set data($fcn,ANAMES) [join $names ", "]
 }
 
+# Ensure previously generated artifacts are writable even if a prior run
+# set them read-only, so regeneration from non-root users succeeds.
+set outputs [list fslayer.h fslayer.makefile]
+foreach f $fcns { lappend outputs [format "fslayer_%s_stub.c" $f] }
+foreach fname $outputs {
+    if {[file exists $fname]} {
+        catch {file attributes $fname -permissions 0644}
+    }
+}
+
 # Generate fslayer.h
 set h [open "fslayer.h" w]
 puts $h "// fslayer.h"
@@ -92,7 +102,7 @@ foreach f $fcns {
     puts $h [format "%s\tfslayer_%s(%s);" $data($f,RET) $f $data($f,ARGS)]
 }
 close $h
-file attributes fslayer.h -permissions 0444
+file attributes fslayer.h -permissions 0644
 
 # Generate stub sources
 foreach f $fcns {
@@ -110,7 +120,7 @@ foreach f $fcns {
     puts $s [format "\treturn (%s(%s));" $f $data($f,ANAMES)]
     puts $s "}"
     close $s
-    file attributes $fname -permissions 0444
+    file attributes $fname -permissions 0644
 }
 
 # Generate makefile fragment
@@ -126,4 +136,4 @@ puts $m "JUNK += fslayer/fslayer.h fslayer/fslayer.makefile \\\n\t[join [lmap f 
 puts $m ""
 puts $m "fslayer: \$(FSLAYER_OBJS)"
 close $m
-file attributes fslayer.makefile -permissions 0444
+file attributes fslayer.makefile -permissions 0644
