@@ -2,16 +2,16 @@
 
 bash genlist.sh > tmplist
 
-perl filter.pl makefile tmplist
+tclsh filter.tcl makefile tmplist
 mv -f tmp.delme makefile
 
-perl filter.pl makefile.icc tmplist
+tclsh filter.tcl makefile.icc tmplist
 mv -f tmp.delme makefile.icc
 
-perl filter.pl makefile.shared tmplist
+tclsh filter.tcl makefile.shared tmplist
 mv -f tmp.delme makefile.shared
 
-perl filter.pl makefile.msvc tmplist
+tclsh filter.tcl makefile.msvc tmplist
 sed -e 's/\.o /.obj /g' < tmp.delme > makefile.msvc
 
 rm -f tmplist
