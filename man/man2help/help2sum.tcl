@@ -71,14 +71,10 @@ proc summary {section} {
         set nl 0
     }
     puts $done "\\$"
-<<<<<<< codex/create-migration-plan-from-perl-to-tcl-4b4k6a
-    # The Perl version ignored groff's exit status; mirror that behavior so
-    # warnings don't break the build.
+
     catch { close $g }
-=======
     close $g
->>>>>>> master
-    close $done
+
 }
 
 set current ""
