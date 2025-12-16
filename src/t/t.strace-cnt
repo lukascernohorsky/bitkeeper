@@ -19,6 +19,7 @@
 # to reset the baseline
 
 DO_CNT="`bk bin`"/t/strace-cnt.tcl
+<<<<<<< HEAD
 test -x "$DO_CNT" || {
         echo "missing strace-cnt.tcl in \`bk bin\`" >&2
         exit 1
