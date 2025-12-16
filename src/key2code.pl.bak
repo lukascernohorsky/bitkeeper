@@ -1,4 +1,5 @@
-# Copyright 2006-2007,2012-2013,2016 BitMover, Inc
+#!/usr/bin/perl
+# Copyright 2005,2016 BitMover, Inc
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,18 +13,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-string.fake:
-	$(MAKE) -C.. string
+# Onetime script to turn a secret key into code to embed in bk
 
-STRING_OBJS = $(patsubst %,string/%, \
-	memmem.o strcasestr.o strndup.o strsep.o \
-	strcnt.o trim.o)
+# "0x55, " - 6 char chunks, and do 10 of them:
+$W = 60;
 
-STRING_HDRS = string/str.cfg string/local_string.h
+$key = '';
+open(F, "$ARGV[0]");
+while ($c = getc(F)) {
+	$count++;
+	$key .= sprintf("0x%02x, ", ord($c));
+}
 
-string: $(STRING_OBJS)
-
-string/str.cfg: string/mk_str_cfg.tcl string/local_string.h
-	$(Q)cd string && tclsh mk_str_cfg.tcl
-
-JUNK += string/str.cfg
+print "private const u8	magickey[$count] = {\n";
+while ($key) {
+    print ",\n" if $sep;
+    $sep = 1;
+    $_ = substr($key, 0, $W, '');
+    chop; chop;
+    print "\t$_";
+}
+print "\n};\n";
