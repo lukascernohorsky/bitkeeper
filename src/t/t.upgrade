@@ -117,7 +117,7 @@ echo OK
 test -d /home/bk/bk-3.2.x || exit 0
 
 # Not everyone has a /usr/bin/perl which is what the script wants
-test -x /usr/bin/perl || exit 0
+command -v tclsh >/dev/null 2>&1 || command -v perl >/dev/null 2>&1 || exit 0
 
 # Not everyone has strict.pm or understands it.
 test `uname` = NetBSD && exit 0
@@ -147,8 +147,13 @@ INSTALLER=bk-3.2.6-$OS.bin
 mkdir upgrade
 cd upgrade
 cp $BK_INSTALLER $INSTALLER
-bk get $Q -S "$BKSRC"/build_upgrade_index.pl
-"$BKSRC"/build_upgrade_index.pl  bk-3.2.6 $INSTALLER
+if command -v tclsh >/dev/null 2>&1; then
+        bk get $Q -S "$BKSRC"/build_upgrade_index.tcl
+        tclsh "$BKSRC"/build_upgrade_index.tcl bk-3.2.6 $INSTALLER
+else
+        bk get $Q -S "$BKSRC"/build_upgrade_index.pl
+        "$BKSRC"/build_upgrade_index.pl  bk-3.2.6 $INSTALLER
+fi
 cd ..
 cd junk2
 bk upgrade -df "$HERE/upgrade" >OUT || {

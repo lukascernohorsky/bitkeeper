@@ -1,74 +1,75 @@
-#!/usr/bin/perl -w
-
+#!/usr/bin/env tclsh
 # Copyright 2003,2016 BitMover, Inc
-
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# notice("index", ....
-# getMsg("index", ....
-# getMsg2("index", ....
-# getMsgv("index", ....
-# errorMsg("index", ...
-
-open(M, "egrep '^#[-a-zA-Z_0-9]+\$' bkmsg.doc |");
-while (<M>) {
-	chop;
-	s/^#//;
-	$keys{$_} = 1;
+proc safe_lines {cmd} {
+    if {[catch {set out [exec sh -c $cmd]} err opts]} {
+        # egrep returns 1 on no matches; treat that as empty output.
+        if {[dict get $opts -errorcode 0] eq "CHILDSTATUS" && [dict get $opts -errorcode 2] == 1} {
+            return {}
+        }
+        error $err
+    }
+    return [split [string trimright $out "\n"] "\n"]
 }
-close(M);
-open(E, "egrep 'notice\\(\"|getMsg\\(\"|getMsg2\\(\"|getMsgv\\(\"|errorMsg\\(\"' *.[ch] port/*.[ch] |");
-while (<E>) {
-	s/:/ /;
-	@_ = split;
-	$file = shift(@_);
-	/"([^"]+)"/;
-	if (defined($keys{$1})) {
-		$keys{$1}++;
-	} else {
-		print "$file $1\n";
-	}
-}
-close(E);
 
-open(H, "bk grep 'bk help' *.c |");
-while (<H>) {
-    if (/bk help (\w+)/) {
-	if ($keys{$1}) {
-	    $keys{$1}++;
-	}
+array set keys {}
+foreach line [safe_lines {egrep '^#[-a-zA-Z_0-9]+\$' bkmsg.doc}] {
+    if {$line eq ""} continue
+    set key [string range $line 1 end]
+    set keys($key) 1
+}
+
+foreach line [safe_lines {egrep 'notice\(\"|getMsg\(\"|getMsg2\(\"|getMsgv\(\"|errorMsg\(\"' *.[ch] port/*.[ch]}] {
+    if {$line eq ""} continue
+    if {[regexp {^([^:]+):.*"([^"]+)"} $line -> file key]} {
+        if {[info exists keys($key)]} {
+            incr keys($key)
+        } else {
+            puts "$file $key"
+        }
     }
 }
-close(H);
 
-open(TCL, "bk -U grep . '*.tcl' |");
-while (<TCL>) {
-    if ((/^(.*?):.*\[getmsg "?([-a-z_]+)/i) ||
-	(/^(.*?):.*{(gui-(support|bug)-\w+)}/)) {
-	if ($keys{$2}) {
-	    $keys{$2}++;
-	} else {
-	    print "$1 $2\n";
-	}
+foreach line [safe_lines {bk grep 'bk help' *.c}] {
+    if {[regexp {^([^:]+):.*bk help (\w+)} $line -> file key]} {
+        if {[info exists keys($key)]} {
+            incr keys($key)
+        }
     }
-} 
-close(TCL);
-
-@u = ();
-foreach $i (keys %keys) {
-	next if $keys{$i} > 1;
-	push(@u, $i);
 }
-foreach $i (sort @u) {
-	print "Appears to be unused: $i\n";
+
+foreach line [safe_lines {bk -U grep . '*.tcl'}] {
+    if {[regexp {^([^:]+):.*(?:\[getmsg "?([-a-z_]+)|{(gui-(?:support|bug)-\w+)}} $line -> file key1 key2]} {
+        set key $key1
+        if {$key eq ""} {
+            set key $key2
+        }
+        if {[info exists keys($key)]} {
+            incr keys($key)
+        } else {
+            puts "$file $key"
+        }
+    }
+}
+
+set unused {}
+foreach key [array names keys] {
+    if {$keys($key) <= 1} {
+        lappend unused $key
+    }
+}
+foreach key [lsort $unused] {
+    puts "Appears to be unused: $key"
 }
