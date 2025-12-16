@@ -169,7 +169,7 @@ files="\
   pcre_stringpiece.cc \
   pcre_stringpiece.h.in \
   pcre_stringpiece_unittest.cc \
-  perltest.pl \
+  perltest.tcl \
   ucp.h \
   ucpinternal.h \
   ucptable.h \
