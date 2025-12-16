@@ -702,8 +702,8 @@ endif
 $(OBJ) bk.o: $(HDRS)
 
 cmd.c cmd.h: cmd.tcl bk.sh $(filter bkd_%,$(SRCS))
-        $(if $(Q),@echo Building $@,)
-        $(Q)tclsh cmd.tcl || (rm -f cmd.c cmd.h; exit 1)
+		$(if $(Q),@echo Building $@,)
+		$(Q)tclsh cmd.tcl || (rm -f cmd.c cmd.h; exit 1)
 
 # This parses slib.c and extracts the meta-data keywords expanded
 # by kw2val() and passes them to gperf to generate hash lookup code.

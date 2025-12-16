@@ -19,19 +19,12 @@ This plan inventories existing Perl usage in the BitKeeper repository and descri
 - **Completed:** Added Tcl rewrite `src/update_copyright.tcl` to refresh BitMover copyright ranges without Perl; original helper retained as `update_copyright.pl.bak` for rollback.
 - **Completed:** Replaced runtime helper `src/chkmsg` with a Tcl implementation that validates message keys against C/Tcl usage, retaining the Perl script as `src/chkmsg.bak` for rollback.
 - **Completed:** Added Tcl rewrite `src/cmd.tcl` to generate `cmd.c`/`cmd.h` from the command inventory while preserving gperf support; original `cmd.pl` retained as `cmd.pl.bak` for rollback.
-- **Completed:** Replaced `src/sccs2rcs` with a Tcl implementation that mirrors the original SCCS-to-RCS conversion flow; original Perl script preserved as `src/sccs2rcs.bak` for rollback.
-- **Completed:** Added Tcl rewrite `src/libc/string/mk_str_cfg.tcl` to generate `str.cfg` without Perl; preserved the original helper as `mk_str_cfg.pl.bak` for rollback.
-- **Completed:** Added Tcl rewrite `src/libc/fslayer/gen_fslayer.tcl` to generate `fslayer.h`, stub sources, and `fslayer.makefile` without Perl; original helper retained as `gen_fslayer.pl.bak` for rollback.
-- **Completed:** Added Tcl rewrites `src/tommath/gen.tcl` and `src/tommath/dep.tcl` to replace the Perl single-file aggregator and dependency/class generator; Perl originals retained as `.bak` backups for rollback.
-- **Completed:** Added Tcl rewrite `src/tommath/booker.tcl` for generating `tommath.tex` from `tommath.src` while retaining the Perl helper as `booker.pl.bak` for rollback.
-- **Completed:** Replaced `src/tommath/pretty.build` with a Tcl implementation that mirrors the original progress reporting and build orchestration while keeping the Perl script as `pretty.build.bak` for rollback.
-- **Completed:** Added Tcl rewrites `src/tomcrypt/filter.tcl` and `src/tomcrypt/parsenames.tcl` for makefile filtering and name parsing, leaving the Perl helpers in `.pl.bak` form for rollback.
-- **Completed:** Added Tcl rewrite `src/tomcrypt/import.bk/build.tcl` to drive tomcrypt/tommath import diffs and tagging while retaining the Perl helper as `build.pl.bak` for rollback.
-- **Completed:** Added Tcl replacements `src/tomcrypt/import.bk/splitc.tcl` and `src/tomcrypt/import.bk/splitc.ltm.tcl` for splitting aggregated changelog streams while retaining the original Perl helpers as `.bak` backups.
-- **Completed:** Added Tcl rewrite `man/man1/fixit` to normalize `.TH` version strings and rewrite `.SA` entries without Perl while preserving the original helper as `fixit.bak` for rollback.
 
 ## Remaining Perl targets
-- Documentation/helpers: `src/gui/tcltk/tcl/doc/L/pod2man`, `src/gui/tcltk/tcl/compat/zlib/zlib2ansi`, `src/gui/tcltk/pcre/Detrail`, `src/gui/tcltk/pcre/CleanTxt`, `src/gui/tcltk/pcre/132html`.
+- Runtime/build helpers: `src/sccs2rcs`.
+- Crypto/math generators: `src/tomcrypt/filter.pl`, `src/tomcrypt/parsenames.pl`, `src/tomcrypt/import.bk/build.pl`, `src/tomcrypt/import.bk/splitc`, `src/tomcrypt/import.bk/splitc.ltm`, `src/tommath/booker.pl`, `src/tommath/dep.pl`, `src/tommath/gen.pl`.
+- Libc generators: `src/libc/fslayer/gen_fslayer.pl`, `src/libc/string/mk_str_cfg.pl`.
+- Documentation/helpers: `man/man1/fixit`, `src/gui/tcltk/tcl/doc/L/pod2man`, `src/gui/tcltk/tcl/compat/zlib/zlib2ansi`, `src/gui/tcltk/pcre/Detrail`, `src/gui/tcltk/pcre/CleanTxt`, `src/gui/tcltk/pcre/132html`.
 - Examples/benchmarks: `src/gui/tcltk/pcre/perltest.pl`, `src/gui/tcltk/tcl/tests/langbench/*.pl`.
 
 ## Perl inventory and roles
