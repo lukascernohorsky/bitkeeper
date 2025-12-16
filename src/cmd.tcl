@@ -521,19 +521,23 @@ proc write_cmd_c {entries use_sizet use_gperf gperf} {
             if {$alias eq ""} { set alias 0 }
             if {$fcn eq ""} { set fcn 0 }
             set qname [cstr $name]
-            puts $chan "$qname, $type, $fcn, $alias, $remote"
+            set qalias [expr {$alias eq "" || $alias eq "0" ? 0 : [cstr $alias]}]
+            puts $chan "$qname, $type, $fcn, $qalias, $remote"
         }
         close $chan
     } else {
         set c [open "cmd.c.new" w]
         puts $c "/* !!! automatically generated file !!! Do not edit. */"
         puts $c "#include \"system.h\"\n#include \"bkd.h\"\n#include \"cmd.h\"\n"
-        puts $c "static CMD cmd_table[] = {"
+        # Use explicit escapes to keep literal brackets in the generated array
+        # declaration (otherwise Tcl would treat them as command substitution
+        # and drop them, emitting an invalid scalar initializer in cmd.c).
+        puts $c "static CMD cmd_table\[\] = {"
         foreach e $entries {
             lassign $e name type fcn alias remote
-            if {$alias eq ""} { set alias 0 }
             if {$fcn eq ""} { set fcn 0 }
-            puts $c "    { \"$name\", $type, $fcn, $alias, $remote },"
+            set alias_val [expr {$alias eq "" || $alias eq "0" ? 0 : [cstr $alias]}]
+            puts $c "    { \"$name\", $type, $fcn, $alias_val, $remote },"
         }
         puts $c "};\n"
         puts $c "static unsigned int cmd_hash(const char *str, size_t len) {"

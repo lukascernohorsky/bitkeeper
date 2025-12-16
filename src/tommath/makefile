@@ -139,13 +139,13 @@ timing: $(LIBNAME)
 
 # makes the LTM book DVI file, requires tetex, tclsh and makeindex [part of tetex I think]
 docdvi: tommath.src
-cd pics ; MAKE=${MAKE} ${MAKE}
-echo "hello" > tommath.ind
-tclsh booker.tcl
-latex tommath > /dev/null
-latex tommath > /dev/null
-makeindex tommath
-latex tommath > /dev/null
+	cd pics ; MAKE=${MAKE} ${MAKE}
+	echo "hello" > tommath.ind
+	tclsh booker.tcl
+	latex tommath > /dev/null
+	latex tommath > /dev/null
+	makeindex tommath
+	latex tommath > /dev/null
 
 # poster, makes the single page PDF poster
 poster: poster.tex
@@ -172,7 +172,7 @@ manual:	mandvi
 	rm -f bn.aux bn.dvi bn.log bn.idx bn.lof bn.out bn.toc
 
 pretty:
-tclsh pretty.build
+	tclsh pretty.build
 
 clean:
 	$(if $(Q),@echo Cleaning tommath,)

@@ -50,54 +50,36 @@ if {$fh ne "stdin"} {
     close $fh
 }
 
-if {$gperf_ok} {
-    set c [open "|$gperf -c >> kw2val_lookup.c" w]
-    puts $c "%{"
-    puts $c "enum {"
-    foreach pair $keywords {
-        set enum [lindex $pair 0]
-        puts $c "\tKW_$enum,"
-    }
-    puts $c "};"
-    puts $c "%}"
-    puts $c "%struct-type"
-    puts $c "%language=ANSI-C"
-    puts $c "%define lookup-function-name kw2val_lookup"
-    puts $c "%define hash-function-name kw2val_hash"
-    puts $c ""
-    puts $c "struct kwval { char *name; int kwnum; };"
-    puts $c "%%"
-    foreach pair $keywords {
-        puts $c "[lindex $pair 1],\tKW_[lindex $pair 0]"
-    }
-    close $c
-} else {
-    set c [open "kw2val_lookup.c" a]
-    puts $c "/* !!! automatically generated file !!! Do not edit. */"
-    puts $c "#include \"system.h\""
-    puts $c "struct kwval { char *name; int kwnum; };"
-    puts $c "enum {"
-    foreach pair $keywords {
-        puts $c "    KW_[lindex $pair 0],"
-    }
-    puts $c "};\n"
-    puts $c "static struct kwval kw_table[] = {"
-    foreach pair $keywords {
-        puts $c "    { \"[lindex $pair 1]\", KW_[lindex $pair 0] },"
-    }
-    puts $c "};\n"
-    set len_type [expr {$use_sizet ? "size_t" : "unsigned int"}]
-    puts $c "static unsigned int kw2val_hash(const char *str, $len_type len) {"
-    puts $c "    unsigned int h = 0;"
-    puts $c "    for ($len_type i = 0; i < len; i++) h = (h * 33) + (unsigned char)str[i];"
-    puts $c "    return h;"
-    puts $c "}\n"
-    puts $c "struct kwval *kw2val_lookup(const char *str, $len_type len) {"
-    puts $c "    size_t n = sizeof(kw_table)/sizeof(kw_table[0]);"
-    puts $c "    for (size_t i = 0; i < n; i++) {"
-    puts $c "        if (strlen(kw_table[i].name) == len && !memcmp(kw_table[i].name, str, len)) return &kw_table[i];"
-    puts $c "    }"
-    puts $c "    return 0;"
-    puts $c "}"
-    close $c
+set c [open "kw2val_lookup.c" a]
+puts $c "/* !!! automatically generated file !!! Do not edit. */"
+puts $c "#include \"system.h\""
+puts $c "struct kwval { char *name; int kwnum; };"
+puts $c "enum {"
+foreach pair $keywords {
+    puts $c "    KW_[lindex $pair 0],"
 }
+puts $c "};\n"
+puts $c "static struct kwval kw_table\[\] = {"
+foreach pair $keywords {
+    puts $c "    { \"[lindex $pair 1]\", KW_[lindex $pair 0] },"
+}
+puts $c "};\n"
+set len_type [expr {$use_sizet ? "size_t" : "unsigned int"}]
+set hash_line [format {    for (%s i = 0; i < len; i++) h = (h * 33) + (unsigned char)str[i];} $len_type]
+set size_line [format {    size_t n = sizeof(kw_table)/sizeof(kw_table[%s]);} 0]
+set loop_line "    for (size_t i = 0; i < n; i++) {"
+set cmp_line [format {        if (strlen(kw_table[%s].name) == len && !memcmp(kw_table[%s].name, str, len)) return &kw_table[%s];} i i i]
+
+puts $c [format "static unsigned int kw2val_hash(const char *str, %s len) {" $len_type]
+puts $c "    unsigned int h = 0;"
+puts $c $hash_line
+puts $c "    return h;"
+puts $c "}\n"
+puts $c [format "struct kwval *kw2val_lookup(const char *str, %s len) {" $len_type]
+puts $c $size_line
+puts $c $loop_line
+puts $c $cmp_line
+puts $c "    }"
+puts $c {    return 0;}
+puts $c "}"
+close $c
