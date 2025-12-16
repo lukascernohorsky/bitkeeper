@@ -16,6 +16,6 @@ fslayer.fake:
 	$(MAKE) -C.. fslayer
 
 fslayer/fslayer.makefile: fslayer/gen_fslayer.tcl fslayer/win_remap.h
-	cd fslayer && tclsh gen_fslayer.tcl
+cd fslayer && tclsh gen_fslayer.tcl
 
 include fslayer/fslayer.makefile
