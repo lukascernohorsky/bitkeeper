@@ -1,38 +1,57 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env tclsh
+# Adapted from the original Perl helper to normalize .TH version and
+# rewrite .SA lines while preserving passthrough behavior for quoted
+# entries.
 
-while (<>) {
-	if (/^.TH\s/) {
-		s/ 1 / "\\*[BKVER]" /;
-	}
-	unless (/^\.SA/) {
-		print;
-		next;
-    	}
-	last;
-}
-exit 0 unless defined($_) && /^\.SA/;
+set sa {}
+set rest {}
+set sawSa 0
 
-# Eat all of them, strip any comments, spit them back out correctly.
-push(@SA, $_);
-while (<>) {
-	if (/^\.SA/) {
-		push(@SA, $_);
-	} else {
-		push(@the_rest, $_);
-	}
+# Stream input until the first .SA directive or EOF
+while {[gets stdin line] >= 0} {
+    if {[regexp {^\.TH\s} $line]} {
+        regsub { 1 } $line { "\\*[BKVER]" } line
+    }
+    if {![regexp {^\.SA} $line]} {
+        puts $line
+        continue
+    }
+    set sawSa 1
+    break
 }
 
-pop(@SA) while ($SA[$#SA] eq ".SA |\n");
-for ($i = 0; $i <= $#SA; ++$i) {
-	$_ = $SA[$i];
-	if (/"/) {
-		warn "Passing verbatum: $_"
-		print;
-	} else {
-		@_ = split;
-		print ".SA $_[1]\n";
-	}
+if {!$sawSa} {
+    exit 0
 }
-foreach $_ (@the_rest) {
-	print;
+
+lappend sa $line
+while {[gets stdin line] >= 0} {
+    if {[regexp {^\.SA} $line]} {
+        lappend sa $line
+    } else {
+        lappend rest $line
+    }
+}
+
+# Trim trailing ".SA |" entries
+while {[llength $sa] > 0 && [lindex $sa end] eq ".SA |"} {
+    set sa [lrange $sa 0 end-1]
+}
+
+foreach entry $sa {
+    if {[string first {"} $entry] != -1} {
+        puts stderr "Passing verbatum: $entry"
+        puts $entry
+        continue
+    }
+    set tokens [split $entry]
+    if {[llength $tokens] >= 2} {
+        puts ".SA [lindex $tokens 1]"
+    } else {
+        puts $entry
+    }
+}
+
+foreach entry $rest {
+    puts $entry
 }
