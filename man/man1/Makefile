@@ -1,4 +1,4 @@
-VER=`../bkver.pl`
+VER=`../bkver.tcl`
 
 g: 
 	g groff -I.. -rC1 -rD1 -d BKVER=$(VER) *.1
@@ -28,4 +28,4 @@ h help:
 	GROFF_NO_SGR=1 groff -I.. -rhelpdoc=1 -P-u -P-b -Tascii -d BKVER=$(VER) *.1 | less -s
 
 deroff.out: *.1
-	../../src/deroff.pl *.1  > $@
+	../../src/deroff.tcl *.1  > $@

@@ -85,7 +85,7 @@ profiled:
 
 #make a single object profiled library 
 profiled_single:
-	perl gen.pl
+	tclsh gen.tcl
 	$(CC) $(CFLAGS) -prof_gen -DTESTING -c mpi.c -o mpi.o
 	$(CC) $(CFLAGS) -DTESTING -DTIMER demo/demo.c mpi.o -o ltmtest
 	./ltmtest
