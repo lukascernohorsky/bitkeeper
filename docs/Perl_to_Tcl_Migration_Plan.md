@@ -30,9 +30,10 @@ This plan inventories existing Perl usage in the BitKeeper repository and descri
 - **Completed:** Added Tcl replacements `src/tomcrypt/import.bk/splitc.tcl` and `src/tomcrypt/import.bk/splitc.ltm.tcl` for splitting aggregated changelog streams while retaining the original Perl helpers as `.bak` backups.
 - **Completed:** Added Tcl rewrite `man/man1/fixit` to normalize `.TH` version strings and rewrite `.SA` entries without Perl while preserving the original helper as `fixit.bak` for rollback.
 - **Completed:** Added Tcl rewrite `src/gui/tcltk/pcre/Detrail` to strip trailing whitespace from files; original Perl helper preserved as `Detrail.bak` for rollback.
+- **Completed:** Added Tcl rewrite `src/gui/tcltk/pcre/CleanTxt` to filter `nroff -man` output for online readability; original Perl helper retained as `CleanTxt.bak` for rollback.
 
 ## Remaining Perl targets
-- Documentation/helpers: `src/gui/tcltk/tcl/doc/L/pod2man`, `src/gui/tcltk/tcl/compat/zlib/zlib2ansi`, `src/gui/tcltk/pcre/CleanTxt`, `src/gui/tcltk/pcre/132html`.
+- Documentation/helpers: `src/gui/tcltk/tcl/doc/L/pod2man`, `src/gui/tcltk/tcl/compat/zlib/zlib2ansi`, `src/gui/tcltk/pcre/132html`.
 - Examples/benchmarks: `src/gui/tcltk/pcre/perltest.pl`, `src/gui/tcltk/tcl/tests/langbench/*.pl`.
 
 ## Perl inventory and roles
