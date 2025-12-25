@@ -145,24 +145,49 @@ set_libcfg() {
 	elif [ -z "$BK_CRANK" ] && eval $testfcn; then
 		# our test function worked
 		true
-	elif [ -z "$BK_CRANK" ]; then
-		echo "Failed to detect system $NAME, use local copy in bk source tree!" 1>&2
-		eval $builtin
-		SYSTEM=0
 	else
-		# no library found, build our own.
-		test "$BK_NO_AUTOCLONE" && {
-			echo $NAME required to build bk 1>&2
-			exit 1
-		}
-		test "$COMPONENT" && {
-			bk here add $COMPONENT || {
-				echo failed to add $COMPONENT component 1>&2
-				exit 1
-			}
-		}
-		eval $builtin
-		SYSTEM=0
+		# FAIL: Required library not found - BitKeeper now requires system libraries
+		echo "ERROR: Required system library '$NAME' not found!" >&2
+		echo "BitKeeper now requires system-installed libraries and will NOT use bundled versions." >&2
+		echo "Please install the appropriate development package:" >&2
+
+		# Platform-specific installation instructions
+		case "$NAME" in
+			TOMCRYPT)
+				echo "  Debian/Ubuntu: sudo apt-get install libtomcrypt-dev" >&2
+				echo "  RHEL/CentOS:   sudo yum install tomcrypt-devel" >&2
+				echo "  Fedora:        sudo dnf install tomcrypt-devel" >&2
+				echo "  Arch Linux:    sudo pacman -S tomcrypt" >&2
+				;;
+			TOMMATH)
+				echo "  Debian/Ubuntu: sudo apt-get install libtommath-dev" >&2
+				echo "  RHEL/CentOS:   sudo yum install tommath-devel" >&2
+				echo "  Fedora:        sudo dnf install tommath-devel" >&2
+				echo "  Arch Linux:    sudo pacman -S libtommath" >&2
+				;;
+			PCRE)
+				echo "  Debian/Ubuntu: sudo apt-get install libpcre3-dev" >&2
+				echo "  RHEL/CentOS:   sudo yum install pcre-devel" >&2
+				echo "  Fedora:        sudo dnf install pcre-devel" >&2
+				echo "  Arch Linux:    sudo pacman -S pcre" >&2
+				;;
+			LZ4)
+				echo "  Debian/Ubuntu: sudo apt-get install liblz4-dev" >&2
+				echo "  RHEL/CentOS:   sudo yum install lz4-devel" >&2
+				echo "  Fedora:        sudo dnf install lz4-devel" >&2
+				echo "  Arch Linux:    sudo pacman -S lz4" >&2
+				;;
+			ZLIB)
+				echo "  Debian/Ubuntu: sudo apt-get install zlib1g-dev" >&2
+				echo "  RHEL/CentOS:   sudo yum install zlib-devel" >&2
+				echo "  Fedora:        sudo dnf install zlib-devel" >&2
+				echo "  Arch Linux:    sudo pacman -S zlib" >&2
+				;;
+			esac
+
+		echo "" >&2
+		echo "After installing the required packages, try building again." >&2
+		exit 1
 	fi
 	echo ${NAME}_SYSTEM=$SYSTEM
 	echo export ${NAME}_SYSTEM

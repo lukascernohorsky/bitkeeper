@@ -45,7 +45,6 @@ default: notes/BUILD
 
 .PHONY: ordered
 ordered:
-	$(Q)$(MAKE) tcltk
 	$(Q)$(MAKE) $(GUIS)
 
 gui guis:  lib images ordered

@@ -317,9 +317,48 @@ MISC	= bkmsg.doc t/doit.sh
 default:
 	$(MAKE) p
 
-SUBDIRS = libc $(shell ls -d tomcrypt tommath 2>/dev/null)
+# Only build libc, remove bundled crypto libraries from build
+SUBDIRS = libc
 
-all: $(ALL)
+# Dependency check target - verify required system libraries are available
+check-dependencies:
+	@echo "Checking for required system dependencies..."
+	@echo "BitKeeper now requires system-installed libraries and will NOT use bundled versions."
+	@echo ""
+	@# Check for libraries using pkg-config
+	@for lib in tomcrypt tommath pcre lz4; do \
+		if ! pkg-config --exists lib$$lib 2>/dev/null; then \
+			echo "ERROR: Missing required library: lib$$lib"; \
+			echo "Please install the development package for this library."; \
+			exit 1; \
+		fi; \
+		echo "Found: lib$$lib"; \
+	done
+	@# Check for zlib (uses different pkg-config name)
+	@if ! pkg-config --exists zlib 2>/dev/null; then \
+		echo "ERROR: Missing required library: zlib"; \
+		echo "Please install the zlib-dev development package."; \
+		exit 1; \
+	fi
+	@echo "Found: zlib"
+	@# Check for Tcl/Tk (they use different pkg-config names)
+	@if ! pkg-config --exists tcl 2>/dev/null; then \
+		echo "ERROR: Missing required library: tcl"; \
+		echo "Please install the tcl-dev development package."; \
+		exit 1; \
+	fi
+	@echo "Found: tcl"
+	@if ! pkg-config --exists tk 2>/dev/null; then \
+		echo "ERROR: Missing required library: tk"; \
+		echo "Please install the tk-dev development package."; \
+		exit 1; \
+	fi
+	@echo "Found: tk"
+	@echo ""
+	@echo "All required dependencies found. Proceeding with build..."
+
+# Make dependency check a prerequisite for main build
+all: check-dependencies $(ALL)
 
 prof:
 	$(MAKE) CFLAGS="$G -pg -O2" LDFLAGS=-pg all
