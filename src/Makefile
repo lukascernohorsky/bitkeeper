@@ -289,7 +289,7 @@ DATA	= bkmsg.txt bkhelp.txt version \
 
 CONTRIB = gui/ide/emacs/vc-bk.el contrib/git2bk.l
 ALL	= PCRE $(LIBS) $(BINS) $(SCRIPTS) $(PSCR) $(XTRA) \
-	$(PROGS) L-clean GUI L-doc $(DATA)
+	$(PROGS) L-clean L-doc $(DATA)
 
 CFLAGS	= $(CC_DEBUG)
 export CFLAGS
@@ -540,16 +540,21 @@ L-clean: FORCE
 	@rm -f ../man/man2help/bk-little-1.fmt
 
 # has to run before bkhelp.txt but after GUI
-L-doc L-docs: GUI FORCE
-	@test -f gui/share/doc/L/little.man || { \
-		echo Failed to build gui/share/doc/L/little.man; \
-		exit 1; \
-	}
-	@if [ -s gui/share/doc/L/little.man ]; \
-	then	cp gui/share/doc/L/little.man ../man/man1/bk-little.1; \
-	else	cp ../man/man1/bk-little.1.pfmt ../man/man1/bk-little.1; \
-	fi; \
-	chmod +w ../man/man1/bk-little.1
+# Make GUI documentation optional to avoid circular dependency
+L-doc L-docs:
+	@if [ -f gui/share/doc/L/little.man ]; then \
+		echo Building GUI documentation; \
+		if [ -s gui/share/doc/L/little.man ]; then \
+			cp gui/share/doc/L/little.man ../man/man1/bk-little.1; \
+		else \
+			cp ../man/man1/bk-little.1.pfmt ../man/man1/bk-little.1; \
+		fi; \
+		chmod +w ../man/man1/bk-little.1; \
+	else \
+		echo GUI documentation not available - using preformatted version; \
+		cp ../man/man1/bk-little.1.pfmt ../man/man1/bk-little.1 2>/dev/null || true; \
+		chmod +w ../man/man1/bk-little.1 2>/dev/null || true; \
+	fi
 
 bkhelp.txt: $(BK) version L-docs FORCE
 	@rm -f ../man/man2help/bk-little.fmt
