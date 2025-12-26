@@ -470,7 +470,11 @@ bisect(opts *op, sccs *s,
 	assert(s && leftrevs && rightrev && next && nleft);
 	score = op->score;
 	assert(score);
+	/* walkrevs_collect returns a valid array, suppress false positive */
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	candlist = walkrevs_collect(s, leftrevs, L(rightrev), 0);
+	#pragma GCC diagnostic pop
 	assert(candlist != NULL);
 	assert(nLines(candlist));
 	*nleft = nLines(candlist);
@@ -495,8 +499,15 @@ bisect(opts *op, sccs *s,
 		FLAGS(s, d) |= D_SET;
 		e = PARENT(s, d);	// works if no parent: e = 0
 		n = score[e];		// note: e may be outside D_SET range
+		/* walkrevs functions generate false positive warnings */
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdangling-pointer"
 		walkrevs_setup(&wd, s, L(e), L(d), 0);
-		while ((d1 = walkrevs(&wd)) != 0) if (FLAGS(s, d1) & D_SET) n++;
+		for (d1 = walkrevs(&wd); d1 != 0; d1 = walkrevs(&wd)) {
+			if (FLAGS(s, d1) & D_SET) n++;
+		}
+		walkrevs_done(&wd);
+		#pragma GCC diagnostic pop
 		walkrevs_done(&wd);
 		score[d] = n;
 	}
