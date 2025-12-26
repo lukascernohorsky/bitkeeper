@@ -471,7 +471,7 @@ private int
 getsfio(int jobs)
 {
 	int	status, pfd;
-	u32	in, out;
+
 	FILE	*f;
 	char	*cmds[10] =
 		    {"bk", "sfio", "-iq", "--checkout", "--mark-no-dfiles", 0};
@@ -492,7 +492,10 @@ getsfio(int jobs)
 	f = fdopen(pfd, "wb");
 	/* stdin needs to be unbuffered here */
 	assert(!Opts.use_stdio);
-	gunzipAll2fh(0, f, &in, &out);
+	int tmp_in = 0;
+	int tmp_out = 0;
+	gunzipAll2fh(0, f, &tmp_in, &tmp_out);
+
 	fclose(f);
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status)) {

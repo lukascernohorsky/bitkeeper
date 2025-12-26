@@ -171,6 +171,7 @@ do_unpark(int id)
 int
 ounpark_main(int ac, char **av)
 {
+	(void)ac; /* Mark as intentionally unused */
 	char	**d;
 	int	i, j, top = 0;
 

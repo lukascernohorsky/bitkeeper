@@ -104,7 +104,7 @@ cmd_push_part1(int ac, char **av)
 
 	out("@OK@\n");
 	p = fmem_peek(fout, &n);
-	unless (writen(1, p, n) == n) {
+	unless (writen(1, p, n) == (int)n) {
 		fclose(fout);
 		return (1);
 	}

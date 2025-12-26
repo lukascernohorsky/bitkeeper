@@ -97,7 +97,7 @@ base64_main(int ac, char **av)
 		while (fgets(buf, sizeof(buf), stdin)) {
 			len = strlen(buf);
 			outlen = sizeof(out);
-			if (err = base64_decode(buf, len, out, &outlen)) {
+			if (err = base64_decode((unsigned char *)buf, len, (unsigned char *)out, (unsigned long *)&outlen)) {
 err:				fprintf(stderr, "base64: %s\n",
 				    error_to_string(err));
 				return (1);
@@ -108,7 +108,7 @@ err:				fprintf(stderr, "base64: %s\n",
 		setmode(fileno(stdin), _O_BINARY);
 		while (len = fread(buf, 1, 48, stdin)) {
 			outlen = sizeof(out);
-			if (err = base64_encode(buf, len, out, &outlen)) {
+			if (err = base64_encode((unsigned char *)buf, len, (unsigned char *)out, (unsigned long *)&outlen)) {
 				goto err;
 			}
 			fwrite(out, 1, outlen, stdout);

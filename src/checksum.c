@@ -245,7 +245,7 @@ fileResum(sccs *s, ser_t d, int diags, int fix, int safefix)
 		e = getSymlnkCksumDelta(s, d);
 		if (!fix && !SUM(s, e)) return (0);
 
-		for (t = SYMLINK(s, d); *t; sum += *t++);
+		for (t = (u8 *)SYMLINK(s, d); *t; sum += *t++);
 		if (SUM(s, e) == sum) return (0);
 		unless (fix) {
 			fprintf(stderr, "Bad symlink checksum %05u:%05u "
@@ -571,14 +571,14 @@ cset_resum(sccs *s, int diags, int fix, int spinners, int takepatch)
 			addArray(&rkarray, 0);
 			rkid->index = cnt++;
 			sum = 0;
-			for (e = HEAP(s, rkoff); *e; e++) sum += *e;
+			for (e = (u8 *)HEAP(s, rkoff); *e; e++) sum += *e;
 			sum += ' ' + '\n';
 			rkid->sum = sum;
 		} else {
 			rkid = (rkinfo *)root2id->vptr;
 			sum = rkid->sum;
 		}
-		for (e = HEAP(s, dkoff); *e; e++) sum += *e;
+		for (e = (u8 *)HEAP(s, dkoff); *e; e++) sum += *e;
 		snew.ser = d;
 		snew.sum = sum;
 		addArray(&rkarray[rkid->index].sse, &snew);

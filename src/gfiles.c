@@ -36,7 +36,7 @@ typedef struct winfo winfo;
 typedef	char	STATE[8];
 
 private int	chk_diffs(sccs *s);
-private void	do_print(char state[6], char *gfile, char *rev);
+private void	do_print(STATE state, char *gfile, char *rev);
 private void	file(char *f);
 private void	print_it(STATE state, char *file, char *rev);
 private	void	print_summary(void);
@@ -159,6 +159,7 @@ willneed(char *sfile)
 private int
 fastprint(char *file, char type, void *data)
 {
+	(void)type; /* Mark as intentionally unused */
 	filecnt	*fc = data;
 	char	*p;
                
@@ -1141,7 +1142,7 @@ uprogress(void)
 	sprintf(buf, "%s%d %d %d %d\n",
 	    opts.gui ? "P|" : "", s_count, x_count, d_count, c_count);
 	/* If we get an error, it usually means that we are to die */
-	if (write(1, buf, strlen(buf)) != strlen(buf)) exit(1);
+	if (write(1, buf, strlen(buf)) != (ssize_t)strlen(buf)) exit(1);
 	s_last = s_count;
 	x_last = x_count;
 	d_last = d_count;

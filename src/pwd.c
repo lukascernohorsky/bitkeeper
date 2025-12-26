@@ -142,6 +142,7 @@ dotbk_main(int ac, char **av)
 int
 realpath_main(int ac, char **av)
 {
+	(void)ac; /* Mark as intentionally unused */
 	char	buf[MAXPATH], real[MAXPATH];
 
 	if (av[1]) {

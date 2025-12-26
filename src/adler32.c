@@ -37,7 +37,7 @@ adler32_file(char *file)
 		mclose(m);
 		return (0);
 	}
-	sum = adler32(0, m->mmap, m->size);
+	sum = adler32(0, (const Bytef *)m->mmap, m->size);
 	mclose(m);
 	return (sum);
 }
@@ -112,10 +112,10 @@ eof:			fprintf(stderr, "adler32: did not see patch EOF\n");
 				printf("\n# Diff checksum=%.8lx\n\n", sum);
 				break;
 			}
-			sum = adler32(sum, "#", 1);
+			sum = adler32(sum, (const Bytef *)"#", 1);
 			fputs("#", stdout);
 			byte_count++;
-			sum = adler32(sum, buf, strlen(buf));
+			sum = adler32(sum, (const Bytef *)buf, strlen(buf));
 			fputs(buf, stdout);
 			byte_count += strlen(buf);
 			if (feof(stdin)) goto eof;
@@ -153,7 +153,7 @@ end:			sprintf(buf, "# Patch checksum=%.8lx\n", sum);
 			save_byte_count(byte_count);
 			return (0);
 		}
-		sum = adler32(sum, buf, strlen(buf));
+		sum = adler32(sum, (const Bytef *)buf, strlen(buf));
 		fputs(buf, stdout);
 		byte_count += strlen(buf);
 		if (feof(stdin)) goto eof;

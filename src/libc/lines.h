@@ -61,7 +61,7 @@
 })
 
 #define	EACH_START(x, s, i)				\
-	if ((i = (x)), (s)) for (; (i) <= _LLEN(s); i++)
+	if ((i = (x)), (s)) for (; (u32)(i) <= _LLEN(s); i++)
 #define	EACH_INDEX(s, i)		EACH_START(1, s, i)
 #define	EACH(s)				EACH_START(1, s, i)
 #define	EACH_REVERSE_INDEX(s, i)	for (i = nLines(s); i > 0; i--)

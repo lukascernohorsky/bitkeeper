@@ -90,14 +90,16 @@ collapse_main(int ac, char **av)
 			fromurl = 1;
 			break;
 		    case 'a':
-			if (after) usage(); after = strdup(optarg); break;
+			if (after) usage();
+		after = strdup(optarg); break;
 		    case 'd': flags |= COLLAPSE_DELTAS; break;
 		    case 'e': edit = 1; break;
 		    case 'l': flags |= COLLAPSE_LOG; break;
 		    case 'm': merge = 1; break;
 		    case 'P': flags |= COLLAPSE_PONLY; break;
 		    case 'r':
-			if (revlist) usage(); revlist = optarg; break;
+			if (revlist) usage();
+		revlist = optarg; break;
 		    case 'q': flags |= SILENT; break;
 		    case 'S': standalone = 1; break;
 		    case 's':  /* reserved for --subset */
