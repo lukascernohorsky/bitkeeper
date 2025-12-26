@@ -465,7 +465,7 @@ atoi_p(char **sp)
 {
 	u8	c;
 	int	val = 0;
-	u8	*s = *sp;
+	u8	*s = (u8 *)*sp;
 
 	if (!s) return (0);
 	// stop at first non-digit including null
@@ -473,7 +473,7 @@ atoi_p(char **sp)
 		val = val * 10 + c;
 		++s;
 	}
-	*sp = s;
+	*sp = (char *)s;
 	return (val);
 }
 
@@ -1053,9 +1053,13 @@ correct:
 			sign = -1;	/* this is what I want */
 		}
 		if (*z == '+') z++;
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
+		#pragma GCC diagnostic ignored "-Wpointer-sign"
 		tp->tm_hour += atoi(z) * sign;
 		while (*z++ != ':');
 		tp->tm_min += atoi(z) * sign;
+		#pragma GCC diagnostic pop
 	}
 }
 
