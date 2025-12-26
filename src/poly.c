@@ -148,10 +148,13 @@ poly_r2c(sccs *cset, ser_t orig, char ***pcsets)
 				e = sccs_findKey(cset, cm->emkey);
 				addArray(&lower, &e);
 			}
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wdangling-pointer"
 			if (range_walkrevs(
 			    cset, lower, L(d), 0, inrange, uint2p(orig))) {
 				*pcsets = addLine(*pcsets, strdup(cm->pkey));
 			}
+			#pragma GCC diagnostic pop
 			FREE(lower);
 		}
 		free(list);
@@ -192,8 +195,11 @@ poly_range(sccs *s, ser_t d, char *pkey)
 				addArray(&lower, &e);
 			}
 			/* XXX: keep range_walkrevs; sets s->rstart/rstop */
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wdangling-pointer"
 			range_walkrevs(s, lower, L(d), 0,
 			    walkrevs_setFlags, uint2p(D_SET));
+			#pragma GCC diagnostic pop
 			s->state |= S_SET;
 			FREE(lower);
 		} else {
@@ -664,11 +670,14 @@ findPoly(sccs *s, ser_t local, ser_t remote, ser_t fake)
 	wrdata	wd;
 	ser_t	*gcalist = 0, *list = 0, d;
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	walkrevs_setup(&wd, s, L(local), L(remote), WR_GCA);
 	while (d = walkrevs(&wd)) {
 		if (polyChk(s, d)) addArray(&gcalist, &d);
 	}
 	walkrevs_done(&wd);
+	#pragma GCC diagnostic pop
 
 	if (nLines(gcalist)) {
 		/* if new poly and not allowed - error */
@@ -875,7 +884,10 @@ lowerBounds(sccs *s, ser_t d, u32 side)
 	cs.d = d;
 	cs.side = side;
 	cs.list = 0;
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	range_walkrevs(s, 0, L(d), 0, csetStop, &cs);
+	#pragma GCC diagnostic pop
 	insertArrayN(&cs.list, 1, &cs.oldest);
 	return (cs.list);
 }

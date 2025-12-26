@@ -151,10 +151,13 @@ csetBoundarySet(sccs *s)
 	 */
 	EACH_REVERSE(serlist) {
 		d = serlist[i];
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdangling-pointer"
 		unless (range_walkrevs(
 			    s, 0, L(d), 0, inCset, uint2p(d))) {
 			removeArrayN(serlist, i);
 		}
+		#pragma GCC diagnostic pop
 	}
 	return (serlist);
 }
