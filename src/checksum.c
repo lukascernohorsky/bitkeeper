@@ -610,19 +610,26 @@ cset_resum(sccs *s, int diags, int fix, int spinners, int takepatch)
 		d = order[orderIndex];
 
 		/* serialmap[i] = (slist[i] ^ symdiff[i]) & 1 */
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdangling-pointer"
 		bits = symdiff_expand(s, L(prev), d, symdiff);
+		#pragma GCC diagnostic pop
 		start = (d > prev) ? d : prev;
 		/* closure[i] = (slist[i] ^ symdiff[i]) & 2 */
 		if (verify) {
 			wrdata	wr;
 			ser_t	tmpd;
 
+			/* walkrevs functions generate false positive warnings */
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wdangling-pointer"
 			walkrevs_setup(&wr, s, L(prev), L(d), WR_EITHER);
 			while ((tmpd = walkrevs(&wr)) != 0) {
 				unless (symdiff[tmpd]) bits++;
 				symdiff[tmpd] |= 2;
 			}
 			walkrevs_done(&wr);
+			#pragma GCC diagnostic pop
 		}
 
 		if (tick) progress(tick, ++n);

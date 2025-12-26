@@ -1440,7 +1440,10 @@ fetch_changeset(int forceCsetFetch)
 		fprintf(stderr, "TIP %s %s\n", REV(s, d), delta_sdate(s, d));
 	}
 	s->hasgone = 1;
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	range_gone(s, L(d), D_SET);
+	#pragma GCC diagnostic pop
 	(void)stripdel_fixTable(s, &i);
 	unless (i) {
 		locked_free(s);

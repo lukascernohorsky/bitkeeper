@@ -301,6 +301,9 @@ do_cset(sccs *s, char *rev, char **nav)
 	/* BK_CSETLIST=/file/of/cset/keys */
 	csetfile = bktmp(0);
 	f = fopen(csetfile, "w");
+	/* walkrevs functions generate false positive warnings */
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	walkrevs_setup(&wr, s, L(d), 0, 0);
 	while ((d = walkrevs(&wr)) != 0) {
 		char    buf[MAXKEY];
@@ -309,6 +312,7 @@ do_cset(sccs *s, char *rev, char **nav)
 		fprintf(f, "%s\n", buf);
 	}
 	walkrevs_done(&wr);
+	#pragma GCC diagnostic pop
 	fclose(f);
 	if (size(csetfile) == 0) {
 		fprintf(stderr, "Nothing to collapse.\n");
@@ -488,9 +492,12 @@ do_file(char *file, char *tiprev)
 	}
 
 	/* save deltas to remove in rmdeltas */
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	if (range_walkrevs(s, L(tipd), L(d), 0, savedeltas, &rmdeltas)) {
 		goto done;
 	}
+	#pragma GCC diagnostic pop
 	reverseArray(rmdeltas);	/* oldest first (for comments) */
 
 	/*
