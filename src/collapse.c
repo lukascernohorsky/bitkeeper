@@ -302,7 +302,7 @@ do_cset(sccs *s, char *rev, char **nav)
 	csetfile = bktmp(0);
 	f = fopen(csetfile, "w");
 	walkrevs_setup(&wr, s, L(d), 0, 0);
-	while (d = walkrevs(&wr)) {
+	while ((d = walkrevs(&wr)) != 0) {
 		char    buf[MAXKEY];
 
 		sccs_md5delta(s, d, buf);

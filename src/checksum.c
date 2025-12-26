@@ -618,7 +618,7 @@ cset_resum(sccs *s, int diags, int fix, int spinners, int takepatch)
 			ser_t	tmpd;
 
 			walkrevs_setup(&wr, s, L(prev), L(d), WR_EITHER);
-			while (tmpd = walkrevs(&wr)) {
+			while ((tmpd = walkrevs(&wr)) != 0) {
 				unless (symdiff[tmpd]) bits++;
 				symdiff[tmpd] |= 2;
 			}
