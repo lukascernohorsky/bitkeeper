@@ -1231,7 +1231,10 @@ scanrev(char *s, ser_t *a, ser_t *b, ser_t *c, ser_t *d)
 			*c = atoi_p(&s);
 			if (d && *s == '.') {
 				s++;
+				#pragma GCC diagnostic push
+				#pragma GCC diagnostic ignored "-Wpointer-sign"
 				*d = atoi(s);
+				#pragma GCC diagnostic pop
 				return (4);
 			} else return (3);
 		} else return (2);
@@ -1667,7 +1670,10 @@ findrev(sccs *s, char *rev)
 	if (streq(rev, "1.0")) return (TREE(s));
 
 	if ((*rev == '=') && isdigit(rev[1])) {
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wpointer-sign"
 		e = atoi(++rev);
+		#pragma GCC diagnostic pop
 		unless ((e >= TREE(s)) && (e <= TABLE(s))) {
 			fprintf(stderr, "Serial %s not found\n", rev);
 			return (0);
@@ -3020,7 +3026,10 @@ sccs_tagConflicts(sccs *s)
 
 	h = hash_new(HASH_U32HASH, sizeof(u32), sizeof(struct tcpair));
 	db = mdbm_mem();
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	walkrevs_setup(&wr, s, L(l1), L(l2), WR_EITHER);
+	#pragma GCC diagnostic pop
 	sym = 0;
 	while (d = walktagrevs(&wr)) {
 	    /* Want active in two contexts, so disable active in walkTags */
@@ -6872,7 +6881,10 @@ _whodisabled(sccs *s, ser_t d, void *token)
 	 * become set and stop the first time it does.  So no reason to clear
 	 * whole list after each iteration.  Pretty slick.
 	 */
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	symdiff_expand(s, L(PARENT(s, d)), d, who->slist);
+	#pragma GCC diagnostic pop
 	if (who->slist[who->base]) {
 		who->base = d;
 		return (1);	/* found; terminate walkrevs */
@@ -6897,7 +6909,10 @@ whodisabled(sccs *s, ser_t tip, ser_t serial, u8 *slist)
 	if ((tip < serial) || !isReachable(s, serial, tip)) return (0);
 	who.base = serial;
 	who.slist = calloc(TABLE(s) + 1, 1);
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	if (range_walkrevs(s, L(serial), L(tip), 0, _whodisabled, &who)) {
+	#pragma GCC diagnostic pop
 		free(who.slist);
 		return (who.base);
 	}
@@ -13126,7 +13141,10 @@ sccs_slowWeave(sccs *s)
 			rewind(diffs);
 		}
 		/* incremental serialmap() call */
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdangling-pointer"
 		symdiff_expand(s, L(prev), d, w.slist);
+		#pragma GCC diagnostic pop
 		prev = d;
 		unless (first) {
 			s->fh = fh[pingpong];
@@ -17140,7 +17158,10 @@ gca3(sccs *s, ser_t left, ser_t right, char **inc, char **exc)
 	*inc = *exc = 0;
 	unless (s && TABLE(s) && left && right) return (0);
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	glist = walkrevs_collect(s, L(left), L(right), WR_GCA);
+	#pragma GCC diagnostic pop
 	count = nLines(glist);
 	assert(count);
 	gca = glist[1];
