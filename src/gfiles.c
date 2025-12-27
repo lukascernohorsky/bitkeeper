@@ -2061,10 +2061,14 @@ sfiles_local_main(int ac, char **av)
 				hash_storeStrStr(seen, file, r);
 				free(file);
 			}
-			free(cmd);
-			if (pclose(f1)) {
-				fprintf(stderr, "%s: '%s' failed\n", prog, cmd);
-				goto out;
+			{
+				char *cmd_copy = strdup(cmd);
+				free(cmd);
+				if (pclose(f1)) {
+					fprintf(stderr, "%s: '%s' failed\n", prog, cmd_copy);
+					goto out;
+				}
+				free(cmd_copy);
 			}
 			continue;
 		}
