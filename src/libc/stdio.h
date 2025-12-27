@@ -319,9 +319,6 @@ int	 snprintf(char * __restrict, size_t, const char * __restrict, ...)
 ;
 int	 vsnprintf(char * __restrict, size_t, const char * __restrict,
 	    va_list)
-#ifdef __GNUC__
-	    __attribute__((__format__(__printf__, 3, 0)))
-#endif
 ;
 
 /*
@@ -352,26 +349,14 @@ void	 setbuffer(FILE *, char *, int);
 int	 setlinebuf(FILE *);
 int	 vasprintf(char ** __restrict, const char * __restrict ab,
 	    va_list)
-#ifdef __GNUC__
-	    __attribute__((__format__(__printf__, 2, 0)))
-#endif
 ;
 int	 vscanf(const char * __restrict, va_list)
-#ifdef __GNUC__
-	    __attribute__((__format__(__scanf__, 1, 0)))
-#endif
 ;
 int	 vfscanf(FILE * __restrict, const char * __restrict,
 	    va_list)
-#ifdef __GNUC__
-	    __attribute__((__format__(__scanf__, 2, 0)))
-#endif
 ;
 int	 vsscanf(const char * __restrict, const char * __restrict,
 	    va_list)
-#ifdef __GNUC__
-	    __attribute__((__format__(__scanf__, 2, 0)))
-#endif
 ;
 const char *fmtcheck(const char *, const char *)
 #ifdef __GNUC__

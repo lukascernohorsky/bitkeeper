@@ -120,5 +120,5 @@ __fgetstr(fp, lenp, sep)
 	} while (p[len++] != sep);
 	p[len] = 0;
 	if (lenp) *lenp = len;
-	return (p);
+	return ((char *)p);
 }

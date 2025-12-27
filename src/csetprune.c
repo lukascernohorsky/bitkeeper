@@ -175,7 +175,7 @@ k_err:			fprintf(stderr,
 			    "lower case hex digits\n", opts->ranbits);
 			usage();
 		}
-		for (p = opts->ranbits; *p; p++) {
+		for (p = (u8 *)opts->ranbits; *p; p++) {
 			if (!isxdigit(*p) || isupper(*p)) goto k_err;
 		}
 	}
@@ -359,8 +359,11 @@ csetprune(Opts *opts)
 		/* leave just history of rev colored (assuming single tip) */
 		sccs_sortkey(cset, d, key);
 		partition_key = strdup(key);
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdangling-pointer"
 		range_walkrevs(cset, L(d), L(sccs_top(cset)), 0,
 		    walkrevs_clrFlags, int2p(D_SET));
+		#pragma GCC diagnostic pop
 	}
 	deepnest = deepPrune(opts->complist, opts->comppath);
 
@@ -1761,7 +1764,10 @@ fixupGraph(sccs *s, ser_t d, ser_t p, ser_t m, u8 *slist, sccs *old)
 		slist[d] = 1;
 	} else {
 		/* No.  Compute difference manually */
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdangling-pointer"
 		count = symdiff_expand(old, L(oldp), d, slist);
+		#pragma GCC diagnostic pop
 
 		/* Filter out GONE'd items */
 		for (e = d, i = count; (e >= TREE(s)) && i; e--) {
@@ -1806,7 +1812,10 @@ fixupGraph(sccs *s, ser_t d, ser_t p, ser_t m, u8 *slist, sccs *old)
 		count++;
 	}
 	/* compute and store cludes list in the new graph */
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	symdiff_compress(s, L(oldp), d, slist, count);
+	#pragma GCC diagnostic pop
 }
 
 /*

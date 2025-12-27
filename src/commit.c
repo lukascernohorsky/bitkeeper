@@ -706,10 +706,10 @@ getfilekey(char *gfile, char *rev, sccs *cset, ser_t cset_d, char ***keys)
 	}
 	//assert(!(FLAGS(s, d) & D_CSET));
 
-	sccs_sdelta(s, sccs_ino(s), buf);
-	*keys = addLine(*keys, strdup(buf));
-	sccs_sdelta(s, d, buf);
-	*keys = addLine(*keys, strdup(buf));
+	sccs_sdelta(s, sccs_ino(s), (char *)buf);
+	*keys = addLine(*keys, strdup((char *)buf));
+	sccs_sdelta(s, d, (char *)buf);
+	*keys = addLine(*keys, strdup((char *)buf));
 	sccs_free(s);
 	return (0);
 }
@@ -785,8 +785,11 @@ updateCsetChecksum(sccs *cset, ser_t d, char **keys)
 		 * to add to todo, as well as look for non merged tips.
 		 */
 		cset->rstart = 0;
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdangling-pointer"
 		range_walkrevs(cset,
 		    L(PARENT(cset, d)), L(MERGE(cset, d)), WR_EITHER, 0, 0);
+		#pragma GCC diagnostic pop
 		if (cset->rstart) {
 			merge = 1;
 			todo++;
@@ -796,7 +799,7 @@ updateCsetChecksum(sccs *cset, ser_t d, char **keys)
 		++cnt;
 		rk = keys[i++];
 		dk = keys[i];
-		for (p = dk; *p; p++) sum += *p; /* sum of new deltakey */
+		for (p = (u8 *)dk; *p; p++) sum += *p; /* sum of new deltakey */
 		if (rkoff = sccs_hasRootkey(cset, rk)) {
 			++todo;
 			rinfo = hash_insert(h, &rkoff, sizeof(rkoff),
@@ -817,7 +820,7 @@ updateCsetChecksum(sccs *cset, ser_t d, char **keys)
 			assert(rkoff && rinfo);
 			rinfo->seen = S_DONE;	/* don't checksum again */
 			/* new file, just add rk now */
-			for (p = rk; *p; p++) sum += *p;
+			for (p = (u8 *)rk; *p; p++) sum += *p;
 			sum += ' ' + '\n';
 			dk = aprintf("|%s", keys[i]);
 			free(keys[i]);
@@ -855,7 +858,7 @@ updateCsetChecksum(sccs *cset, ser_t d, char **keys)
 				if (seen & S_REMOTE) {
 					/* must be a delta on remote only */
 					rinfo->seen = S_REMOTE;
-					p = HEAP(cset, dkoff);
+					p = (u8 *)HEAP(cset, dkoff);
 					while (*p) sum += *p++;
 					++todo;
 				} else {
@@ -884,7 +887,7 @@ updateCsetChecksum(sccs *cset, ser_t d, char **keys)
 		if (seen & S_REMOTE) {
 			if (!dkoff) {
 				/* new file */
-				p = HEAP(cset, rkoff);
+				p = (u8 *)HEAP(cset, rkoff);
 				while (*p) sum += *p++;
 				sum += ' ' + '\n';
 
@@ -901,7 +904,7 @@ updateCsetChecksum(sccs *cset, ser_t d, char **keys)
 			 * found previous deltakey for one of my files,
 			 * subtract off old key
 			 */
-			for (p = HEAP(cset, dkoff); *p; sum -= *p++);
+			for (p = (u8 *)HEAP(cset, dkoff); *p; sum -= *p++);
 			--todo;
 			rinfo->seen |= S_DONE;
 		}
@@ -916,7 +919,7 @@ updateCsetChecksum(sccs *cset, ser_t d, char **keys)
 		rinfo = h->vptr;
 		if (rinfo->seen & S_DONE) continue;
 
-		for (p = HEAP(cset, rkoff); *p; p++) sum += *p;
+		for (p = (u8 *)HEAP(cset, rkoff); *p; p++) sum += *p;
 		sum += ' ' + '\n';
 		assert(rinfo->n);
 		if (rinfo->seen & S_INREMOTE) {

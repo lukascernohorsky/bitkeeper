@@ -273,7 +273,7 @@ info_server_main(int ac, char **av)
 
 			len = sizeof(cliaddr);
 			n = recvfrom(udpsock, buf, sizeof(buf), 0,
-			    (struct sockaddr*)&cliaddr, &len);
+			    (struct sockaddr*)&cliaddr, (socklen_t *)&len);
 			if (n < 0) {
 				perror("recvfrom");
 				T_DEBUG("n=%d err=%s", n, strerror(errno));

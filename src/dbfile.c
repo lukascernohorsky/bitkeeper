@@ -300,7 +300,7 @@ do_explode(char *file, char *dir, int mode, MDBM *db, u32 flags)
 
 	EACH_KV(db) {
 		if (print_field(file, dir, mode,
-			kv.key.dptr, kv.val.dptr, kv.val.dsize, flags)) {
+			kv.key.dptr, (u8 *)kv.val.dptr, kv.val.dsize, flags)) {
 			return (-1);
 		}
 		n++;

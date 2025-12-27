@@ -3884,11 +3884,10 @@ first:		if (streq(buf, "\001u")) break;
 			    case 'i':
 				p = &buf[3];
 				while (q = eachstr(&p, &i)) {
-					sccs_saveNum(
-					    #pragma GCC diagnostic push
-					    #pragma GCC diagnostic ignored "-Wpointer-sign"
-					    fcludes, atoi(q), 1);
-					    #pragma GCC diagnostic pop
+					#pragma GCC diagnostic push
+					#pragma GCC diagnostic ignored "-Wpointer-sign"
+					sccs_saveNum(fcludes, atoi(q), 1);
+					#pragma GCC diagnostic pop
 				}
 				break;
 			    case 'x':

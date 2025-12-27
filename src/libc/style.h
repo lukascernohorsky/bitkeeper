@@ -27,8 +27,8 @@
 #define	bzero(s,l)	memset(s,0,l)
 #undef creat
 #define creat(p,m)	open(p,O_CREAT|O_WRONLY|O_TRUNC,m)
-#define	streq(a,b)	(!strcmp((a),(b)))
-#define	strneq(a,b,n)	(!strncmp((a),(b),(n)))
+#define	streq(a,b)	(!strcmp((const char *)(a),(const char *)(b)))
+#define	strneq(a,b,n)	(!strncmp((const char *)(a),(const char *)(b),(n)))
 #define	begins_with(a,b) ({				  \
 	char	*_a = (a), *_b = (b);			  \
 	int	_lenb = strlen(_b);			  \
@@ -37,7 +37,7 @@
 	char	*_a = (a), *_b = (b);			  \
 	int	_lena = strlen(_a);			  \
 	int	_lenb = strlen(_b);			  \
-	((_lena >= _lenb) && streq(_a + _lena - _lenb, _b));})
+	((_lena >= _lenb) && streq((const char *)(_a + _lena - _lenb), (const char *)_b));})
 #define	index(s, c)	strchr(s, c)
 #define	rindex(s, c)	strrchr(s, c)
 #define	notnull(s)	((s) ? (s) : "")

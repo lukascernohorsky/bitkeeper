@@ -51,7 +51,7 @@ uniq_adjust(sccs *s, ser_t d)
 		}
 	}
 	T_DEBUG("send key %s", key);
-	hash_keyencode(fout, key);
+	hash_keyencode(fout, (u8 *)key);
 	if (CSET(s)) {
 		/* Add rand from syncRoot to cset delta keys */
 		sccs_syncRoot(s, key);

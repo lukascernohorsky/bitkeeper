@@ -127,11 +127,11 @@ zRead(void *cookie, char *buf, int len)
 
 	if (zf->eof) return (0);
 
-	zf->z.next_out = buf;
+	zf->z.next_out = (Bytef *)buf;
 	zf->z.avail_out = len;
 	while (zf->z.avail_out) {
 		unless (zf->z.avail_in) {
-			zf->z.next_in = zf->obuf;
+			zf->z.next_in = (Bytef *)zf->obuf;
 			zf->z.avail_in = doFill(zf);
 		}
 		unless (zf->z.avail_in) {
@@ -179,7 +179,7 @@ zWrite(void *cookie, const char *buf, int len)
 	int	err;
 
 	assert(len > 0);
-	zf->z.next_in = (char *)buf;
+	zf->z.next_in = (Bytef *)buf;
 	zf->z.avail_in = len;
 	do {
 		if (err = deflate(&zf->z, Z_NO_FLUSH)) {
@@ -189,7 +189,7 @@ zWrite(void *cookie, const char *buf, int len)
 		}
 		if (zf->z.avail_out == 0) {
 			writeBlock(zf);
-			zf->z.next_out = zf->obuf;
+			zf->z.next_out = (Bytef *)zf->obuf;
 			zf->z.avail_out = zf->obuflen;
 		}
 	} while (zf->z.avail_in > 0);
@@ -229,7 +229,7 @@ zCloseWrite(zbuf *zf)
 			return (-1);
 		}
 		writeBlock(zf);
-		zf->z.next_out = zf->obuf;
+		zf->z.next_out = (Bytef *)zf->obuf;
 		zf->z.avail_out = zf->obuflen;
 	} while (err != Z_STREAM_END);
 	if (zf->header) {

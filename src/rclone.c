@@ -771,7 +771,11 @@ send_sfio(remote *r, int gzip)
 	fh = popen(sfiocmd, "r");
 	free(sfiocmd);
 	opts.in = opts.out = 0;
-	gzipAll2fh(fileno(fh), fout, gzip, &opts.in, &opts.out, 0);
+	int tmp_in = opts.in;
+	int tmp_out = opts.out;
+	gzipAll2fh(fileno(fh), fout, gzip, &tmp_in, &tmp_out, 0);
+	opts.in = tmp_in;
+	opts.out = tmp_out;
 	status = pclose(fh);
 	unlink(tmpf);
 	free(tmpf);

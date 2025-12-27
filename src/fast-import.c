@@ -1203,9 +1203,9 @@ data(opts *op, char *line, FILE *f, int want_sha1)
 	if (want_sha1) {
 		idx = register_hash(&sha1_desc);
 		hash_descriptor[idx].init(&md);
-		sprintf(buf, "blob %zd", len);
+		sprintf((char *)buf, "blob %zd", len);
 		/* we _want_ the trailing NULL */
-		hash_descriptor[idx].process(&md, buf, strlen(buf)+1);
+		hash_descriptor[idx].process(&md, buf, strlen((char *)buf)+1);
 	}
 	/*
 	 * Read data and compute sha1
@@ -1215,7 +1215,7 @@ data(opts *op, char *line, FILE *f, int want_sha1)
 		c2 = fwrite(buf, 1, c1, f);
 		assert(c1 == c2);
 		len -= c2;
-		if (want_sha1) hash_descriptor[idx].process(&md, buf, c2);
+		if (want_sha1) hash_descriptor[idx].process(&md, (unsigned char *)buf, c2);
 	}
 
 	/* See if we have the optional last LF */

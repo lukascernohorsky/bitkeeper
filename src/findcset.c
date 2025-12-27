@@ -677,7 +677,7 @@ mkCset(mkcs_t *cur, dinfo *d)
 		sprintf(dline, "%s %s\n", keylist[k], top->dkey);
 		lines = addLine(lines, strdup(dline));
 		linesum = 0;
-		for (ch = dline; *ch; ch++) {
+		for (ch = (u8 *)dline; *ch; ch++) {
 			sumch = *ch;
 			linesum += sumch;
 		}
@@ -688,7 +688,7 @@ mkCset(mkcs_t *cur, dinfo *d)
 		 * hash key is delta root key
 		 * hash value is checksum of corresponding line in cset file
 		 */
-		if (ch = mdbm_fetch_str(cur->view, keylist[k])) {
+		if (ch = (u8 *)mdbm_fetch_str(cur->view, keylist[k])) {
 			memcpy(&sumch, ch, sizeof(sum_t));
 			cur->sum -= sumch;
 // fprintf(stderr, "--- cur=%u %u\n", cur->sum, sumch);
@@ -820,11 +820,11 @@ preloadView(sccs *s, MDBM *db, ser_t d)
 	EACH_KV(s->mdbm) {
 		/* sum up rootkey, deltakey, space and newline */
 		linesum = ' ' + '\n';	
-		for (ch = kv.key.dptr; *ch; ch++) {
+		for (ch = (u8 *)kv.key.dptr; *ch; ch++) {
 			sumch = *ch;
 			linesum += sumch;
 		}
-		for (ch = kv.val.dptr; *ch; ch++) {
+		for (ch = (u8 *)kv.val.dptr; *ch; ch++) {
 			sumch = *ch;
 			linesum += sumch;
 		}

@@ -183,7 +183,7 @@ remote_cmd(char **av, char *url, FILE *in, FILE *out, FILE *err,
 
 	unless (r->rf) r->rf = fdopen(r->rfd, "r");
 	if (r->type == ADDR_HTTP) skip_http_hdr(r);
-	line = (getline2(r, buf, sizeof(buf)) > 0) ? buf : 0;
+	line = (getline2(r, buf, sizeof(buf)) > 0) ? (u8 *)buf : 0;
 	unless (line) {
 		/* no data at all? connect failure */
 		i = 1<<3;
@@ -196,7 +196,7 @@ remote_cmd(char **av, char *url, FILE *in, FILE *out, FILE *err,
 			i = 1<<5;
 			goto out;
 		}
-		line = (getline2(r, buf, sizeof(buf)) > 0) ? buf : 0;
+		line = (getline2(r, buf, sizeof(buf)) > 0) ? (u8 *)buf : 0;
 	}
 
 	unless (line) {
@@ -221,7 +221,7 @@ remote_cmd(char **av, char *url, FILE *in, FILE *out, FILE *err,
 	}
 	if (strneq("ERROR-", line, 6)) {
 err:		if (err) fprintf(err, "##### %s #####\n", u);
-		if (p = strchr(line+6, '\n')) *p = 0; /* terminate line */
+		if (p = strchr((const char *)line+6, '\n')) *p = 0; /* terminate line */
 		if (err) fprintf(err, "%s\n", &line[6]);
 		/*
 		 * N.B.
@@ -235,7 +235,7 @@ err:		if (err) fprintf(err, "##### %s #####\n", u);
 	}
 	if (streq("@GZIP@", line)) {
 		zin = fopen_zip(r->rf, "rh");
-		line = fgetline(zin);
+		line = (u8 *)fgetline(zin);
 		unless (line) {
 			i = 1<<6;
 			goto out;
@@ -244,7 +244,7 @@ err:		if (err) fprintf(err, "##### %s #####\n", u);
 	while (strneq(line, "@STDOUT=", 8) || strneq(line, "@STDERR=", 8)) {
 		wf = out;
 		if (strneq(line, "@STDERR=", 8)) wf = err;
-		bytes = atoi(&line[8]);
+		bytes = atoi((const char *)&line[8]);
 		assert(bytes <= sizeof(buf));
 		if (zin) {
 			i = fread(buf, 1, bytes, zin);
@@ -267,9 +267,9 @@ err:		if (err) fprintf(err, "##### %s #####\n", u);
 			goto out;
 		}
 		if (zin) {
-			line = fgetline(zin);
+			line = (u8 *)fgetline(zin);
 		} else {
-			line = fnext(buf, r->rf) ? buf : 0;
+			line = fnext(buf, r->rf) ? (u8 *)buf : 0;
 		}
 		unless (line) {
 			i = 1<<6;
@@ -277,7 +277,7 @@ err:		if (err) fprintf(err, "##### %s #####\n", u);
 		}
 	}
 	if (strneq("ERROR-", line, 6)) goto err;
-	unless (sscanf(line, "@EXIT=%d@", &i)) i = 1<<5;
+	unless (sscanf((const char *)line, "@EXIT=%d@", &i)) i = 1<<5;
 out:	if (zin) fclose(zin);
 	wait_eof(r, 0);
 	disconnect(r);

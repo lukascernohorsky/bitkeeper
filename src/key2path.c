@@ -124,7 +124,7 @@ md5key2key(void)
 	(void)proj_cset2key(0, "+", rootkey);
 	free(rootkey);
 	mpath = aprintf("%s/BitKeeper/tmp/csetcache.%x",
-	    proj_root(0), (u32)adler32(0, "+", 1));
+	    proj_root(0), (u32)adler32(0, (const Bytef *)"+", 1));
 	unless (cache = mdbm_open(mpath, O_RDONLY, 0600, 0)) {
 		free(mpath);
 		return (0);

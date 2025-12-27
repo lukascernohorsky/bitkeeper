@@ -1322,7 +1322,7 @@ fp_common:
 			flags |= LONGINT;
 			/*FALLTHROUGH*/
 		case 's':
-			if ((flags & LONGINT) != MULTI) {
+			if ((flags & LONGINT) == 0) {
 				if ((result = GETARG(CHAR_T *)) == NULL)
 					result = STRCONST("(null)");
 			} else {

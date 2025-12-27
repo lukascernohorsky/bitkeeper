@@ -93,7 +93,7 @@ fread(buf, size, count, fp)
 		 */
 		if ((fp->_flags & __SRD) && !HASUB(fp) &&
 		    (fp->_bf._size > 0) && (resid >= fp->_bf._size)) {
-			char *obuf = fp->_bf._base;
+			unsigned char *obuf = fp->_bf._base;
 			size_t osize = fp->_bf._size;
 			fp->_bf._base = p;
 			/* keep reads aligned by bufsize */

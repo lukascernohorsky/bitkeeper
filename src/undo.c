@@ -228,7 +228,8 @@ err:		if (undo_list[0]) unlink(undo_list);
 		goto err;
 	}
 	unless (force) {
-		for (i = 0; i<79; ++i) putchar('-'); putchar('\n');
+		for (i = 0; i<79; ++i) putchar('-');
+		putchar('\n');
 		fflush(stdout);
 		// LMXXX - if changes ever locks this breaks
 		f = popen(opts->verbose ?

@@ -80,8 +80,8 @@ match_one(char *string, char *glob, int ignorecase)
 	u8 	*p, *g;
 	int	invert, match;
 
-	p = string;
-	g = glob;
+	p = (u8 *)string;
+	g = (u8 *)glob;
 	while (*g) {
 		switch (*g) {
 		    case '?':
@@ -90,7 +90,7 @@ match_one(char *string, char *glob, int ignorecase)
 		    case '[':
 			g++;
 			if (invert = (*g == '^')) g++;
-			unless (strchr(g, ']')) {
+			unless (strchr((const char *)g, ']')) {
 				fprintf(stderr, "bad glob: %s\n", glob);
 				return (0);
 			}
@@ -142,7 +142,7 @@ star:	while (*p) {
 			while (*p && C(*p) != C(*g)) p++;
 			unless (*p) return (0);
 		}
-		if (match_one(p, g, ignorecase)) return (1);
+		if (match_one((char *)p, (char *)g, ignorecase)) return (1);
 		p++;
 	}
 	return (0);

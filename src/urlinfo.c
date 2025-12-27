@@ -257,7 +257,7 @@ urlinfo_write(nested *n)
 		if (now - data->time > 6*MONTH) continue;
 
 		putc('@', f);
-		webencode(f, data->url, strlen(data->url)+1);
+		webencode(f, (u8 *)data->url, strlen(data->url)+1);
 		putc('\n', f);
 		fprintf(f, "%ld\n", data->time);
 		fprintf(f, "%d\n", data->gate);

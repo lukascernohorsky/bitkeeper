@@ -659,7 +659,10 @@ chk_pending(sccs *s, char *gfile, STATE state, MDBM *sDB, MDBM *gDB)
 		char	*data[2] = {state, gfile};
 
 		/* get the nodes not covered by D_CSET */
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdangling-pointer"
 		range_walkrevs(s, 0, L(d), 0, pending_print, data);
+		#pragma GCC diagnostic pop
 		printed = 1;
 	} else if (opts.Cflg) {
 		do_print(state, gfile, REV(s, d));

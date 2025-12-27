@@ -124,8 +124,12 @@ fullLink(char *xfile, char *tmp, int followLink)
 		perror("chdir error");
 		exit(1);
 	}
-	if (tmp == buf) tmp = strdup(buf);
-	return (tmp);
+	if (tmp == buf) {
+		char *result = strdup(buf);
+		return (result);
+	}
+	char *result = strdup(tmp);
+	return (result);
 }
 
 #else /* WIN32 */
@@ -168,7 +172,10 @@ fullLink(char *gfile, char *new, int followLink)
 	}
 
 	cleanPath(new, new);
-	if (new == buf) new = strdup(buf);
+	if (new == buf) {
+		char *result = strdup(buf);
+		return (result);
+	}
 	return (new);
 }
 #endif /* WIN32 */

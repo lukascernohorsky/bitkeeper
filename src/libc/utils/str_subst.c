@@ -51,7 +51,9 @@ str_subst(char *str, char *search, char *replace, char *output)
 	while ((*t++ = *s++));
 	if (output == buf) {
 		assert((t - output) + strlen(s) < sizeof(buf));
-		output = strdup(output);
+		char *result = strdup(output);
+		return (result);
 	}
-	return (output);
+	char *result = strdup(output);
+	return (result);
 }

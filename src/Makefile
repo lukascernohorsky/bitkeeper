@@ -34,6 +34,9 @@
 #   $^  all sources
 #   $<  first source
 
+# Set locale to C to avoid locale-related warnings
+export LC_ALL = C
+
 INSTALLED_BK	?= $(shell bash -c "cd / && command -v bk")
 INREPO  ?= $(shell bash -c "test -d ../.bk && echo true || echo false")
 HERE    := $(shell pwd)
@@ -578,7 +581,7 @@ bkver.c: utils/bk_version FORCE
 	$(Q)echo "#include \"sccs.h\"" > bk.v
 	$(Q)echo "char *bk_platform = \""`./utils/bk_version`"\";" >> bk.v
 	$(Q)echo "int test_release = "$(TRIAL)";" >> bk.v
-	$(Q)echo "time_t bk_build_timet = "`perl -e "print time"`";" >> bk.v
+	$(Q)echo "time_t bk_build_timet = "`echo 'puts [clock seconds]' | tclsh`";" >> bk.v
 	$(Q)echo "char *bk_build_dir = \""`pwd`"\";" >> bk.v
 	$(Q)mv -f bk.v bkver.c
 
@@ -634,7 +637,7 @@ installdir: utils/registry.tcl
 	fi
 	cd $(IMGDIR); \
 	    find . -type l | \
-		perl -ne 'chomp; $$a = readlink; print "$$a|$$_\n";'>symlinks; \
+		tclsh -c "while {gets stdin line} {set link [file readlink \$line]; puts \"\$link|\$line\"}" > symlinks; \
 	    test -s symlinks || rm -f symlinks
 	@true
 

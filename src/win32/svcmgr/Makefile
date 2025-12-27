@@ -27,7 +27,7 @@ svcmgr.exe: svcmgr.c $(RESREADY) usage.h
 
 usage.h: usage.txt Makefile
 	echo "\"\\" >"$@"
-	perl -n -p -e 's/\\/\\\\/g;s/$$/\\n\\/' <"$<" >>"$@"
+	tclsh -c "while {gets stdin line} {regsub -all \\\\ \$line \\\\\\\\ line; puts \"\$line\\\\n\\\\"}" <"$<" >>"$@"
 	echo "\"" >>"$@"
 
 clean:

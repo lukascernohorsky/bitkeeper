@@ -447,9 +447,9 @@ rcs_rootkey(RCS *rcs)
 	 * tree...)
 	 */
 	str = rcs->text;
-	if (str) randbits = adler32(randbits, str, strlen(str));
+	if (str) randbits = adler32(randbits, (const Bytef *)str, strlen(str));
 	str = d->comments;
-	if (str) randbits = adler32(randbits, str, strlen(str));
+	if (str) randbits = adler32(randbits, (const Bytef *)str, strlen(str));
 
 	tp = utc2tm(d->date-1);
 	str = aprintf("%s@%s|%s|%02d%02d%02d%02d%02d%02d",
@@ -462,7 +462,7 @@ rcs_rootkey(RCS *rcs)
 			tp->tm_hour,
 			tp->tm_min,
 			tp->tm_sec);
-	randbits = adler32(randbits, str, strlen(str));
+	randbits = adler32(randbits, (const Bytef *)str, strlen(str));
 	rcs->rootkey = aprintf("%s|%05u|%08x",
 	    str, randbits & 0xffff, randbits);
 	free(str);

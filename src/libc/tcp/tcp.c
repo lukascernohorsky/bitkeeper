@@ -68,7 +68,7 @@ tcp_accept(int sock)
 {
 	struct	sockaddr_in s;
 	int	newsock;
-	int	namelen;
+	socklen_t	namelen;
 
 	namelen = sizeof(s);
 	memset((void*)&s, 0, namelen);
@@ -133,7 +133,7 @@ tcp_connect(char *host, int port)
 int
 sockport(int s)
 {
-	int	namelen;
+	socklen_t	namelen;
 	struct sockaddr_in sin;
 
 	namelen = sizeof(sin);
@@ -147,7 +147,7 @@ sockport(int s)
 char *
 peeraddr(int s)
 {
-	int	namelen;
+	socklen_t	namelen;
 	struct sockaddr_in sin;
 
 	namelen = sizeof(sin);
@@ -161,7 +161,7 @@ peeraddr(int s)
 char *
 sockaddr(int s)
 {
-	int	namelen;
+	socklen_t	namelen;
 	struct sockaddr_in sin;
 
 	namelen = sizeof(sin);
@@ -176,8 +176,9 @@ int
 issock(int s)
 {
         int rc, t = 1;
+        socklen_t optlen = sizeof(t);
 
-        rc = getsockopt(s, SOL_SOCKET, SO_TYPE, SOCK_OPT_CAST &t, &t);
+        rc = getsockopt(s, SOL_SOCKET, SO_TYPE, SOCK_OPT_CAST &t, &optlen);
         if (rc) return (0);
         return (1);
 }

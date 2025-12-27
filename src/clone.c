@@ -1424,7 +1424,13 @@ sfio(remote *r, char *prefix)
 	if (freeme) free(freeme);
 	if (dashN) free(dashN);
 	f = fdopen(pfd, "wb");
-	gunzipAll2fh(r->rfd, f, &(opts->in), &(opts->out));
+	{
+		int in_int = opts->in;
+		int out_int = opts->out;
+		gunzipAll2fh(r->rfd, f, &in_int, &out_int);
+		opts->in = in_int;
+		opts->out = out_int;
+	}
 	fclose(f);
 	waitpid(pid, &status, 0);
 	if (opts->verbose) {

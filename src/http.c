@@ -65,8 +65,8 @@ str2base64(const char *s)
 
 	len = strlen(s);
 	len2 = (4 * ((len + 2) / 3)) + 1;
-	buf = p = malloc(len2);
-	if ((err = base64_encode(s, len, buf, &len2)) != CRYPT_OK) {
+	buf = p = (char *)malloc(len2);
+	if ((err = base64_encode((const unsigned char *)s, len, (unsigned char *)buf, &len2)) != CRYPT_OK) {
 		fprintf(stderr, "%s", error_to_string(err));
 		exit(1);
 	}
@@ -211,7 +211,7 @@ connect_socks4_srv(remote *r, char *host, int port)
 	c.dstip[1] = (web_ip >> 16) & 0xff;
 	c.dstip[2] = (web_ip >>  8) & 0xff;
 	c.dstip[3] = (web_ip) & 0xff;
-	strcpy(c.userid, "anonymous");
+	strcpy((char *)c.userid, "anonymous");
 
 	sfd = connect_srv(host, port, trace);
 	if (sfd < 0) return (-1);

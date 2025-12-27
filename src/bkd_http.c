@@ -760,9 +760,9 @@ http_dir(char *page)
 			hash_deleteStr(qout, "REV");
 			mk_querystr();
 			ftrunc(out, 0);
-			webencode(out, root, strlen(root)+1);
+			webencode(out, (u8 *)root, strlen(root)+1);
 			fputc('/', out);
-			webencode(out, lnkfn, strlen(lnkfn)+1);
+			webencode(out, (u8 *)lnkfn, strlen(lnkfn)+1);
 			enc = fmem_peek(out, 0);
 			printf("<td class='icon'><a href='/%s%s'><img src='"
 			    BKWWW "document_delta.png'></a></td>",
@@ -868,16 +868,16 @@ dl_link(void)
 	char	*base = basenm(fpath);
 
 	fputs("<a title='View file contents' href=\"/", f);
-	webencode(f, root, strlen(root)+1);
+	webencode(f, (u8 *)root, strlen(root)+1);
 	putc('/', f);
-	webencode(f, fpath, strlen(fpath)+1);
+	webencode(f, (u8 *)fpath, strlen(fpath)+1);
 	fputs("?PAGE=cat", f);
 	if (hash_fetchStr(qin, "REV")) {
 		fputs("&REV=", f);
 		webencode(f, qin->vptr, qin->vlen);
 	}
 	fputs("\">", f);
-	webencode(f, base, strlen(base)+1);
+	webencode(f, (u8 *)base, strlen(base)+1);
 	fputs("</a>", f);
 	return (fmem_close(f, 0));
 }
@@ -1899,7 +1899,7 @@ http_repos(char *page)
 		unless (S_ISDIR(sb.st_mode)) continue;
 		concat_path(buf2, buf, "BitKeeper/etc");
 		ftrunc(f, 0);
-		webencode(f, d[i], strlen(d[i])+1);
+		webencode(f, (u8 *)d[i], strlen(d[i])+1);
 		enc = fmem_peek(f, 0);
 		if (isdir(buf2)) {
 			concat_path(buf, buf, "SCCS/s.ChangeSet");

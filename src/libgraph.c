@@ -330,7 +330,10 @@ graph_hasDups(sccs *s, ser_t d, u8 *slist)
 {
 	ser_t	*dups = 0;
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdangling-pointer"
 	(void)symdiff(s, L(PARENT(s, d)), d, 0, &dups, slist, 0, -1);
+	#pragma GCC diagnostic pop
 	if (dups) {
 		free(dups);
 		return (1);

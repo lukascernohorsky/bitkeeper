@@ -183,7 +183,7 @@ zlib_compress(const void *in, int ilen, void *out, int *olen)
 	}
 	z.next_out = out;
 	z.avail_out = bz = *olen;
-	z.next_in = (char *)in;
+	z.next_in = (Bytef *)in;
 	z.avail_in = ilen;
 	if (deflate(&z, Z_FINISH) != Z_STREAM_END) {
 		perror("deflate");
@@ -213,7 +213,7 @@ zlib_uncompress(const void *in, int ilen, void *out, int *olen)
 	}
 	z.next_out = out;
 	z.avail_out = bz = *olen;
-	z.next_in = (char *)in;
+	z.next_in = (Bytef *)in;
 	z.next_in[ilen] = 0; /* zlib reads this dummy byte */
 	z.avail_in = ilen+1; /* extra "dummy" byte of gzip */
 	if (inflate(&z, Z_FINISH) != Z_STREAM_END) {
@@ -248,7 +248,7 @@ none_compress(const void *in, int ilen, void *out, int *olen)
 private int
 lz4_compress(const void *in, int ilen, void *out, int *olen)
 {
-	*olen = LZ4_compress_limitedOutput(in, out, ilen, *olen);
+	*olen = LZ4_compress_default(in, out, ilen, *olen);
 	return (*olen == 0);
 }
 
@@ -471,7 +471,9 @@ zipWrite(void *cookie, const char *buf, int len)
 	addArray(&fz->szarr, &sz);
 
 	csz = sizeof(data);
-	if (fz->compress(buf, len, data, &csz)) return (-1);
+	int tmp_csz = csz;
+	if (fz->compress((const void *)buf, len, (void *)data, &tmp_csz)) return (-1);
+	csz = tmp_csz;
 	tmp = htole32(csz);
 	fwrite(&tmp, sizeof(u32), 1, fz->fin);
 	if (fwrite(data, 1, csz, fz->fin) != csz) {

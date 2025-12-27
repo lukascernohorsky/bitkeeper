@@ -172,7 +172,10 @@ cmd_pull_part2(int ac, char **av)
 		/*
 		 * Need the 'gone' region marked RED
 		 */
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdangling-pointer"
 		range_gone(cset, L(d), D_RED);
+		#pragma GCC diagnostic pop
 	}
 
 	bzero(&r, sizeof(r));
