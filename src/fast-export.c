@@ -490,8 +490,10 @@ gitExport(opts *op)
 		    "log --pretty='%%w(0,1,1)%%B%%n%%w(0,0,0)%%H' --all",
 		    op->baserepo);
 		f1 = popen(cmd, "r");
-		free(cmd);
-		while (!feof(f1)) {
+		{
+			char *cmd_copy = strdup(cmd);
+			free(cmd);
+			while (!feof(f1)) {
 			md5 = 0;
 			while ((line = fgetline(f1)) && line[0] == ' ') {
 				if (strneq(line, " bk: ", 5) &&
@@ -518,11 +520,13 @@ gitExport(opts *op)
 			free(md5);
 		}
 		if (pclose(f1)) {
-			fprintf(stderr, "%s failed\n", cmd);
+			fprintf(stderr, "%s failed\n", cmd_copy);
 			exit(1);
 		}
+		free(cmd_copy);
+	}
 
-		f1 = 0;
+	f1 = 0;
 
 		numcsets += uncolorAlreadyImported(op, cset);
 		gitProgress(op, "%d csets already imported\n", numcsets);
