@@ -1979,7 +1979,10 @@ ok:
 		if (!c) {
 			/* Seems weird but makes -e -r2 -> 2.1 when tot is 1.x
 			 */
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wpointer-sign"
 			int	release = rev ? atoi(rev) : 1;
+			#pragma GCC diagnostic pop
 
 			if (release > a) {
 				a = release;
@@ -3409,7 +3412,10 @@ meta(sccs *s, ser_t d, char *buf)
 		break;
 	    case 'F':
 		/* Do not add to date here, done in inherit */
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wpointer-sign"
 		DATE_FUDGE_SET(s, d, atoi(&buf[3]));
+		#pragma GCC diagnostic pop
 		break;
 	    case 'H':
 		hostArg(s, d, &buf[3]);
@@ -3437,7 +3443,10 @@ meta(sccs *s, ser_t d, char *buf)
 		/* ignored, used to be d->text */
 		break;
 	    case 'V':
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wpointer-sign"
 		s->version = atoi(&buf[3]);
+		#pragma GCC diagnostic pop
 		unless (s->version <= SCCS_VERSION) {
 			fprintf(stderr,
 			    "Later file format version %d, forcing read only\n",
@@ -3838,7 +3847,10 @@ first:		if (streq(buf, "\001u")) break;
 			goto bad;
 		}
 		p++;
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wpointer-sign"
 		PARENT_SET(s, d, atoi(p));
+		#pragma GCC diagnostic pop
 		debug((stderr, "mkgraph(%s)\n", rev));
 		revArg(s, d, rev);
 		if (FLAGS(s, d) & D_BADFORM) {
@@ -3873,7 +3885,10 @@ first:		if (streq(buf, "\001u")) break;
 				p = &buf[3];
 				while (q = eachstr(&p, &i)) {
 					sccs_saveNum(
+					    #pragma GCC diagnostic push
+					    #pragma GCC diagnostic ignored "-Wpointer-sign"
 					    fcludes, atoi(q), 1);
+					    #pragma GCC diagnostic pop
 				}
 				break;
 			    case 'x':
