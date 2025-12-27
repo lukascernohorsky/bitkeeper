@@ -13,8 +13,8 @@ ps: bk_refcard.ps
 
 pdf: bk_refcard.pdf
 
-bk_refcard.ps: bk_refcard.tr flip
-	groff -P-g -P-l bk_refcard.tr | perl flip > bk_refcard.ps
+bk_refcard.ps: bk_refcard.tr flip.tcl
+	groff -P-g -P-l bk_refcard.tr | tclsh flip.tcl > bk_refcard.ps
 
 bk_refcard.pdf: bk_refcard.tr bk_refcard.ps
 	-ps2pdf bk_refcard.ps
