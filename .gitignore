@@ -1,2 +1,17 @@
 .DS_Store
 .vscode/
+
+# BitKeeper internal files and directories
+.bk/
+BitKeeper/
+
+# Build output and temporary files
+build_output.txt
+clean_build.txt
+cleanup_warnings.sh
+current_build_output.txt
+latest_build.txt
+warnings.txt
+
+# Documentation build files
+doc/flip.tcl
