@@ -57,10 +57,10 @@ lib:
 images: FORCE
 	$(Q)rm -rf images
 	$(Q)test -d images || mkdir images
-	$(Q)$(BK) -rimgsrc co -S
-	$(Q)cp -rp imgsrc/* images
-	$(Q)test "X$(ICONS)" = X || cp $(ICONS) images
-	$(Q)chmod 664 images/*.gif
+	$(Q)$(BK) -rimgsrc co -S 2>/dev/null || true
+	$(Q)if [ -d imgsrc ]; then cp -rp imgsrc/* images; fi
+	$(Q)test "X$(ICONS)" = X || cp $(ICONS) images 2>/dev/null || true
+	$(Q)chmod 664 images/*.gif 2>/dev/null || true
 
 tcltk: FORCE
 	$(Q)echo "Using system Tcl/Tk"
