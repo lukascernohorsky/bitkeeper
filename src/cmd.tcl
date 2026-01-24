@@ -22,14 +22,23 @@ proc cstr {s} {
 }
 
 proc maybe_replace {path} {
-    if {[file exists $path]} {
-        if {[catch {exec cmp -s $path ${path}.new}]} {
-            file rename -force ${path}.new $path
+    set newpath "${path}.new"
+    if {[file exists $newpath]} {
+        if {[file exists $path]} {
+            if {[catch {exec cmp -s $path $newpath}]} {
+                if {[catch {file rename -force $newpath $path} error]} {
+                    puts stderr "Error renaming $newpath to $path: $error"
+                    file delete -force $newpath
+                }
+            } else {
+                file delete -force $newpath
+            }
         } else {
-            file delete -force ${path}.new
+            if {[catch {file rename -force $newpath $path} error]} {
+                puts stderr "Error renaming $newpath to $path: $error"
+                file delete -force $newpath
+            }
         }
-    } else {
-        file rename -force ${path}.new $path
     }
 }
 
