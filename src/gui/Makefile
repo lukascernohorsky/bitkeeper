@@ -22,14 +22,14 @@ else
 	ICONS=
 endif
 
-REPO   := $(shell basename "`$(BK) -P root`")
+REPO   := $(shell basename "`$(BK) -P root 2>/dev/null || echo ../..`")
 LIBDIR	= lib
 GUIS	= revtool citool helptool difftool csettool fmtool fm3tool \
 	  msgtool renametool setuptool installtool outputtool bugform \
 	  supportform
 DOIT	= ../t/doit
 GUITEST = ../t/guitest.tcl
-BK	= $(REPO)/src/bk
+BK	= ../../src/bk
 T	= $(REPO)/src/t
 COMMON	= ../port/$(SYS)_platform.tcl config.tcl bktheme.tcl tooltip.tcl \
 	  common.tcl
@@ -45,7 +45,7 @@ default: notes/BUILD
 
 .PHONY: ordered
 ordered:
-	$(Q)$(MAKE) tcltk
+	$(Q)$(MAKE) lib images
 	$(Q)$(MAKE) $(GUIS)
 
 gui guis:  lib images ordered
@@ -63,8 +63,8 @@ images: FORCE
 	$(Q)chmod 664 images/*.gif
 
 tcltk: FORCE
-	$(Q)test -f tcltk/Makefile || $(BK) co -q tcltk
-	$(Q)$(MAKE) -Ctcltk
+	$(Q)echo "Using system Tcl/Tk"
+	$(Q)mkdir -p bin lib share
 
 test: lib $(GUIS) $(DOIT) $(GUITEST) ../t/setup
 	@$(BK) get -S ../t/SCCS/s.g.* 
@@ -81,10 +81,10 @@ clobber-here: clean-here FORCE
 	-$(BK) -r. clean
 
 clean: clean-here FORCE
-	-cd tcltk && $(MAKE) clean
+	# tcltk directory removed, using system Tcl/Tk
 
 clobber: clobber-here FORCE
-	-cd tcltk && $(MAKE) clobber
+	# tcltk directory removed, using system Tcl/Tk
 
 install: $(GUIS)
 	echo "no installation required."
@@ -109,7 +109,7 @@ bugform: $(COMMON) search.tcl appState.tcl buglib.tcl bugform.tcl
 supportform: $(COMMON) search.tcl appState.tcl supportlib.tcl supportform.tcl
 	@(echo 'wm withdraw .' ;  cat $^)  > $(LIBDIR)/supportform
 
-citool: $(COMMON) appState.tcl ciedit.tcl $(LCOMMON) citool.l
+citool: $(COMMON) appState.tcl ciedit.tcl $(LCOMMON)
 	@(	echo 'wm withdraw .' ;		\
 		echo 'set ::tool_name $@' ;	\
 		cat $(filter %.tcl,$^) ;	\

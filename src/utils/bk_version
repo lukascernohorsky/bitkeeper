@@ -48,9 +48,10 @@ sed 's/^X//' << 'SHAR_EOF' > /tmp/gnu-os$$
 # Attempt to guess a canonical system name.
 #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
 #   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
-#   2011 Free Software Foundation, Inc.
+#   2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021
+#   Free Software Foundation, Inc.
 X
-timestamp='2011-02-02'
+timestamp='2021-12-31'
 X
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -931,6 +932,9 @@ X	else
 X	    echo ${UNAME_MACHINE}-unknown-linux-gnueabi
 X	fi
 X	exit ;;
+X    aarch64:Linux:*:*)
+X	echo aarch64-unknown-linux-gnu
+X	exit ;;
 X    avr32*:Linux:*:*)
 X	echo ${UNAME_MACHINE}-unknown-linux-gnu
 X	exit ;;
@@ -1025,6 +1029,9 @@ X	echo ${UNAME_MACHINE}-dec-linux-gnu
 X	exit ;;
 X    x86_64:Linux:*:*)
 X	echo x86_64-unknown-linux-gnu
+X	exit ;;
+X    aarch64:Linux:*:*)
+X	echo aarch64-unknown-linux-gnu
 X	exit ;;
 X    xtensa*:Linux:*:*)
 X	echo ${UNAME_MACHINE}-unknown-linux-gnu
