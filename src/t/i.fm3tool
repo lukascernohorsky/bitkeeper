@@ -21,10 +21,7 @@ echo $N Create some data ............................................$NL
 commercial project
 mkdir "$HERE/project/src"
 cd "$HERE/project/src"
-perl -e '
-for ($i = 1; $i <= 400; $i++) {
-    printf "%3s: this is part of the original file\n", $i;
-}' > file1
+tclsh -c "for {set i 1} {\$i <= 400} {incr i} {puts [format {%3s: this is part of the original file} \$i]}" > file1
 bk ci $Q -i file1 || exit 1
 bk commit $Q -y"initial checkin"
 # create clones

@@ -123,11 +123,11 @@ unix_common_setup()
 	mkdir "$BK_BIN"
 	if [ X"$RUNBK_LEVEL" = X ]; then
 		ln -s "`cd .. && pwd`/bk" "$BK_BIN/bk"
-		ln -s "`cd .. && pwd`/gui/tcltk/tcl/unix/tcltest" "$BK_BIN/tcltest"
+		ln -s "`which tclsh`" "$BK_BIN/tcltest"
 	else
 		echo "RUNBK_LEVEL is set, using `bk bin`"
 		ln -s "`bk bin`/bk" "$BK_BIN/bk"
-		ln -s "`bk bin`/gui/tcltk/tcl/unix/tcltest" "$BK_BIN/tcltest"
+		ln -s "`which tclsh`" "$BK_BIN/tcltest"
 	fi
 	test `uname` != SunOS && PATH=/bin:/usr/bin:$PATH:/usr/local/bin:/usr/freeware/bin:/usr/gnu/bin
 	#if [ -d /usr/xpg4/bin ]; then PATH=/usr/xpg4/bin:$PATH; fi

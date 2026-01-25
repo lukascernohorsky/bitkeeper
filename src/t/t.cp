@@ -139,11 +139,10 @@ commercial proj3
 BK="`bk bin`/bk"
 test $PLATFORM = WIN32 && BK=${BK}.exe
 DATA="$HERE"/data
-perl -e 'sysread(STDIN, $buf, 81920);
-syswrite(STDOUT, $buf, 81920);' < $BK > "$DATA"
+tclsh -c "set buf [read stdin 81920]; puts -nonewline stdout $buf" < $BK > "$DATA"
 cp "$DATA" data
 bk new $Q data || fail
-perl -e 'printf "Hi there\x0\n";' > small
+tclsh -c "puts -nonewline \"Hi there\\u0000\\n\"" > small
 BK_CONFIG='BAM:1k!' bk new $Q small
 test -d BitKeeper/BAM || fail
 bk edit $Q data

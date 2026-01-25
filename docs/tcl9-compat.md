@@ -23,7 +23,7 @@
 | `doc/gui/tcltk/tktable/demos/*.tcl`, `src/gui/tcltk/tktreectrl/demos/demo.tcl` | Widget demos | Executed with `wish` as interactive demos. |
 | `src/gui/tcltk/tk/tests/visual_bb.test`, `src/gui/tcltk/tk/changes` | Tk tests/docs | `wish`/`tclsh` entry as upstream artifacts. |
 | `src/macosx/scripts/postinstall.tcl` | Installer postflight GUI helper (`wish`) | Called from `src/macosx/scripts/postinstall` shell wrapper (BK installer). |
-| `src/contrib/git2bk.l` | Legacy Little shim now backed by Tcl | Uses `/usr/libexec/bitkeeper/gui/bin/tclsh -L` in shebang. |
+| `src/contrib/git2bk.tcl` | Tcl rewrite of Git importer | Replaces the original Little script with pure Tcl implementation. |
 | `src/utils/rcversion.tcl` | Emits Windows resource version metadata | Run by `src/utils/Makefile` via `bk tclsh ./rcversion.tcl`. |
 
 ### Library and sourced modules

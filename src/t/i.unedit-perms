@@ -58,23 +58,7 @@ bk unedit foo
 bk _test ! -f SCCS/p.foo || myfail
 bk _stat foo > foo.stat2 || myfail
 # New inode, new user - note: new inode may be the same inode - no testing
-cat foo.stat foo.stat2 | perl -e '
-	$_ = <STDIN>;
-	chomp;
-	@oldstat = split(/\|/, $_);
-	$_ = <STDIN>;
-	chomp;
-	@newstat = split(/\|/, $_);
-	($e++), print STDERR "file $oldstat[11] was not writable\n"
-	    unless $oldstat[2] eq "100664";
-	($e++), print STDERR "file $oldstat[11] is not read-only\n"
-	    unless $newstat[2] eq "100444";
-	($e++), print STDERR "file $oldstat[11] has same owner\n"
-	    if $oldstat[4] eq $newstat[4];
-	($e++), print STDERR "file $oldstat[11] has diff name\n"
-	    unless $oldstat[11] eq $newstat[11];
-	die "$e errors\n" if defined($e);
-' || myfail
+cat foo.stat foo.stat2 | tclsh -c "set oldstat [split [gets stdin] |]; set newstat [split [gets stdin] |]; set e 0; if {[lindex \$oldstat 2] ne {100664}} {incr e; puts stderr {file [lindex \$oldstat 11] was not writable}}; if {[lindex \$newstat 2] ne {100444}} {incr e; puts stderr {file [lindex \$oldstat 11] is not read-only}}; if {[lindex \$oldstat 4] eq [lindex \$newstat 4]} {incr e; puts stderr {file [lindex \$oldstat 11] has same owner}}; if {[lindex \$oldstat 11] ne [lindex \$newstat 11]} {incr e; puts stderr {file [lindex \$oldstat 11] has diff name}}; if {\$e > 0} {exit 1}" || myfail
 #
 # second bug - unedit read-only to make writable
 # also check inode for foo stays stable
@@ -87,64 +71,14 @@ bk _stat foo > foo.stat3 || myfail
 bk _stat bar > bar.stat2 || myfail
 bk _test -f SCCS/p.foo -a -f SCCS/p.bar || myfail
 # Test foo: must be same inode
-cat foo.stat2 foo.stat3 | perl -e '
-	$_ = <STDIN>;
-	chomp;
-	@oldstat = split(/\|/, $_);
-	$_ = <STDIN>;
-	chomp;
-	@newstat = split(/\|/, $_);
-	($e++), print STDERR "file $oldstat[11] has diff inode\n"
-	    unless $oldstat[1] eq $newstat[1];
-	($e++), print STDERR "file $oldstat[11] is not read-only\n"
-	    unless $oldstat[2] eq "100444";
-	($e++), print STDERR "file $oldstat[11] was not writable\n"
-	    unless $newstat[2] eq "100664";
-	($e++), print STDERR "file $oldstat[11] has diff owner\n"
-	    unless $oldstat[4] eq $newstat[4];
-	($e++), print STDERR "file $oldstat[11] has diff name\n"
-	    unless $oldstat[11] eq $newstat[11];
-	die "$e errors\n" if defined($e);
-' || myfail
+cat foo.stat2 foo.stat3 | tclsh -c "set oldstat [split [gets stdin] |]; set newstat [split [gets stdin] |]; set e 0; if {[lindex \$oldstat 1] ne [lindex \$newstat 1]} {incr e; puts stderr {file [lindex \$oldstat 11] has diff inode}}; if {[lindex \$oldstat 2] ne {100444}} {incr e; puts stderr {file [lindex \$oldstat 11] is not read-only}}; if {[lindex \$newstat 2] ne {100664}} {incr e; puts stderr {file [lindex \$oldstat 11] was not writable}}; if {[lindex \$oldstat 4] ne [lindex \$newstat 4]} {incr e; puts stderr {file [lindex \$oldstat 11] has diff owner}}; if {[lindex \$oldstat 11] ne [lindex \$newstat 11]} {incr e; puts stderr {file [lindex \$oldstat 11] has diff name}}; if {\$e > 0} {exit 1}" || myfail
 # Test bar: New inode, new user - note: new inode may be the same inode
-cat bar.stat bar.stat2 | perl -e '
-	$_ = <STDIN>;
-	chomp;
-	@oldstat = split(/\|/, $_);
-	$_ = <STDIN>;
-	chomp;
-	@newstat = split(/\|/, $_);
-	($e++), print STDERR "file $oldstat[11] is not read-only\n"
-	    unless $oldstat[2] eq "100444";
-	($e++), print STDERR "file $oldstat[11] was not writable\n"
-	    unless $newstat[2] eq "100664";
-	($e++), print STDERR "file $oldstat[11] has same owner\n"
-	    if $oldstat[4] eq $newstat[4];
-	($e++), print STDERR "file $oldstat[11] has diff name\n"
-	    unless $oldstat[11] eq $newstat[11];
-	die "$e errors\n" if defined($e);
-' || myfail
+cat bar.stat bar.stat2 | tclsh -c "set oldstat [split [gets stdin] |]; set newstat [split [gets stdin] |]; set e 0; if {[lindex \$oldstat 2] ne {100444}} {incr e; puts stderr {file [lindex \$oldstat 11] is not read-only}}; if {[lindex \$newstat 2] ne {100664}} {incr e; puts stderr {file [lindex \$oldstat 11] was not writable}}; if {[lindex \$oldstat 4] eq [lindex \$newstat 4]} {incr e; puts stderr {file [lindex \$oldstat 11] has same owner}}; if {[lindex \$oldstat 11] ne [lindex \$newstat 11]} {incr e; puts stderr {file [lindex \$oldstat 11] has diff name}}; if {\$e > 0} {exit 1}" || myfail
 echo OK
 
 echo $N Demonstrate get -S on a file with no write perms ............$NL
 bk _stat bar2 > bar2.stat1 || myfail
 bk get $Q -e -S bar2 || myfail
 bk _stat bar2 > bar2.stat2 || myfail
-cat bar2.stat1 bar2.stat2 | perl -e '
-	$_ = <STDIN>;
-	chomp;
-	@oldstat = split(/\|/, $_);
-	$_ = <STDIN>;
-	chomp;
-	@newstat = split(/\|/, $_);
-	($e++), print STDERR "file $oldstat[11] is not read-only\n"
-	    unless $oldstat[2] eq "100444";
-	($e++), print STDERR "file $oldstat[11] was not writable\n"
-	    unless $newstat[2] eq "100664";
-	($e++), print STDERR "file $oldstat[11] has same owner\n"
-	    if $oldstat[4] eq $newstat[4];
-	($e++), print STDERR "file $oldstat[11] has diff name\n"
-	    unless $oldstat[11] eq $newstat[11];
-	die "$e errors\n" if defined($e);
-' || myfail
+cat bar2.stat1 bar2.stat2 | tclsh -c "set oldstat [split [gets stdin] |]; set newstat [split [gets stdin] |]; set e 0; if {[lindex \$oldstat 2] ne {100444}} {incr e; puts stderr {file [lindex \$oldstat 11] is not read-only}}; if {[lindex \$newstat 2] ne {100664}} {incr e; puts stderr {file [lindex \$oldstat 11] was not writable}}; if {[lindex \$oldstat 4] eq [lindex \$newstat 4]} {incr e; puts stderr {file [lindex \$oldstat 11] has same owner}}; if {[lindex \$oldstat 11] ne [lindex \$newstat 11]} {incr e; puts stderr {file [lindex \$oldstat 11] has diff name}}; if {\$e > 0} {exit 1}" || myfail
 echo OK

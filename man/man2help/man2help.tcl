@@ -27,6 +27,16 @@ proc writeBkverMacro {bkver} {
 }
 
 proc detectBkver {} {
+    global env
+    
+    # First try to use BK environment variable
+    if {[info exists env(BK)] && [file executable $env(BK)]} {
+        if {![catch {set out [exec $env(BK) version -s]}]} {
+            return [string trim $out]
+        }
+    }
+    
+    # Fallback to original paths
     foreach candidate {../../src/bk ../../src/bk.exe bk} {
         if {[file executable $candidate]} {
             if {![catch {set out [exec $candidate version -s]}]} {

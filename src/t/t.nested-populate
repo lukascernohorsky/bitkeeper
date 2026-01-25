@@ -619,26 +619,25 @@ echo foo > Makefile
 bk new $Q Makefile
 bk commit -S $Q -y.
 bk -P commit $Q -y.
-bk setup -fc"$HERE/empty" tcltk/tcl
-bk setup -fc"$HERE/empty" tcltk/tk
+# Skip tcltk setup as it is now system-wide
 cd "$HERE"
 bk clone -sall $Q all-present not-present
 cd not-present
 bk here set $Q .
-test -d src/gui/tcltk && fail did not remove empty path
+test -d src/gui && fail did not remove empty path
 echo OK
 
 echo $N Unpopulating should list local csets on failure .............$NL
-bk here add $Q src/gui/tcltk/tk
-cd src/gui/tcltk/tk
+bk here add $Q src/gui
+cd src/gui
 echo hi > local
 bk new $Q local
 bk commit -S $Q -ylocal || fail
-cd ../../../..
-bk here rm $Q src/gui/tcltk/tk 2> ERR && fail -f ERR
+cd ../..
+bk here rm $Q src/gui 2> ERR && fail -f ERR
 sed 's/ChangeSet@1.2,.*/ChangeSet@1.2,/' < ERR > ERR2
 cat <<EOF >WANT
-here: unable to remove ./src/gui/tcltk/tk, it contains csets not committed in product.
+here: unable to remove ./src/gui, it contains csets not committed in product.
 EOF
 
 cmpfiles ERR2 WANT
@@ -647,9 +646,9 @@ echo OK
 echo $N And with no other URLs we just list failure .................$NL
 rm BitKeeper/log/urllist
 bk parent $Q -r
-bk here rm $Q src/gui/tcltk/tk 2> ERR && fail -f ERR
+bk here rm $Q src/gui 2> ERR && fail -f ERR
 cat <<EOF > WANT
-here: unable to remove ./src/gui/tcltk/tk, it contains csets not committed in product.
+here: unable to remove ./src/gui, it contains csets not committed in product.
 EOF
 cmpfiles ERR WANT
 echo OK

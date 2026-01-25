@@ -105,7 +105,7 @@ echo $N Commit in bogus nested alias ................................$NL
 mkdir subdir
 cd subdir
 test 1.4 = `bk prs -r+ -hnd:I: ../ChangeSet` || fail
-bk commit $Q -sTCLTK -yfile-leftover 2>ERR && fail -f ERR should fail
+bk commit $Q -sSYSTEM_TCLTK -yfile-leftover 2>ERR && fail -f ERR should fail
 echo 'commit: -sALIAS only allowed in product' > WANT
 cmpfiles ERR WANT
 bk commit $Q -sHERE -yfile-leftover || fail

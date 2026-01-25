@@ -26,8 +26,7 @@ bk delta $Q -ycheckout BitKeeper/etc/config
 # Force BAM data into the repo to test those code paths.
 BK="`bk bin`/bk"
 test $PLATFORM = WIN32 && BK=${BK}.exe
-perl -e 'sysread(STDIN, $buf, 81920);
-syswrite(STDOUT, $buf, 81920);' < $BK > data
+tclsh -c "set buf [read stdin 81920]; puts -nonewline stdout $buf" < $BK > data
 bk new $Q data
 #
 bk commit $Q -ycheckout

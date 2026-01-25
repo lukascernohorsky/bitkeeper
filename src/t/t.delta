@@ -168,11 +168,7 @@ echo OK
 
 echo $N Make sure delta -G works ....................................$NL
 echo "G change data" > init3
-perl -e '
-$tt = time;
-$tt -= 500;
-utime $tt, $tt, "init";
-'
+tclsh -c "set tt [clock seconds]; set tt [expr {\$tt - 500}]; file mtime init \$tt \$tt"
 bk mtime init3 > CMP1
 bk delta $Q -i -G init3
 bk prs -Y -h -d':D: :T:\n' init3 > CMP2

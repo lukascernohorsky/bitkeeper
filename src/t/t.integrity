@@ -50,9 +50,7 @@ cmpfiles WANT GOT
 # Corrupt the xor block, but not the crc for the block. Get a crc error
 for f in seek noseek seek.bam noseek.bam
 do	bk _cp SCCS/s.$f orig.$f
-	perl -e 'local($/,$\); binmode STDIN; binmode STDOUT; $in = <>;
-	    substr($in, -6, 1) ^= chr(5); print $in;' \
-	    < orig.$f > hack
+	tclsh -c "fconfigure stdin -translation binary; fconfigure stdout -translation binary; set in [read stdin]; binary scan [string range \$in end-5 end-5] c c; set c [expr {\$c ^ 5}]; set in [string replace \$in end-5 end-5 [binary format c \$c]]; puts -nonewline stdout \$in" < orig.$f > hack
 	bk _cp hack SCCS/s.$f
 	bk get -q $f 2> ERR && fail -f ERR $f
 	grep -q "crc error block" ERR || fail -f ERR $f
@@ -65,9 +63,7 @@ echo $N Test crc err detection in xor block in cset sfile and heap ..$NL
 bk commit $Q -yfiles || fail
 for pre in s 1 2
 do	bk _cp SCCS/$pre.ChangeSet cset.$pre
-	perl -e 'local($/,$\); binmode STDIN; binmode STDOUT; $in = <>;
-	    substr($in, -6, 1) ^= chr(5); print $in;' \
-	    < cset.$pre > hack
+	tclsh -c "fconfigure stdin -translation binary; fconfigure stdout -translation binary; set in [read stdin]; binary scan [string range \$in end-5 end-5] c c; set c [expr {\$c ^ 5}]; set in [string replace \$in end-5 end-5 [binary format c \$c]]; puts -nonewline stdout \$in" < cset.$pre > hack
 	bk _cp hack SCCS/$pre.ChangeSet
 	bk get -q ChangeSet 2> ERR && fail -f ERR $pre
 	grep -q "crc error block" ERR || fail -f ERR $pre

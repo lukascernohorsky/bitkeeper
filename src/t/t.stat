@@ -91,33 +91,33 @@ echo OK
 
 echo $N Test stat command across daylight savings time ..............$NL
 
-cat <<'EOF' > test.pl
-$_ = <>;
-die unless /^f1:/;
-$_ = <>;
-die unless /^(\d+)\S+ (\d+)/;
+cat <<'EOF' > test.tcl
+set line1 [gets stdin]
+if {![regexp {^f1:} $line1]} {error "Expected f1: line"}
+set line2 [gets stdin]
+if {![regexp {^(\d+)\S+ (\d+)} $line2 -> mtime atime]} {error "Expected mtime/atime line"}
 
-die "wrong f1 mtime" unless abs($1 - 1130587200) < 3;
-die "wrong f1 atime" unless abs($2 - 1130544000) < 24*3600;
+set now [clock seconds]
+if {abs($mtime - 1130587200) >= 3} {error "wrong f1 mtime"}
+if {abs($atime - 1130544000) >= 86400} {error "wrong f1 atime"}
 
-$_ = <>;
-die unless /^f2:/;
-$_ = <>;
-die unless /^(\d+)\S+ (\d+)/;
+set line3 [gets stdin]
+if {![regexp {^f2:} $line3]} {error "Expected f2: line"}
+set line4 [gets stdin]
+if {![regexp {^(\d+)\S+ (\d+)} $line4 -> mtime atime]} {error "Expected mtime/atime line"}
 
-die "wrong f2 mtime" unless abs($1 - 1130846400) < 3;
-die "wrong f2 atime" unless abs($2 - 1130803200) < 24*3600;
+if {abs($mtime - 1130846400) >= 3} {error "wrong f2 mtime"}
+if {abs($atime - 1130803200) >= 86400} {error "wrong f2 atime"}
 
-$_ = <>;
-die unless /^f3:/;
-$_ = <>;
-die unless /^(\d+)\S+ (\d+)/;
+set line5 [gets stdin]
+if {![regexp {^f3:} $line5]} {error "Expected f3: line"}
+set line6 [gets stdin]
+if {![regexp {^(\d+)\S+ (\d+)} $line6 -> mtime atime]} {error "Expected mtime/atime line"}
 
-$now = time;
-die "wrong f3 mtime" unless abs($1 - $now) < 1000;
-die "wrong f2 atime" unless abs($2 - $now) < 24*3600 + 1000;
+if {abs($mtime - $now) >= 1000} {error "wrong f3 mtime"}
+if {abs($atime - $now) >= 90000} {error "wrong f3 atime"}
 EOF
-bk _stattest | perl test.pl || fail
+bk _stattest | tclsh test.tcl || fail
 echo OK
 
 echo $N Test stat and lstat for doing what we would expect ..........$NL

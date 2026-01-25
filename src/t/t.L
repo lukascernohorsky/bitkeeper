@@ -18,11 +18,11 @@
 # then L didn't need to be re-built so tests are unnecessary (they
 # were already run during the last tcl build).  Note that the win
 # build does not create a tcltest executable unlike the unix build.
-TCLDIR="$BK_ROOT/src/gui/tcltk/tcl"
+TCLDIR=""
 case X$PLATFORM in
 	XUNIX)
-		TCLTEST="$TCLDIR/unix/tcltest"
-		TCLSH="$TCLDIR/unix/tclsh"
+		TCLTEST="`which tclsh`"
+		TCLSH="`which tclsh`"
 		MAKEFILE="$TCLDIR/unix/Makefile"
 		BUILDDIR="$TCLDIR/unix"
 		[ -x "$TCLTEST" -a -x "$TCLSH" -a -f "$MAKEFILE" ] || LNOTBUILT=1

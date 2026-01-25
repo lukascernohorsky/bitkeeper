@@ -462,7 +462,7 @@ echo OK
 echo $N Test binary and text files together .........................$NL
 ## Make some binary files
 echo FOO > foo.txt
-perl -e 'printf "b\000b\n"' > foo.bin
+tclsh -c "puts -nonewline \"b\\u0000b\\n\"" > foo.bin
 bk ci -a -y'checkin comment' foo.txt foo.bin 2>/dev/null
 bk commit $Q -y'commit comment' 2>/dev/null
 bk edit $Q foo.txt foo.bin

@@ -34,7 +34,7 @@ cd test
 touch empty
 echo 0 > empty.size
 cp "$BIN2" data
-bk _stat data | perl -ne '@_ = split(/\|/); print "$_[7]\n"' > data.size
+bk _stat data | tclsh -c "set line [gets stdin]; set fields [split \$line |]; puts \$fields"
 for mode in c z cz; do
 	for file in empty data; do
 		bk _fgzip -$mode < $file > $file.store.$mode

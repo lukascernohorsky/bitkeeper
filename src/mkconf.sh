@@ -183,8 +183,14 @@ PCRE_test() {
 	fi
 }
 PCRE_builtin() {
-	PCRE_CPPFLAGS=-I`pwd`/gui/tcltk/pcre/local/include
-	PCRE_LDFLAGS=`pwd`/gui/tcltk/pcre/local/lib/libpcre.a
+	# Use system PCRE instead of built-in
+	if pcre-config --libs > /dev/null 2>&1
+	then	PCRE_CPPFLAGS=`pcre-config --cflags`
+		PCRE_LDFLAGS=`pcre-config --libs`
+	else
+		echo "PCRE library not found, please install it" 1>&2
+		exit 1
+	fi
 }
 
 set_libcfg PCRE libpcre PCRE

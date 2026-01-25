@@ -1227,7 +1227,7 @@ __install()
 	if [ "X$OSTYPE" = "Xmsys" ]
 	then
 		test $VERBOSE = YES && echo "Updating registry and path ..."
-		gui/bin/tclsh gui/lib/registry.tcl $UPGRADE $DLLOPTS "$DEST"
+		_tclsh gui/lib/registry.tcl $UPGRADE $DLLOPTS "$DEST"
 		# Clean out any old BK menu items
 		bk _startmenu uninstall
 		# Make new entries
@@ -1256,9 +1256,16 @@ __sortmerge()
 }
 
 _tclsh() {
-	TCLSH=$BK_BIN/gui/bin/tclsh
-	test "X$OSTYPE" = "Xmsys" && TCLSH=`win2msys "$TCLSH"`
-	exec "$TCLSH" "$@"
+	# Try to find system Tcl interpreter
+	for TCLSH in /usr/bin/tclsh /usr/local/bin/tclsh tclsh; do
+		if [ -x "$TCLSH" ]; then
+			test "X$OSTYPE" = "Xmsys" && TCLSH=`win2msys "$TCLSH"`
+			exec "$TCLSH" "$@"
+			return
+		fi
+	done
+	echo "Cannot find system Tcl interpreter. Please install Tcl 8.6+." >&2
+	exit 1
 }
 
 _L() {

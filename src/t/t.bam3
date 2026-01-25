@@ -20,7 +20,7 @@ export BK_NO_HARDLINK_CLONE
 echo $N Create initial repository ...................................$NL
 for f in 1 2 3 4 5 6 7 8 9
 do	echo $f > F$f
-	perl -e 'printf "a\000b\n"' >> F$f
+	tclsh -c "puts -nonewline \"a\\u0000b\\n\"" >> F$f
 done
 commercial pmaster
 bk bam server $Q . || fail

@@ -20,7 +20,7 @@ export BK_NO_HARDLINK_CLONE
 echo $N Create initial repository ...................................$NL
 for f in 1 2 3 4 5 6 7 8 9
 do	echo $f > F$f
-	perl -e 'printf "a\000b\n"' >> F$f
+	tclsh -c "puts -nonewline \"a\\u0000b\\n\"" >> F$f
 done
 commercial pmaster
 bk bam server $Q . || fail
@@ -536,12 +536,12 @@ bk clone $Q pmaster pclone6
 bk clone $Q pmaster pclone7
 cd pclone6
 echo foo > foo
-perl -e 'printf "q\000\001\002b\n"' >> foo
+tclsh -c "puts -nonewline \"q\\u0000\\u0001\\u0002b\\n\"" >> foo
 bk new $Q foo
 bk commit $Q -f -y"Added foo"
 cd ../pclone7
 echo foo > foo
-perl -e 'printf "q\000\001\002b\n"' >> foo
+tclsh -c "puts -nonewline \"q\\u0000\\u0001\\u0002b\\n\"" >> foo
 bk new $Q foo
 bk commit $Q -f -y"Added foo"
 bk pull $Q ../pclone6 2>ERR <<EOF
@@ -557,12 +557,12 @@ bk clone $Q pmaster pclone6
 bk clone $Q pmaster pclone7
 cd pclone6
 bk edit $Q F5
-perl -e 'printf "b\000b\n"' >> F5
+tclsh -c "puts -nonewline \"b\\u0000b\\n\"" >> F5
 bk ci $Q -y"Added stuff" F5
 bk commit $Q -f -y"Added stuff to F5"
 cd ../pclone7
 bk edit $Q F5
-perl -e 'printf "b\000b\n"' >> F5
+tclsh -c "puts -nonewline \"b\\u0000b\\n\"" >> F5
 bk ci $Q -y"Added other stuff" F5
 bk commit $Q -f -y"Added other stuff to F5"
 bk pull $Q ../pclone6 2>ERR
@@ -575,12 +575,12 @@ bk clone $Q pmaster pclone6
 bk clone $Q pmaster pclone7
 cd pclone6
 bk edit $Q F5
-perl -e 'printf "b\000b\n"' >> F5
+tclsh -c "puts -nonewline \"b\\u0000b\\n\"" >> F5
 bk ci $Q -y"Added stuff" F5
 bk commit $Q -f -y"Added stuff to F5"
 cd ../pclone7
 bk edit $Q F5
-perl -e 'printf "c\000b\n"' >> F5
+tclsh -c "puts -nonewline \"c\\u0000b\\n\"" >> F5
 bk ci $Q -y"Added other stuff" F5
 bk commit $Q -f -y"Added other stuff to F5"
 bk pull $Q ../pclone6 2>ERR <<EOF
@@ -601,7 +601,7 @@ bk chmod +x F5
 bk commit $Q -f -y"Added execute to F5"
 cd ../pclone7
 bk edit $Q F5
-perl -e 'printf "b\000b\n"' >> F5
+tclsh -c "puts -nonewline \"b\\u0000b\\n\"" >> F5
 bk ci $Q -y"Added other stuff" F5
 bk commit $Q -f -y"Added other stuff to F5"
 bk pull $Q ../pclone6 2>ERR <<EOF

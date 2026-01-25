@@ -87,7 +87,7 @@ echo $N Check that line splitting is idempotent .....................$NL
 # script inspired by Martin Dorey's bug report with no bug number yet
 # The comments file gets filtered twice for a changeset because
 # of trigger processing.  A split line was getting split again.
-perl -e 'print "1234567890"x111, "\n"' > CMT
+tclsh -c "puts [string repeat 1234567890 111]" > CMT
 bk edit $Q foo
 bk delta -q -f -YCMT foo 2> FILE
 bk commit -q -YCMT 2> CSET

@@ -18,7 +18,7 @@ echo foo > foo
 bk new $Q foo
 echo bar > bar
 bk new $Q bar
-perl -e 'print "bin\000ary\nda\000ta\n"' > bin
+tclsh -c "puts -nonewline \"bin\\u0000ary\\nda\\u0000ta\\n\"" > bin
 bk new $Q bin
 bk get $Q foo bar bin
 echo OK

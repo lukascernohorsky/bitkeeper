@@ -223,7 +223,7 @@ verbose() {
 
 islink() {
 	# test -L is not portable - freebsd[34] and mac102 do not support
-	perl -e "exit ((-l '$1') ? 0 : 1)"
+	tclsh -c "exit [expr {[file type $1] eq \"link\" ? 0 : 1}]"
 }
 
 _mtime() {
@@ -264,11 +264,7 @@ fail() {
 # path is a deep nest of 15 char dirs separated by / and a "xxx..." file
 # name at the end to get the right total size.
 longpath() {
-	PROG='	$x = $ARGV[1] - length($ARGV[0]);
-		$y = int(($x-1)/16);
-		print "$ARGV[0]",
-		    "abcdefg12345679/" x $y, "x" x ($x - 16*$y), "\n";'
-	perl -e "$PROG" "$1" $2
+	tclsh -c "set x [expr {\$argv1 - [string length \$argv0]}]; set y [expr {int((\$x-1)/16)}]; puts -nonewline \$argv0; puts -nonewline [string repeat abcdefg12345679/ \$y]; puts -nonewline [string repeat x [expr {\$x - 16*\$y}]]; puts \"\"" "$1" $2
 }
 
 test_gui_result() {
@@ -322,9 +318,9 @@ mkBINs() {
 	# Make the binaries not too large, sco hangs on large diffs.
 	DOTBIN="$TST_DIR/.bin"
 	mkdir -p "$DOTBIN"
-	perl -e '$s=102400;sysread(STDIN, $buf, $s);syswrite(STDOUT, $buf, $s)' < "$B"/bk$EXE > "$DOTBIN/binary1"
-	perl -e '$s=204900;seek(STDIN, 2056, 0); sysread(STDIN, $buf, $s);syswrite(STDOUT, $buf, $s)' < "$B"/bk$EXE > "$DOTBIN/binary2"
-	perl -e '$s=307200;seek(STDIN, 5564, 0); sysread(STDIN, $buf, $s);syswrite(STDOUT, $buf, $s)' < "$B"/bk$EXE > "$DOTBIN/binary3"
+	tclsh -c "set buf [read stdin 102400]; puts -nonewline stdout $buf" < "$B"/bk$EXE > "$DOTBIN/binary1"
+	tclsh -c "seek stdin 2056; set buf [read stdin 204900]; puts -nonewline stdout $buf" < "$B"/bk$EXE > "$DOTBIN/binary2"
+	tclsh -c "seek stdin 5564; set buf [read stdin 307200]; puts -nonewline stdout $buf" < "$B"/bk$EXE > "$DOTBIN/binary3"
 	BIN1="$DOTBIN/binary1"
 	BIN2="$DOTBIN/binary2"
 	BIN3="$DOTBIN/binary3"

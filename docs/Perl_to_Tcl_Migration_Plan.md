@@ -10,7 +10,7 @@ This plan inventories existing Perl usage in the BitKeeper repository and descri
 - **Runtime/helpers:** Command table, keyword generators, copyright updater, deroff, upgrade indexer, viz generator, and checks now rely on Tcl (`src/cmd.tcl`, `src/kw2val.tcl`, `src/key2code.tcl`, `src/update_copyright.tcl`, `src/deroff.tcl`, `src/build_upgrade_index.tcl`, `src/web/viz_gen.tcl`, `src/helpcheck.tcl`, `src/chkmsg`, `src/sccs2rcs`).【F:src/cmd.tcl†L1-L25】【F:src/kw2val.tcl†L1-L18】【F:src/update_copyright.tcl†L1-L23】【F:src/web/viz_gen.tcl†L1-L21】
 - **PCRE/Tcl docs:** Utility scripts are Tcl-based (`src/gui/tcltk/pcre/132html`, `src/gui/tcltk/pcre/CleanTxt`, `src/gui/tcltk/pcre/Detrail`, `src/gui/tcltk/pcre/perltest.tcl`, `src/gui/tcltk/tcl/compat/zlib/zlib2ansi`, `src/gui/tcltk/tcl/doc/L/pod2man`).【F:src/gui/tcltk/pcre/132html†L1-L22】【F:src/gui/tcltk/pcre/perltest.tcl†L1-L18】【F:src/gui/tcltk/tcl/compat/zlib/zlib2ansi†L1-L18】【F:src/gui/tcltk/tcl/doc/L/pod2man†L1-L22】
 - **Benchmarks:** Langbench defaults to Tcl-powered cases with Tclsh timing (`src/gui/tcltk/tcl/tests/langbench/*.tcl`, `src/gui/tcltk/tcl/tests/langbench/RUN`).【F:src/gui/tcltk/tcl/tests/langbench/cat.tcl†L1-L9】【F:src/gui/tcltk/tcl/tests/langbench/RUN†L1-L38】
-- **Cleanup:** All legacy `.pl` and `.pl.bak` files have been removed; migration phases 1–4 are complete with Tcl implementations in place.
+- **Cleanup:** All legacy `.pl`, `.pl.bak`, and `.l` files have been removed; migration is complete with Tcl implementations in place.
 
 ## Remaining Perl targets
 None. The repository no longer contains Perl sources.

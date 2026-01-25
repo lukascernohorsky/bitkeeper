@@ -31,9 +31,7 @@ patchcount() {
 # use this to make an sfile shorter
 # Usage: chopfile template sfile lines-in-sfile-after-^AT
 chopfile() {
-	bk _cat $1 | perl -e \
-	    "while(<>){print;last if /^.T/}for(1..$3){print scalar(<>)}" \
-	    | bk undos > temp4324
+	bk _cat $1 | tclsh -c "set count 0; while {[gets stdin line] >= 0} {puts \$line; if {[regexp {^.T} \$line]} {for {set i 0} {\$i < \$argv} {incr i} {puts [gets stdin]}}; incr count} if {\$count >= 3} break" $3 | bk undos > temp4324
 	bk _mv temp4324 $2
 	bk _chmod 444 $2
 	bk admin -z $2
@@ -41,13 +39,11 @@ chopfile() {
 
 patchdump() {
 	bk _cat $1 | perl -e \
-	    "while(<>){last if /== $2/}
-	    while(<>){last if /^F$/}print;
-	    while(<>){print;last if /^K/}"
+	    "set found 0; while {[gets stdin line] >= 0} {if {\$found == 0 && [regexp {== \$argv} \$line]} {set found 1; continue}; if {\$found == 1 && \$line eq {F}} {set found 2; puts \$line; continue}; if {\$found == 2} {puts \$line; if {\$line eq {K}} break}}" $2
 }
 
 weavedump() {
-	bk _heapdump $1 | perl -ne 's/^\^A//; print unless 1 .. /^weave:/'   
+	bk _heapdump $1 | tclsh -c "set in_weave 0; while {[gets stdin line] >= 0} {set line [regsub {^\\u0001} \$line {}]; if {!\$in_weave && [regexp {^weave:} \$line]} {set in_weave 1}; if {!\$in_weave} {puts \$line}}"
 }
 
 

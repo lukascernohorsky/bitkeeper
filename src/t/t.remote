@@ -184,7 +184,7 @@ echo OK
 
 echo $N Make sure bk cleans locks when client dies ..................$NL
 cd "$HERE"/project
-perl -e 'print("bam" x 200000)' > bam
+tclsh -c "puts -nonewline [string repeat bam 200000]" > bam
 bk new -b $Q bam || fail
 KEY=`bk log -r+ -nd':BAMHASH: :KEY: :MD5KEY|1.0:' bam`
 # allow bk client process to die while bkd side is still running

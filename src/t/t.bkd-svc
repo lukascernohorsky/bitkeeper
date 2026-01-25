@@ -116,22 +116,12 @@ bk clone $Q project copy || fail
 test -d copy/BitKeeper/etc || fail
 PORT=`port 53100`
 bk bkd -d -p$PORT -ikill || fail
-perl -e '
-	$start = time;
-	system("bk clone -q bk://localhost:$ARGV[0]/copy junk") && die;
-	$stop = time;
-	print 1 + $stop - $start, "\n";
-' $PORT > BKDTIME || fail
+tclsh -c "set start [clock seconds]; set result [catch {exec bk clone -q bk://localhost:[lindex \$argv 0]/copy junk}]; if {\$result != 0} {exit 1}; set stop [clock seconds]; puts [expr {1 + \$stop - \$start}]" $PORT > BKDTIME || fail
 bk _kill bk://localhost:$PORT
 test -d junk/BitKeeper/etc || fail
 rm -fr junk
 bk service install $BKDNAME $GZIP -EBK_REGRESSION=1 -p$PORT
-perl -e '
-	$start = time;
-	system("bk clone -q bk://localhost:$ARGV[0]/copy junk") && die;
-	$stop = time;
-	print 1 + $stop - $start, "\n";
-' $PORT > SVCTIME || fail
+tclsh -c "set start [clock seconds]; set result [catch {exec bk clone -q bk://localhost:[lindex \$argv 0]/copy junk}]; if {\$result != 0} {exit 1}; set stop [clock seconds]; puts [expr {1 + \$stop - \$start}]" $PORT > SVCTIME || fail
 bk service uninstall $BKDNAME
 test -d junk/BitKeeper/etc || fail
 rm -fr junk

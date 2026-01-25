@@ -48,7 +48,7 @@ mv c "`bk dotbk`"/config
 test -d $OLDBK || {
     # Skip this test if we don't have at least 5gigs free
     df -Pk /build 2>/dev/null |
-        perl -e '$_ = <>; $_ = <>; exit 0 if /^\S+\s+\d+\s+\d+\s+(\d+)\s+\d+%/ && $1 > 5e6; exit 1' || {
+        tclsh -c "gets stdin; gets stdin line; set match [regexp -inline {^\S+\s+\d+\s+\d+\s+(\d+)\s+\d+%} \$line]; if {\$match ne {} && [lindex \$match 1] > 5000000} {exit 0} else {exit 1}" || {
 	echo skipped
 	exit 0
     }
@@ -277,22 +277,7 @@ echo OK
 echo $N Document the weave signature ................................$NL
 # Dump a weave signature
 dump() {
-	perl -e '
-		while (<>) { last if /^\001T/ }  # Skip to weave
-		while (<>) {
-			if (s/\001//) {
-				if ($x) {
-					print "$x\n";
-					$x = 0;
-				} elsif (/^E/) {
-					print "== 0 ==\n";
-				}
-				print;
-			} else {
-				$x++;
-			}
-		}
-	' $1
+	tclsh -c "set x 0; while {[gets stdin line] >= 0} {if {[string index \$line 0] eq \"\\u0001\"} {set line [string range \$line 1 end]; if {\$x > 0} {puts \$x; set x 0} elseif {[string index \$line 0] eq \"E\"} {puts \"== 0 ==\"}; puts \$line} else {incr x}}" < $1
 }
 # For compat sake, 2 empty slots.
 dump new > GOT

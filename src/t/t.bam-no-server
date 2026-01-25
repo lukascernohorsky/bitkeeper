@@ -20,8 +20,7 @@ commercial project
 BK="`bk bin`/bk"
 test $PLATFORM = WIN32 && BK=${BK}.exe
 DATA="$HERE"/data
-perl -e 'sysread(STDIN, $buf, 81920);
-syswrite(STDOUT, $buf, 81920);' < $BK > "$DATA"
+tclsh -c "set buf [read stdin 81920]; puts -nonewline stdout $buf" < $BK > "$DATA"
 cp "$DATA" data
 bk new $Q data || fail
 test -d BitKeeper/BAM || fail

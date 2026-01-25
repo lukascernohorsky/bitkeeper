@@ -18,7 +18,7 @@ echo hi > foo
 bk new $Q foo
 
 # create a 2M comment
-perl -e 'print ((("x" x 79) . "\n") x 30000)' > C
+tclsh -c "for {set i 0} {\$i < 30000} {incr i} {puts [string repeat x 79]}" > C
 bk _mv BitKeeper/etc/SCCS/s.config SAVE
 bk commit $Q -YC 2>ERR && fail -f ERR expect failure
 bk _mv SAVE BitKeeper/etc/SCCS/s.config

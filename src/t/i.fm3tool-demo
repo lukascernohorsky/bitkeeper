@@ -19,10 +19,7 @@ echo $N demo slowness in fm3tool.....................................$NL
 commercial project
 mkdir "$HERE/project/src"
 cd "$HERE/project/src"
-perl -e '
-for ($i = 1; $i <= 600; $i++) {
-   printf "%3s: this is part of the original file\n", $i;
-}' > file1
+tclsh -c "for {set i 1} {\$i <= 600} {incr i} {puts [format {%3s: this is part of the original file} \$i]}" > file1
 bk ci $Q -i file1 || exit 1
 bk commit $Q -y"initial checkin"
 # create clones
@@ -32,40 +29,12 @@ bk clone $Q "$HERE/project" "$HERE/local"
 # introduce conflicts
 cd "$HERE/remote/src"
 bk get $Q -e file1
-perl -e '
-for ($i = 1; $i <= 200; $i++) {
-   printf "%3s: this is part of the original file\n", $i;
-}
-for ($i = 1; $i <= 800; $i++) {
-   printf "%3s: this is part of the remote file\n", $i;
-}
-for ($i = 201; $i <= 400; $i++) {
-   printf "%3s: this is part of the original file\n", $i;
-}
-printf "gratuitous diff in remote\n";
-for ($i = 401; $i <= 600; $i++) {
-   printf "%3s: this is part of the original file\n", $i;
-}
-' > file1
+tclsh -c "for {set i 1} {\$i <= 200} {incr i} {puts [format {%3s: this is part of the original file} \$i]}; for {set i 1} {\$i <= 800} {incr i} {puts [format {%3s: this is part of the remote file} \$i]}; for {set i 201} {\$i <= 400} {incr i} {puts [format {%3s: this is part of the original file} \$i]}; puts {gratuitous diff in remote}; for {set i 401} {\$i <= 600} {incr i} {puts [format {%3s: this is part of the original file} \$i]}" > file1
 bk ci $Q -y"introduced conflicts" file1
 bk commit $Q -y"introduced conflicts in file1"
 cd "$HERE/local/src"
 bk get $Q -e file1
-perl -e '
-for ($i = 1; $i <= 200; $i++) {
-   printf "%3s: this is part of the original file\n", $i;
-}
-for ($i = 1; $i <= 800; $i++) {
-   printf "%3s: this is part of the local file\n", $i;
-}
-for ($i = 201; $i <= 400; $i++) {
-   printf "%3s: this is part of the original file\n", $i;
-}
-printf "gratuitous diff in local\n";
-for ($i = 401; $i <= 600; $i++) {
-   printf "%3s: this is part of the original file\n", $i;
-}
-' > file1
+tclsh -c "for {set i 1} {\$i <= 200} {incr i} {puts [format {%3s: this is part of the original file} \$i]}; for {set i 1} {\$i <= 800} {incr i} {puts [format {%3s: this is part of the local file} \$i]}; for {set i 201} {\$i <= 400} {incr i} {puts [format {%3s: this is part of the original file} \$i]}; puts {gratuitous diff in local}; for {set i 401} {\$i <= 600} {incr i} {puts [format {%3s: this is part of the original file} \$i]}" > file1
 bk ci $Q -y"introduced conflicts" file1
 bk commit $Q -y"introduced conflicts in file1"
 # pushing remote changes to parent

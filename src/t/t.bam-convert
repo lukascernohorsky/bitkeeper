@@ -20,8 +20,7 @@ echo 'BAM: off!' >> BitKeeper/etc/config
 
 echo $N Trying to check in some binary data .........................$NL
 cp "$BIN1" data
-perl -e 'sysread(STDIN, $buf, 10240);
-syswrite(STDOUT, $buf, 10240);' < data > data2
+tclsh -c "set buf [read stdin 10240]; puts -nonewline stdout $buf" < data > data2
 chmod u+w data data2
 touch zero
 printf "x" > one

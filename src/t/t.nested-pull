@@ -36,7 +36,7 @@ EOF
 cmpfiles WANT GOT
 echo OK
 
-TAGGED=`perl -e 'if (\`bk version -s\` =~ /^[0-9]+$/) { print "NO" ;} else { print "YES";}'`
+TAGGED=`tclsh -c "set version [exec bk version -s]; if {[regexp {^[0-9]+$} \$version]} {puts NO} else {puts YES}"`
 if [ $TAGGED = NO ] ; then
 	echo $N Counting number of locks	....................................$NL
 	cd "$HERE"

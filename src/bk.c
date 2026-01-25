@@ -1671,10 +1671,24 @@ launch_L(char *script, char **av)
 	char	*argv[MAXARGS];
 	char	tclcmd[MAXPATH];
 	char	cmd[MAXPATH];
+	const char *tclsh_paths[] = {
+		"/usr/bin/tclsh",
+		"/usr/local/bin/tclsh",
+		"tclsh",
+		NULL
+	};
 
-	sprintf(tclcmd, "%s/gui/bin/tclsh", bin);
-	unless(executable(tclcmd)) {
-		fprintf(stderr, "Cannot find the L interpreter.\n");
+	/* Try to find system Tcl interpreter */
+	int found = 0;
+	for (int k = 0; tclsh_paths[k]; k++) {
+		strcpy(tclcmd, tclsh_paths[k]);
+		if (executable(tclcmd)) {
+			found = 1;
+			break;
+		}
+	}
+	if (!found) {
+		fprintf(stderr, "Cannot find system Tcl interpreter. Please install Tcl 8.6+.\n");
 		exit(1);
 	}
 

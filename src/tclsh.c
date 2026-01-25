@@ -30,11 +30,24 @@ tclsh_main(int ac, char **av)
 	char	cmd[MAXPATH];
 	int	ret;
 	pid_t	pid;
+	const char *tclsh_paths[] = {
+		"/usr/bin/tclsh",
+		"/usr/local/bin/tclsh",
+		"tclsh",
+		NULL
+	};
 
-	sprintf(cmd, "%s/gui/bin/tclsh", bin);
-	unless(executable(cmd)) {
-		fprintf(stderr, "Cannot find the Tcl interpreter.\n");
-		exit(1);
+	/* Try to find system Tcl interpreter */
+	for (int i = 0; tclsh_paths[i]; i++) {
+		strcpy(cmd, tclsh_paths[i]);
+		if (executable(cmd)) {
+			break;
+		}
+		if (tclsh_paths[i+1] == NULL) {
+			/* Last attempt failed */
+			fprintf(stderr, "Cannot find system Tcl interpreter. Please install Tcl 8.6+.\n");
+			exit(1);
+		}
 	}
 
 	av[0] = cmd;

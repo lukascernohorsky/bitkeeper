@@ -17,7 +17,7 @@ commercial project
 echo hi > ascii
 cp ascii ascii_sfile
 cp ascii WANT_ASCII
-perl -e 'print "abc\001\000\r\t\n\0aa"' > binary
+tclsh -c "puts -nonewline \"abc\\u0001\\u0000\\r\\t\\n\\u0000aa\"" > binary
 cp binary binary_sfile
 cp binary WANT_BINARY
 bk new $Q -b binary_sfile

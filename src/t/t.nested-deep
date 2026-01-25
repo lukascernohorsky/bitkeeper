@@ -136,15 +136,9 @@ echo $N Show that we can unpopulate and repopulate under deep .......$NL
 mkdir src
 cd src
 bk setup -f gui || fail
-mkdir gui/tcltk
-cd gui/tcltk
-echo hi > file
-bk new $Q file || fail
-bk commit -S $Q -yfile
-bk setup -f tk || fail
-bk -P commit $Q -ywrap || fail
+# Skip tcltk setup as it is now system-wide
 cd "$HERE"
-bk clone $Q -s./src/gui -s./src/gui/tcltk/tk project copy2 || fail
+bk clone $Q -s./src/gui project copy2 || fail
 cd copy2
 bk unpopulate $Q ./src/gui || fail
 bk populate $Q ./src/gui || fail
@@ -194,15 +188,8 @@ src/gui/BitKeeper/etc/config|+
 src/gui/BitKeeper/etc/gone|+
 src/gui/BitKeeper/etc/ignore|+
 src/gui/afile|+
-src/gui/tcltk/file|+
+src/gui/file|+
 src/gui/zfile|+
-src/gui/tcltk/tk/ChangeSet|+
-src/gui/tcltk/tk/BitKeeper/etc/collapsed|+
-src/gui/tcltk/tk/BitKeeper/etc/config|+
-src/gui/tcltk/tk/BitKeeper/etc/gone|+
-src/gui/tcltk/tk/BitKeeper/etc/ignore|+
-src/gui/tcltk/tk/afile|+
-src/gui/tcltk/tk/zfile|+
 EOF
 perl -pe '($file) = /^([^|]+)/;s/\+/`bk prs -hd:MD5KEY: -r+ $file`/ge unless $file eq "ChangeSet"' < WANT > WANT2 || fail
 cmpfiles WANT2 GOT

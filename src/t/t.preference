@@ -26,7 +26,7 @@ cd src
 echo foo > foo.c
 echo bar > bar.c
 echo h > h.h
-perl -e 'printf "a\000b\n"' > bam
+tclsh -c "puts -nonewline \"a\\u0000b\\n\"" > bam
 bk ci $Q -i foo.c bar.c h.h bam
 bk co -q # checkout:get is added later
 echo OK
