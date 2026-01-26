@@ -555,8 +555,9 @@ version: version.sh $(BK) utils/bk_version GUI FORCE
 	$(Q)cp $< $@
 	$(Q)chmod +x $@
 
-%: %.l
-	$(if $(Q),@echo Not lexing $@,)
+# Removed .l file processing - using Tcl equivalents
+# %: %.l
+#	$(if $(Q),@echo Not lexing $@,)
 
 import: import.sh port/$(SYS)_platform.sh
 	cat port/$(SYS)_platform.sh import.sh > import.T

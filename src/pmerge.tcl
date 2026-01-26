@@ -942,7 +942,7 @@ proc init {} {
     while {[llength $argv] > 0 && [string match "-*" [lindex $argv 0]]} {
         set x [string range [lindex $argv 0] 1 end]
         
-        if {$x eq "-help"} {
+        if {$x eq "help" || $x eq "-help" || $x eq "--help"} {
             usage
         }
         
