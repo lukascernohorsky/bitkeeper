@@ -1239,7 +1239,7 @@ do_patch(sccs *s, ser_t d, char *tag, char *tagparent, FILE *out)
 	if (DANGLING(s, d)) fprintf(out, "D\n");
 	t = COMMENTS(s, d);
 	while (p = eachline(&t, &len)) fprintf(out, "c %.*s\n", len, p);
-	if (DATE_FUDGE(s, d)) fprintf(out, "F %d\n", (int)DATE_FUDGE(s, d));
+	if (DATE_FUDGE(s, d)) fprintf(out, "F %ld\n", (long)DATE_FUDGE(s, d));
 	assert(!HAS_CLUDES(s, d));
 	unless (TAG(s, d)) fprintf(out, "K %u\n", SUM(s, d));
 	assert(!MERGE(s, d));

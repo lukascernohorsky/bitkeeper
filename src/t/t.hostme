@@ -1,0 +1,73 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# hostme -- test hostme command functionality
+
+echo $N Test hostme help and usage ...................................$NL
+# Test help output
+bk hostme --help > GOT 2>&1
+# Should contain usage information
+grep -q "usage:" GOT || fail -f GOT
+grep -q "hostme" GOT || fail -f GOT
+echo OK
+
+echo $N Test hostme with invalid options .............................$NL
+# Test invalid option
+bk hostme -z 2> ERR && fail
+# Should get bad argument error
+grep -q "unknown option" ERR || fail -f ERR
+echo OK
+
+echo $N Test hostme command recognition ..............................$NL
+# Test that hostme command is recognized
+bk hostme --help > /dev/null 2>&1 || fail
+echo OK
+
+echo $N Test hostme with missing required arguments .................$NL
+# Test missing required arguments
+bk hostme 2> ERR && fail
+# Should get usage error
+grep -q "usage:" ERR || fail -f ERR
+echo OK
+
+echo $N Test hostme with project option only ........................$NL
+# Test with project option only
+bk hostme -p testproject 2> ERR && fail
+# Should get error about missing other required options
+grep -q "usage:" ERR || fail -f ERR
+echo OK
+
+echo $N Test hostme with debug option ................................$NL
+# Test debug option
+bk hostme -d 2> ERR && fail
+# Should get usage error
+grep -q "usage:" ERR || fail -f ERR
+echo OK
+
+echo $N Test hostme with quiet option ................................$NL
+# Test quiet option
+bk hostme -q 2> ERR && fail
+# Should get usage error
+grep -q "usage:" ERR || fail -f ERR
+echo OK
+
+echo $N Test hostme in nested repository ..............................$NL
+nested project
+cd gcc
+# Test hostme in nested component
+bk hostme --help > /dev/null 2>&1 || fail
+cd ..
+echo OK
+
+echo "All hostme tests completed successfully"

@@ -1322,7 +1322,7 @@ fp_common:
 			flags |= LONGINT;
 			/*FALLTHROUGH*/
 		case 's':
-			if ((flags & LONGINT) != MULTI) {
+			if (flags & LONGINT) {
 				if ((result = GETARG(CHAR_T *)) == NULL)
 					result = STRCONST("(null)");
 			} else {
@@ -1341,6 +1341,9 @@ fp_common:
 					}
 					result = convbuf;
 				}
+#else
+				if ((result = GETARG(CHAR_T *)) == NULL)
+					result = STRCONST("(null)");
 #endif
 			}
 			if (prec >= 0) {

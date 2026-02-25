@@ -548,7 +548,7 @@ check_main(int ac, char **av)
 		fclose(fsavedump);
 		getMsg("chk7", 0, '=', stderr);
 	}
-	if (e = sfileDone()) {
+	if ((e = sfileDone())) {
 		errors++;
 		goto out;
 	}
@@ -733,7 +733,7 @@ out:	if (locked_free(cset)) {
 		/* clean check so we can update dfile marker */
 		enableFastPendingScan();
 	}
-	if (t = getenv("_BK_RAN_CHECK")) touch(t, 0666);
+	if ((t = getenv("_BK_RAN_CHECK"))) touch(t, 0666);
 	if (errors && pull_inProgress) {
 		getMsg("pull_in_progress", 0, 0, stderr);
 	}
@@ -1165,16 +1165,16 @@ listFound(hash *db)
 	h = hash_new(HASH_MEMHASH);
 	f = popen("bk gfiles -a --no-bkskip", "r");
 	assert(f);
-	while (t = fgetline(f)) hash_insertStrSet(h, t);
+	while ((t = fgetline(f))) hash_insertStrSet(h, t);
 	pclose(f);
 
 	f = popen("bk gfiles", "r");
 	assert(f);
-	while (t = fgetline(f)) hash_deleteStr(h, t);
+	while ((t = fgetline(f))) hash_deleteStr(h, t);
 	pclose(f);
 
 	EACH_HASH(h) {
-		if (s = locked_init(h->kptr, SILENT|INIT_MUSTEXIST)) {
+		if ((s = locked_init(h->kptr, SILENT|INIT_MUSTEXIST))) {
 			sccs_sdelta(s, sccs_ino(s), key);
 			locked_free(s);
 			if (hash_fetchStr(db, key)) {
@@ -1257,7 +1257,7 @@ keycmp(const void *k1, const void *k2)
 
 	/* compare pathnames */
 	while (*p1) {
-		if (cmp = (*(unsigned char *)p1 - *(unsigned char *)p2)) {
+		if ((cmp = (*(unsigned char *)p1 - *(unsigned char *)p2))) {
 			/*
 			 * path mismatch, but if one is short then invert
 			 * result.
@@ -1297,7 +1297,7 @@ keycmp_nopath(char *keya, char *keyb)
 	 * will return non-zero.
 	 */
 	userlen = (ta-keya <= tb-keyb) ? ta-keya : tb-keyb;
-	if (ret = strncmp(keya, keyb, userlen)) return (ret);
+	if ((ret = strncmp(keya, keyb, userlen))) return (ret);
 
 	/* Now compare from the date onward */
 	date_a = strchr(ta, '|');
@@ -1440,8 +1440,11 @@ fetch_changeset(int forceCsetFetch)
 		fprintf(stderr, "TIP %s %s\n", REV(s, d), delta_sdate(s, d));
 	}
 	s->hasgone = 1;
-	range_gone(s, L(d), D_SET);
-	(void)stripdel_fixTable(s, &i);
+	{
+		ser_t d_arr[2] = {d, 0};
+		range_gone(s, d_arr, D_SET);
+	}
+	i = stripdel_fixTable(s, &i);
 	unless (i) {
 		locked_free(s);
 		goto done;
@@ -1475,7 +1478,11 @@ color_merge(sccs *s, ser_t trunk, ser_t branch)
 		unless (branch = MERGE(s, trunk)) return (trunk);
 		trunk = PARENT(s, trunk);
 	}
-	range_walkrevs(s, L(branch), L(trunk), WR_EITHER, 0, 0);
+	{
+		ser_t branch_arr[2] = {branch, 0};
+		ser_t trunk_arr[2] = {trunk, 0};
+		(void)range_walkrevs(s, branch_arr, trunk_arr, WR_EITHER, 0, 0);
+	}
 	return (s->rstart);
 }
 
@@ -1573,7 +1580,7 @@ checkKeys(sccs *s)
 	i = 1;
 	for (d = TABLE(s); d >= TREE(s); d--) {
 		if (TAG(s, d)) continue;
-		if (color = (FLAGS(s, d) & (D_RED|D_BLUE))) {
+		if ((color = (FLAGS(s, d) & (D_RED|D_BLUE)))) {
 			FLAGS(s, d) &= ~color;
 		}
 		fake = 0;
@@ -1628,12 +1635,16 @@ next:		if (color) {
 		} else if (nLines(branches) == 2) {
 			wrdata	wr;
 
-			walkrevs_setup(&wr, s,
-			    L(branches[1]), L(branches[2]), WR_GCA);
-			while (d = walkrevs(&wr)) {
+			{
+				ser_t branch1_arr[2] = {branches[1], 0};
+				ser_t branch2_arr[2] = {branches[2], 0};
+				walkrevs_setup(&wr, s,
+				    branch1_arr, branch2_arr, WR_GCA);
+			}
+			while ((d = walkrevs(&wr))) {
 				sccs_sdelta(s, d, key);
 				if (FLAGS(s, d) & D_CSET) {
-					if (idx = keyFind(rkd, key)) {
+					if ((idx = keyFind(rkd, key))) {
 						addArray(&rkd->gca, &idx);
 						addArray(&rkd->gcamask, 0);
 					}
@@ -1693,7 +1704,7 @@ keyFind(rkdata *rkd, char *key)
 	 */
 	do {
 		++p;
-		if (p > rkd->keycnt) break; /* end of keys */
+		if ((u32)p > rkd->keycnt) break; /* end of keys */
 		dp = keyDate(KEY(rkd, p));
 		unless (cmp = strncmp(dp, dkey, 14)) {
 			if (streq(KEY(rkd, p), key)) return (p);
@@ -1736,9 +1747,9 @@ buildKeys(MDBM *idDB)
 			e++;
 		}
 		/* in RESYNC remember the new serials in changeset file */
-		if (f = fopen(CSETS_IN, "r")) {
+		if ((f = fopen(CSETS_IN, "r"))) {
 			csets_in = hash_new(HASH_MEMHASH);
-			while (p = fgetline(f)) {
+			while ((p = fgetline(f))) {
 				ser = sccs_findKey(cset, p);
 				hash_store(csets_in, &ser, sizeof(ser), 0, 0);
 			}
@@ -1756,7 +1767,7 @@ buildKeys(MDBM *idDB)
 
 	sccs_rdweaveInit(cset);
 	lastser = 0;
-	while (ser = cset_rdweavePair(cset, 0, &rkoff, &dkoff)) {
+	while ((ser = cset_rdweavePair(cset, 0, &rkoff, &dkoff))) {
 		if (ser != lastser) {
 			lastser = ser;
 			if (ser < oldest) {
@@ -1890,7 +1901,7 @@ found:				if (rkd->dmasks[rkd->curr]) {
 						}
 					}
 				}
-				if (rkd->curr < rkd->keycnt) {
+				if ((u32)rkd->curr < rkd->keycnt) {
 					++rkd->curr;
 				} else {
 					rkd->curr = 0;
@@ -1904,7 +1915,7 @@ found:				if (rkd->dmasks[rkd->curr]) {
 				 * taken 0.5% of the time, so
 				 * performance is not critical.
 				 */
-				if (idx = keyFind(rkd, dkey)) {
+				if ((idx = keyFind(rkd, dkey))) {
 					rkd->curr = idx;
 					goto found;
 				}
@@ -1992,8 +2003,8 @@ ignorepoly(char *dkey)
 	ignore = popen("bk -R cat " IGNOREPOLY, "r");
 
 again:	unless (ignore) return (0);
-	while (line = fgetline(ignore)) {
-		if (crc = separator(line)) *crc = 0; /* strip old hmac */
+	while ((line = fgetline(ignore))) {
+		if ((crc = separator(line))) *crc = 0; /* strip old hmac */
 		if (streq(line, dkey)) break;
 	}
 	if (pclose(ignore) && !line && again && resync) {
@@ -2074,11 +2085,11 @@ tipdata_sort(const void *a, const void *b)
 	int	rc;
 	int	len = min(aa->pathlen, bb->pathlen);
 
-	if (rc = strncmp(HEAP(cset, aa->pathoff),
-			 HEAP(cset, bb->pathoff), len)) {
+	if ((rc = strncmp(HEAP(cset, aa->pathoff),
+			 HEAP(cset, bb->pathoff), len))) {
 		return (rc);
 	}
-	if (rc = (aa->pathlen - bb->pathlen)) return (rc);
+	if ((rc = (aa->pathlen - bb->pathlen))) return (rc);
 
 	/* same path? sort by rootkeys */
 	return (strcmp(HEAP(cset, aa->rkoff), HEAP(cset, bb->rkoff)));
@@ -2094,7 +2105,7 @@ keyinit(char *rkey, MDBM *idDB, MDBM **prod_idDB)
 	project	*prod;
 	u32	flags = INIT_NOSTAT|INIT_NOCKSUM|SILENT;
 
-	if (s = sccs_keyinit( 0, rkey, flags, idDB)) {
+	if ((s = sccs_keyinit( 0, rkey, flags, idDB))) {
 		return (s);
 	}
 	unless (resync) return (0);
@@ -2105,7 +2116,7 @@ keyinit(char *rkey, MDBM *idDB, MDBM **prod_idDB)
 		*prod_idDB = loadDB(idcache, 0, DB_IDCACHE);
 		free(idcache);
 	}
-	if (s = sccs_keyinit(prod, rkey, flags, *prod_idDB)) {
+	if ((s = sccs_keyinit(prod, rkey, flags, *prod_idDB))) {
 		return (s);
 	}
 	return (0);
@@ -2291,14 +2302,17 @@ getRev(char *root, char *key, MDBM *idDB)
 }
 
 private int
-stripdelFile(sccs *s, rkdata *rkd, char *tip)
+stripdelFile(sccs *s, rkdata *rkd __attribute__((unused)), char *tip)
 {
 	int	i;
 	int	errors;
 
 	assert(s);
-	range_gone(s, L(sccs_findKey(s, tip)), D_SET);
-	(void)stripdel_fixTable(s, &i);
+	{
+		ser_t tip_arr[2] = {sccs_findKey(s, tip), 0};
+		range_gone(s, tip_arr, D_SET);
+	}
+	i = stripdel_fixTable(s, &i);
 	if (verbose > 2) {
 		fprintf(stderr, "Rolling back %d deltas in %s\n", i, s->gfile);
 	}
@@ -2363,7 +2377,7 @@ missingDelta(rkdata *rkd)
 		int	matched = 0;
 		char	*found = 0, *tip = 0;
 
-		for (i = 1; i <= rkd->keycnt; i++) {
+		for (i = 1; (u32)i <= rkd->keycnt; i++) {
 			if (rkd->dmasks[i]) {
 				matched++;
 				unless (tip) tip = KEY(rkd, i);
@@ -2590,7 +2604,7 @@ check(sccs *s, MDBM *idDB)
 			sccs_sdelta(s, ino, buf);
 			idcache_item(idDB, buf, s->gfile);
 			unless (s->grafted) break;
-			while (ino = sccs_prev(s, ino)) {
+			while ((ino = sccs_prev(s, ino))) {
 				if (HAS_RANDOM(s, ino)) break;
 			}
 		} while (ino);
@@ -2730,7 +2744,7 @@ repair_main(int ac, char **av)
  * bk needscheck && bk -r check -acv
  */
 int
-needscheck_main(int ac, char **av)
+needscheck_main(int ac __attribute__((unused)), char **av)
 {
 	int	verbose = av[1] && streq(av[1], "-v");
 
@@ -2834,7 +2848,7 @@ locked_init(char *name, u32 flags)
 	}
 	lockfile(name, lock);
 	if (sccs_lockfile(lock, -1, 0)) return (0);
-	if (s = sccs_init(name, flags)) {
+	if ((s = sccs_init(name, flags))) {
 		s->state |= S_LOCKFILE;
 		assert(CSET(s));
 	} else {

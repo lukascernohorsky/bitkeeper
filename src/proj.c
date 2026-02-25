@@ -975,9 +975,11 @@ restoreCO(sccs *s, int co, int dtime)
 
 	switch (co) {
 	    case CO_EDIT:
-		unless (HAS_PFILE(s)) getFlags |= GET_EDIT; break;
+		unless (HAS_PFILE(s)) getFlags |= GET_EDIT;
+		break;
 	    case CO_GET:
-		unless (HAS_GFILE(s)) getFlags |= GET_EXPAND; break;
+		unless (HAS_GFILE(s)) getFlags |= GET_EXPAND;
+		break;
 	    default:
 		fprintf(stderr, "co=0x%x\n", co);
 		assert(0);

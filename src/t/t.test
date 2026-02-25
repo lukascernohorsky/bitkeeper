@@ -1,0 +1,105 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# test -- test test command functionality
+
+echo $N Test test help and usage ...................................$NL
+# Test help output
+bk test --help > GOT 2>&1
+# Should contain usage information
+grep -q "usage:" GOT || fail -f GOT
+grep -q "test" GOT || fail -f GOT
+echo OK
+
+echo $N Test test command recognition ..............................$NL
+# Test that test command is recognized
+bk test --help > /dev/null 2>&1 || fail
+echo OK
+
+echo $N Test test file existence ....................................$NL
+# Test file existence check
+bk test -f /dev/null || fail
+bk test -f /nonexistent && fail
+echo OK
+
+echo $N Test test file readability ..................................$NL
+# Test file readability
+bk test -r /dev/null || fail
+bk test -r /nonexistent && fail
+echo OK
+
+echo $N Test test file writability ..................................$NL
+# Test file writability (use temp file)
+touch tempfile
+chmod 644 tempfile
+bk test -w tempfile && fail
+chmod 666 tempfile
+bk test -w tempfile || fail
+rm tempfile
+echo OK
+
+echo $N Test test file executability ................................$NL
+# Test file executability
+touch tempfile
+chmod 644 tempfile
+bk test -x tempfile && fail
+chmod 755 tempfile
+bk test -x tempfile || fail
+rm tempfile
+echo OK
+
+echo $N Test test directory check ...................................$NL
+# Test directory check
+bk test -d / || fail
+bk test -d /nonexistent && fail
+echo OK
+
+echo $N Test test character device check ..........................$NL
+# Test character device check
+bk test -c /dev/null || fail
+bk test -c /nonexistent && fail
+echo OK
+
+echo $N Test test block device check ..............................$NL
+# Test block device check (may not have block devices)
+bk test -b /dev/null && fail || true  # May fail, that's ok
+echo OK
+
+echo $N Test test string operations ................................$NL
+# Test string operations
+bk test "hello" = "hello" || fail
+bk test "hello" != "world" || fail
+bk test -n "hello" || fail
+bk test -z "" || fail
+echo OK
+
+echo $N Test test numeric comparisons ...............................$NL
+# Test numeric comparisons
+bk test 5 -eq 5 || fail
+bk test 5 -ne 3 || fail
+bk test 5 -gt 3 || fail
+bk test 3 -lt 5 || fail
+bk test 5 -ge 5 || fail
+bk test 3 -le 5 || fail
+echo OK
+
+echo $N Test test in nested repository ..............................$NL
+nested project
+cd gcc
+# Test test in nested component
+bk test -f ChangeSet || fail
+cd ..
+echo OK
+
+echo "All test tests completed successfully"

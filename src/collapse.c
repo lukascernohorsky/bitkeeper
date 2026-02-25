@@ -90,14 +90,16 @@ collapse_main(int ac, char **av)
 			fromurl = 1;
 			break;
 		    case 'a':
-			if (after) usage(); after = strdup(optarg); break;
+			if (after) usage();
+			after = strdup(optarg); break;
 		    case 'd': flags |= COLLAPSE_DELTAS; break;
 		    case 'e': edit = 1; break;
 		    case 'l': flags |= COLLAPSE_LOG; break;
 		    case 'm': merge = 1; break;
 		    case 'P': flags |= COLLAPSE_PONLY; break;
 		    case 'r':
-			if (revlist) usage(); revlist = optarg; break;
+			if (revlist) usage();
+			revlist = optarg; break;
 		    case 'q': flags |= SILENT; break;
 		    case 'S': standalone = 1; break;
 		    case 's':  /* reserved for --subset */
@@ -299,7 +301,10 @@ do_cset(sccs *s, char *rev, char **nav)
 	/* BK_CSETLIST=/file/of/cset/keys */
 	csetfile = bktmp(0);
 	f = fopen(csetfile, "w");
-	walkrevs_setup(&wr, s, L(d), 0, 0);
+	{
+		ser_t d_arr[2] = {d, 0};
+		walkrevs_setup(&wr, s, d_arr, 0, 0);
+	}
 	while (d = walkrevs(&wr)) {
 		char    buf[MAXKEY];
 
@@ -486,8 +491,12 @@ do_file(char *file, char *tiprev)
 	}
 
 	/* save deltas to remove in rmdeltas */
-	if (range_walkrevs(s, L(tipd), L(d), 0, savedeltas, &rmdeltas)) {
-		goto done;
+	{
+		ser_t tipd_arr[2] = {tipd, 0};
+		ser_t d_arr[2] = {d, 0};
+		if (range_walkrevs(s, tipd_arr, d_arr, 0, savedeltas, &rmdeltas)) {
+			goto done;
+		}
 	}
 	reverseArray(rmdeltas);	/* oldest first (for comments) */
 

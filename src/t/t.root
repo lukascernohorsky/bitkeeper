@@ -1,0 +1,75 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# root -- test root command functionality
+
+echo $N Test root help and usage ...................................$NL
+# Test help output
+bk root --help > GOT 2>&1
+# Should contain usage information
+grep -q "usage:" GOT || fail -f GOT
+grep -q "root" GOT || fail -f GOT
+echo OK
+
+echo $N Test root with invalid options .............................$NL
+# Test invalid option
+bk root -z 2> ERR && fail
+# Should get bad argument error
+grep -q "unknown option" ERR || fail -f ERR
+echo OK
+
+echo $N Test root command recognition ..............................$NL
+# Test that root command is recognized
+bk root --help > /dev/null 2>&1 || fail
+echo OK
+
+echo $N Test root in simple repository ..............................$NL
+nested project
+# Test root in simple repository
+bk root > GOT || fail
+# Should show the repository root
+test -s GOT || fail
+echo OK
+
+echo $N Test root in nested repository ..............................$NL
+cd gcc
+# Test root in nested component
+bk root > GOT || fail
+# Should show the product root
+test -s GOT || fail
+cd ..
+echo OK
+
+echo $N Test root with standalone option ............................$NL
+# Test standalone option
+bk root -S > GOT || fail
+# Should show the standalone root
+test -s GOT || fail
+echo OK
+
+echo $N Test root with path argument ...............................$NL
+# Test with path argument
+bk root . > GOT || fail
+# Should show the root for current directory
+test -s GOT || fail
+echo OK
+
+echo $N Test root with file argument ................................$NL
+# Test with file argument
+bk root ChangeSet > GOT || fail
+# Should show the root for the file
+test -s GOT || fail
+echo OK
+
+echo "All root tests completed successfully"

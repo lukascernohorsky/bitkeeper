@@ -36,7 +36,7 @@ typedef struct winfo winfo;
 typedef	char	STATE[8];
 
 private int	chk_diffs(sccs *s);
-private void	do_print(char state[6], char *gfile, char *rev);
+private void	do_print(char state[8], char *gfile, char *rev);
 private void	file(char *f);
 private void	print_it(STATE state, char *file, char *rev);
 private	void	print_summary(void);
@@ -658,7 +658,10 @@ chk_pending(sccs *s, char *gfile, STATE state, MDBM *sDB, MDBM *gDB)
 		char	*data[2] = {state, gfile};
 
 		/* get the nodes not covered by D_CSET */
-		range_walkrevs(s, 0, L(d), 0, pending_print, data);
+		{
+			ser_t d_arr[2] = {d, 0};
+			range_walkrevs(s, 0, d_arr, 0, pending_print, data);
+		}
 		printed = 1;
 	} else if (opts.Cflg) {
 		do_print(state, gfile, REV(s, d));
@@ -1319,7 +1322,7 @@ do_print(STATE buf, char *gfile, char *rev)
 		}
 		/* XXX - make this conditional on !directory */
 		if (streq("s.", p)) p += 2;
-		unless (match_one(p, opts.glob, 0)) return;
+		unless (match_one((u8 *)p, (u8 *)opts.glob, 0)) return;
 	}
 
 	if (state[PSTATE] == 'p') p_count++;
@@ -2059,7 +2062,7 @@ sfiles_local_main(int ac, char **av)
 			}
 			free(cmd);
 			if (pclose(f1)) {
-				fprintf(stderr, "%s: '%s' failed\n", prog, cmd);
+				fprintf(stderr, "%s: command failed\n", prog);
 				goto out;
 			}
 			continue;

@@ -146,6 +146,7 @@ WARNINGS_GCC6= -Wno-misleading-indentation
 
 # XXX could not get -Wimplicit-fallthrough=3 to work
 WARNINGS_GCC7= -Wno-implicit-fallthrough
+WARNINGS_GCC14= -Wno-dangling-pointer -Wno-misleading-indentation -Wno-unused-function
 
 # Other options to consider enabling in the future:
 #
@@ -180,6 +181,10 @@ endif
 ifeq ($(GCC_MAJOR_REV),8)
 	WARNINGS += $(WARNINGS_GCC3) $(WARNINGS_GCC4) $(WARNINGS_GCC5) \
 		    $(WARNINGS_GCC6) $(WARNINGS_GCC7) $(WARNINGS_GCC8)
+endif
+ifeq ($(GCC_MAJOR_REV),14)
+	WARNINGS += $(WARNINGS_GCC3) $(WARNINGS_GCC4) $(WARNINGS_GCC5) \
+		    $(WARNINGS_GCC6) $(WARNINGS_GCC7) $(WARNINGS_GCC14)
 endif
 
 TRACE = -DUSE_TRACE

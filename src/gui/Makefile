@@ -110,11 +110,7 @@ supportform: $(COMMON) search.tcl appState.tcl supportlib.tcl supportform.tcl
 	@(echo 'wm withdraw .' ;  cat $^)  > $(LIBDIR)/supportform
 
 citool: $(COMMON) appState.tcl ciedit.tcl $(LCOMMON)
-citool: $(COMMON) appState.tcl ciedit.tcl $(LCOMMON)
-	@(		echo 'wm withdraw .' ;			
-		echo 'set ::tool_name $@' ;		
-		cat $^ ;		
-	) > $(LIBDIR)/citool
+	@(echo "wm withdraw ." ; echo "set ::tool_name $@"; cat $^) > $(LIBDIR)/$@
 
 csettool: $(COMMON) search.tcl appState.tcl difflib.tcl csettool.tcl
 	@(echo 'wm withdraw .' ; echo 'set ::tool_name $@'; cat $^) > $(LIBDIR)/$@

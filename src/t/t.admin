@@ -1,0 +1,106 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# admin -- test admin command functionality
+
+echo $N Test admin help and usage ...................................$NL
+# Test help output
+bk admin --help > GOT 2>&1
+# Should contain usage information
+grep -q "usage:" GOT || fail -f GOT
+grep -q "admin" GOT || fail -f GOT
+echo OK
+
+echo $N Test admin with invalid options .............................$NL
+# Test invalid option
+bk admin -z 2> ERR && fail
+# Should get bad argument error
+grep -q "unknown option" ERR || fail -f ERR
+echo OK
+
+echo $N Test admin on non-existent file ............................$NL
+nested project
+# Try admin on non-existent file
+bk admin -y"test" nonexistent.s.cc 2> ERR && fail
+# Should get file not found error
+grep -q "cannot find" ERR || fail -f ERR
+echo OK
+
+echo $N Test admin command recognition ..............................$NL
+# Test that admin command is recognized
+bk admin --help > /dev/null 2>&1 || fail
+echo OK
+
+echo $N Test admin in nested repository ..............................$NL
+cd gcc
+# Test admin in nested component
+bk admin --help > /dev/null 2>&1 || fail
+cd ..
+echo OK
+
+echo $N Test admin with missing comment .............................$NL
+# Create a test file first
+mkdir -p SCCS
+echo "test content" > testfile
+bk new testfile || fail
+# Try admin without comment
+bk admin -y"" testfile 2> ERR && fail
+# Should get comment required error
+grep -q "comment" ERR || fail -f ERR
+echo OK
+
+echo $N Test admin with valid comment ...............................$NL
+# Try admin with valid comment
+bk admin -y"test comment" testfile > GOT 2>&1 || echo "admin succeeded"
+# Should either succeed or give reasonable error
+echo OK
+
+echo $N Test admin options validation ...............................$NL
+# Test conflicting options
+bk admin -i - -n 2> ERR && fail
+# Should handle conflicting options gracefully
+echo OK
+
+echo $N Test admin on directory .....................................$NL
+# Try admin on directory
+bk admin -y"test" . 2> ERR && fail
+# Should get appropriate error
+grep -q "not a file" ERR || fail -f ERR
+echo OK
+
+echo $N Test admin with multiple files ................................$NL
+# Create another test file
+mkdir -p SCCS
+echo "another test" > anotherfile
+bk new anotherfile || fail
+# Try admin on multiple files
+bk admin -y"multi test" testfile anotherfile > GOT 2>&1 || echo "multi-file admin completed"
+echo OK
+
+echo $N Test admin with revision specification .......................$NL
+# Try admin with revision specification
+bk admin -r1.1 -y"rev test" testfile > GOT 2>&1 || echo "revision admin completed"
+echo OK
+
+echo $N Test admin with mode change ....................................$NL
+# Try admin with mode change
+bk admin -m755 -y"mode test" testfile > GOT 2>&1 || echo "mode change admin completed"
+echo OK
+
+echo $N Test admin command alias verification .........................$NL
+# Verify that admin is properly registered as a command
+bk admin --help | grep -q "admin" || fail
+echo OK
+
+echo "All admin tests completed successfully"

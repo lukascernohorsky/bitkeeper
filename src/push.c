@@ -639,7 +639,10 @@ push_part1(remote *r, char rev_list[MAXPATH], char **envVar)
 	/*
 	 * What we want is: "remote => bk _prunekey => keys"
 	 */
-	if (opts.d) range_gone(s_cset, L(opts.d), D_RED);
+	{
+		ser_t d_arr[2] = {opts.d, 0};
+		if (opts.d) range_gone(s_cset, d_arr, D_RED);
+	}
 	bktmp_local(rev_list);
 	fd = open(rev_list, O_CREAT|O_WRONLY, 0644);
 	assert(fd >= 0);

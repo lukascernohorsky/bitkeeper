@@ -97,7 +97,7 @@ base64_main(int ac, char **av)
 		while (fgets(buf, sizeof(buf), stdin)) {
 			len = strlen(buf);
 			outlen = sizeof(out);
-			if (err = base64_decode(buf, len, out, &outlen)) {
+			if (err = base64_decode((const unsigned char *)buf, len, (unsigned char *)out, (unsigned long *)&outlen)) {
 err:				fprintf(stderr, "base64: %s\n",
 				    error_to_string(err));
 				return (1);
@@ -108,7 +108,7 @@ err:				fprintf(stderr, "base64: %s\n",
 		setmode(fileno(stdin), _O_BINARY);
 		while (len = fread(buf, 1, 48, stdin)) {
 			outlen = sizeof(out);
-			if (err = base64_encode(buf, len, out, &outlen)) {
+			if (err = base64_encode((const unsigned char *)buf, len, (unsigned char *)out, (unsigned long *)&outlen)) {
 				goto err;
 			}
 			fwrite(out, 1, outlen, stdout);
@@ -161,9 +161,9 @@ hashstr(char *str, int len)
 
 	md5len = sizeof(md5);
 	if ((len == 1) && streq(str, "-")) {
-		if (hash_fd(hash, 0, md5, &md5len)) return (0);
+		if (hash_fd(hash, 0, (unsigned char *)md5, &md5len)) return (0);
 	} else {
-		if (hash_memory(hash, str, len, md5, &md5len)) return (0);
+		if (hash_memory(hash, (const unsigned char *)str, len, (unsigned char *)md5, (unsigned long *)&md5len)) return (0);
 	}
 	b64len = sizeof(b64);
 	if (hex_output) {
@@ -173,7 +173,7 @@ hashstr(char *str, int len)
 			    "%1x%x", (md5[n] >> 4) & 0xf, md5[n] & 0xf);
 		}
 	} else {
-		if (base64_encode(md5, md5len, b64, &b64len)) return (0);
+		if (base64_encode((const unsigned char *)md5, md5len, (unsigned char *)b64, (unsigned long *)&b64len)) return (0);
 		for (p = b64; *p; p++) {
 			if (*p == '/') *p = '-';	/* dash */
 			if (*p == '+') *p = '_';	/* underscore */
@@ -196,9 +196,9 @@ hashstream(int fd)
 	char	b64[32];
 
 	md5len = sizeof(md5);
-	if (hash_fd(hash, fd, md5, &md5len)) return (0);
+	if (hash_fd(hash, fd, (unsigned char *)md5, &md5len)) return (0);
 	b64len = sizeof(b64);
-	if (base64_encode(md5, md5len, b64, &b64len)) return (0);
+	if (base64_encode((const unsigned char *)md5, md5len, (unsigned char *)b64, (unsigned long *)&b64len)) return (0);
 	for (p = b64; *p; p++) {
 		if (*p == '/') *p = '-';	/* dash */
 		if (*p == '+') *p = '_';	/* underscore */
@@ -252,7 +252,7 @@ findhashdup_main(int ac, char **av)
 
 	for (i = 0; ; i++) {
 		len = sprintf(buf, "%d\n", i);
-		a32 = adler32(0, buf, len);
+		a32 = adler32(0, (const Bytef *)buf, len);
 
 		unless (hash_insert(h, &a32, 4, buf, len)) {
 			printf("dup %.*s && %.*s == %08x\n",
@@ -279,7 +279,7 @@ file_fanout(char *base)
 	assert(!strchr(base, '/'));
 
 	md5len = sizeof(md5);
-	hash_memory(hash, base, strlen(base), md5, &md5len);
+	hash_memory(hash, (const unsigned char *)base, strlen(base), (unsigned char *)md5, (unsigned long *)&md5len);
 
 	return (aprintf("%1x%1x/%s",
 		((md5[0] >> 4) & 0xf), (md5[0] & 0xf),

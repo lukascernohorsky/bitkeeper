@@ -518,7 +518,7 @@ gitExport(opts *op)
 			free(md5);
 		}
 		if (pclose(f1)) {
-			fprintf(stderr, "%s failed\n", cmd);
+			fprintf(stderr, "fast-export command failed\n");
 			exit(1);
 		}
 

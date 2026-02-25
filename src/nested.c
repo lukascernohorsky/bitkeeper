@@ -323,8 +323,11 @@ err:				if (revsDB) mdbm_close(revsDB);
 			fprintf(stderr, "nested: bad rev %s\n", rev);
 			goto err;
 		}
-		range_walkrevs(cset, 0, L(d), 0,
+		{
+			ser_t d_arr[2] = {d, 0};
+			range_walkrevs(cset, 0, d_arr, 0,
 		    walkrevs_setFlags,(void*)D_RED);
+	}
 		left = 0;
 		right = d;
 	}

@@ -82,7 +82,7 @@ hash_toStream(hash *h, FILE *f)
 	}
 	sortLines(fieldlist, 0);
 	EACH(fieldlist) {
-		data = hash_fetchStr(h, fieldlist[i]);
+		data = (u8 *)hash_fetchStr(h, fieldlist[i]);
 		assert(data);
 		writeField(f, fieldlist[i], data, h->vlen);
 	}
@@ -153,7 +153,7 @@ hash_parseLine(char *line, hash *h, hashpl *s)
 		u8	*data;
 		size_t	len;
 
-		data = fmem_peek(s->val, &len);
+		data = (u8 *)fmem_peek(s->val, &len);
 		if (key || len) {
 			unless (key) key = "";
 			if (!s->base64 && len && (data[len-1] == '\n')) --len;
@@ -182,7 +182,7 @@ hash_parseLine(char *line, hash *h, hashpl *s)
 			char	data[256];
 
 			len = sizeof(data);
-			base64_decode(line, strlen(line), data, &len);
+			base64_decode((const unsigned char *)line, strlen(line), (unsigned char *)data, (unsigned long *)&len);
 			if (len) fwrite(data, 1, len, s->val);
 		} else {
 			/* compat: ignore null key null val */
@@ -284,13 +284,13 @@ writeField(FILE *f, char *key, u8 *data, int len)
 	fputc('@', f);
 	/* strip trailing null, all fields should have one */
 	if ((len > 0) && (data[len-1] == 0)) --len;
-	hash_keyencode(f, key);
+	hash_keyencode(f, (u8 *)key);
 	if (binaryField(data, len)) {
 		fputs(" base64\n", f);
 		while (len) {
 			inlen = min(48, len);
 			outlen = sizeof(out);
-			if (base64_encode(data, inlen, out, &outlen)) {
+			if (base64_encode((const unsigned char *)data, inlen, (unsigned char *)out, (unsigned long *)&outlen)) {
 				fprintf(stderr, "writeField: base64 err\n");
 				exit(1);
 			}

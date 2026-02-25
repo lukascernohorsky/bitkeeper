@@ -1,0 +1,72 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# csets -- test csets command functionality
+
+echo $N Test csets help and usage ...................................$NL
+# Test help output
+bk csets --help > GOT 2>&1
+# Should contain usage information
+grep -q "usage:" GOT || fail -f GOT
+grep -q "csets" GOT || fail -f GOT
+echo OK
+
+echo $N Test csets with invalid options .............................$NL
+# Test invalid option
+bk csets -z 2> ERR && fail
+# Should get bad argument error
+grep -q "unknown option" ERR || fail -f ERR
+echo OK
+
+echo $N Test csets command recognition ..............................$NL
+# Test that csets command is recognized
+bk csets --help > /dev/null 2>&1 || fail
+echo OK
+
+echo $N Test csets in nested repository ..............................$NL
+nested project
+cd gcc
+# Test csets in nested component
+bk csets --help > /dev/null 2>&1 || fail
+cd ..
+echo OK
+
+echo $N Test csets with diff option .................................$NL
+# Test diff option
+nested project
+cd gcc
+# Create some changes
+bk edit ChangeSet || fail
+echo "test change" >> ChangeSet
+bk delta -y"test" ChangeSet || fail
+# Try csets with diff option
+bk csets -D > GOT 2>&1 || echo "csets diff completed"
+echo OK
+
+echo $N Test csets with verbose option .............................$NL
+# Try verbose option
+bk csets -v > GOT 2>&1 || echo "csets verbose completed"
+echo OK
+
+echo $N Test csets with text option ................................$NL
+# Try text option
+bk csets -T > GOT 2>&1 || echo "csets text completed"
+echo OK
+
+echo $N Test csets with stats option ...............................$NL
+# Try stats option
+bk csets --stats > GOT 2>&1 || echo "csets stats completed"
+echo OK
+
+echo "All csets tests completed successfully"

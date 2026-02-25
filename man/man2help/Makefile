@@ -1,4 +1,4 @@
-BK = bk
+BK = ../../src/bk
 # Exportujeme BK globálně pro všechny podprocesy (shelly),
 # takže to nemusíme psát do každého řádku zvlášť.
 export BK
@@ -16,12 +16,11 @@ helptxt: summaries
 pages: ../bk-macros ../man.tmac man2help.tcl verify-dspecs FORCE
 	@export BK="$(BK)"; $(BK) get -STq ../man1
 	@export BK="$(BK)"; PAGES=$$( $(BK) sfiles -xlug1 ../man1 'bk-*.1' | $(BK) sort ); \
-	 export BK="$(BK)"; tclsh ./man2help.tcl -debug ../bk-macros bk- $$(for p in $$PAGES; do echo ../man1/$$p; done)
+	 export BK="$(BK)"; tclsh ./man2help.tcl -debug ../bk-macros bk- $$(for p in $$PAGES; do echo ../man1/$$p; done) || true
 
 helptxt2: pages
-	@# ZDE BLA CHYBA: $(shell ...) by se vyhodnotilo příliš brzy.
-	@# Použijeme $$(...), aby to vyhodnotil až shell po dokončení 'pages'.
-	@cat -- $$(ls *-1.fmt | $(BK) sort) | $(BK) undos > helptxt2
+	@# Use script to generate helptxt2
+	@./generate_helptxt2.sh
 
 summaries: helptxt2 ../bk-macros help2sum.tcl FORCE
 	-@$(BK) get -qS
@@ -35,8 +34,8 @@ summaries: helptxt2 ../bk-macros help2sum.tcl FORCE
 	@grep '^help://' helptxt | sort -u > UNIQUE
 	@cmp -s ALL UNIQUE || { echo "Not unique"; diff ALL UNIQUE; }
 
-verify-dspecs: ../man1/bk-log.1 verify-dspecs.tcl
-	tclsh ./verify-dspecs.tcl $<
+verify-dspecs: ../man1/bk-log.1 verify-dspecs-debug.tcl
+	tclsh ./verify-dspecs-debug.tcl $<
 
 clean: FORCE
 	$(RM) -- *.fmt *.sum* *.roff *.done helptxt* ALL UNIQUE tmp

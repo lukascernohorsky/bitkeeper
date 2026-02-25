@@ -49,23 +49,35 @@ vasprintf(str, fmt, ap)
 	struct __sfileext fext;
 	unsigned char *_base;
 
-	assert(str != NULL);
-	assert(fmt != NULL);
+	if (str == NULL) {
+		fprintf(stderr, "vasprintf: str is NULL\n");
+		goto err;
+	}
+	if (fmt == NULL) {
+		fprintf(stderr, "vasprintf: fmt is NULL\n");
+		goto err;
+	}
 
 	_FILEEXT_SETUP(&f, &fext);
 	f._file = -1;
 	f._flags = __SWR | __SSTR | __SALC;
 	f._bf._base = f._p = (unsigned char *)malloc(128);
-	if (f._bf._base == NULL)
+	if (f._bf._base == NULL) {
+		fprintf(stderr, "vasprintf: malloc failed\n");
 		goto err;
+	}
 	f._bf._size = f._w = 127;		/* Leave room for the NUL */
 	ret = __vfprintf_unlocked(&f, fmt, ap);
-	if (ret == -1)
+	if (ret == -1) {
+		fprintf(stderr, "vasprintf: __vfprintf_unlocked failed\n");
 		goto err;
+	}
 	*f._p = '\0';
 	_base = realloc(f._bf._base, (size_t)(ret + 1));
-	if (_base == NULL)
+	if (_base == NULL) {
+		fprintf(stderr, "vasprintf: realloc failed\n");
 		goto err;
+	}
 	*str = (char *)_base;
 	return (ret);
 

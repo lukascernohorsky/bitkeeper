@@ -151,9 +151,12 @@ csetBoundarySet(sccs *s)
 	 */
 	EACH_REVERSE(serlist) {
 		d = serlist[i];
-		unless (range_walkrevs(
-			    s, 0, L(d), 0, inCset, uint2p(d))) {
+		{
+			ser_t d_arr[2] = {d, 0};
+			unless (range_walkrevs(
+				    s, 0, d_arr, 0, inCset, uint2p(d))) {
 			removeArrayN(serlist, i);
+			}
 		}
 	}
 	return (serlist);

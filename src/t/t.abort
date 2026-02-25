@@ -1,0 +1,119 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# abort -- test abort command functionality
+
+echo $N Test abort when no resync is in progress ..................$NL
+nested project
+# Try to abort when there's no resync happening
+bk abort 2> ERR && fail
+# Should get "no RESYNC directory" message
+grep -q "abort: no RESYNC directory" ERR || fail -f ERR
+echo OK
+
+echo $N Test abort with force flag when no resync ....................$NL
+# Even with -f flag, should still fail when no resync
+bk abort -f 2> ERR && fail
+# Should still get "no RESYNC directory" message
+grep -q "abort: no RESYNC directory" ERR || fail -f ERR
+echo OK
+
+echo $N Test abort help and usage ...................................$NL
+# Test help output
+bk abort --help > GOT 2>&1
+# Should contain usage information
+grep -q "usage:" GOT || fail -f GOT
+grep -q "abort" GOT || fail -f GOT
+echo OK
+
+echo $N Test abort with invalid remote URL ..........................$NL
+# Test with invalid remote URL
+bk abort invalid://url 2> ERR && fail
+# Should get parsing error
+grep -q "Cannot parse" ERR || fail -f ERR
+echo OK
+
+echo $N Test abort options validation ...............................$NL
+# Test invalid option
+bk abort -z 2> ERR && fail
+# Should get bad argument error
+grep -q "unknown option" ERR || fail -f ERR
+echo OK
+
+echo $N Test abort in nested repository ..............................$NL
+cd gcc
+# Test abort in nested component
+bk abort 2> ERR && fail
+# Should get "no RESYNC directory" message
+grep -q "abort: no RESYNC directory" ERR || fail -f ERR
+cd ..
+echo OK
+
+echo $N Test abort quiet mode ........................................$NL
+# Test quiet mode - should suppress "no RESYNC directory" message
+bk abort -q 2> ERR
+# ERR should be empty in quiet mode
+test -s ERR && fail -f ERR
+echo OK
+
+echo $N Test abort standalone mode ...................................$NL
+# Test standalone mode validation
+bk abort -S 2> ERR && fail
+# Should get usage error since standalone requires remote
+grep -q "usage:" ERR || fail -f ERR
+echo OK
+
+echo $N Test abort with leave patch option ..........................$NL
+# Test leave patch option
+bk abort -p 2> ERR && fail
+# Should still fail but with different behavior
+grep -q "abort: no RESYNC directory" ERR || fail -f ERR
+echo OK
+
+echo $N Test abort command completion ................................$NL
+# Test that abort command is recognized
+bk abort --help > /dev/null 2>&1 || fail
+echo OK
+
+echo $N Test abort with remote repository simulation ..................$NL
+# Test abort with simulated remote repository
+bk abort bk://invalid.host/repo 2> ERR && fail
+# Should get parsing or connection error
+grep -q "Cannot parse\|Connection" ERR || fail -f ERR
+echo OK
+
+echo $N Test abort with multiple force flags ..........................$NL
+# Test multiple force flags
+bk abort -f -f 2> ERR && fail
+# Should still fail but handle multiple flags gracefully
+grep -q "abort: no RESYNC directory" ERR || fail -f ERR
+echo OK
+
+echo $N Test abort command alias verification .........................$NL
+# Verify that abort is properly registered as a command
+bk abort --help | grep -q "abort" || fail
+echo OK
+
+echo $N Test abort in different directory contexts ....................$NL
+# Test abort in subdirectory
+mkdir -p subdir
+cd subdir
+bk abort 2> ERR && fail
+# Should still work from subdirectory
+grep -q "abort: no RESYNC directory" ERR || fail -f ERR
+cd ..
+rmdir subdir
+echo OK
+
+echo "All abort tests completed successfully"

@@ -1,0 +1,119 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Repository repair -- test repository checking and repair functions
+
+echo $N Test basic repository health check ............................$NL
+nested project
+# Run comprehensive health check
+bk check -ac || fail
+# Should complete successfully
+echo OK
+
+echo $N Test repository check with all options ........................$NL
+# Test check with all available options
+bk check -a -c || fail
+# Should complete successfully
+echo OK
+
+echo $N Test repository consistency check ............................$NL
+# Test repocheck command
+bk repocheck || fail
+# Should complete successfully
+echo OK
+
+echo $N Test checksum verification and repair .........................$NL
+# Generate and verify checksums
+bk checksum > GOT || fail
+test -s GOT || fail
+# Verify repository is still healthy
+bk check -ac || fail
+echo OK
+
+echo $N Test repair-like operations simulation .......................$NL
+# Simulate repair operations by checking and fixing issues
+# Create a file with potential issues
+bk new test_repair_file || fail
+bk edit test_repair_file || fail
+echo "test content" > test_repair_file
+bk delta -y"test repair" test_repair_file || fail
+# Run checks to ensure consistency
+bk check -ac || fail
+bk repocheck || fail
+echo OK
+
+echo $N Test consistency after file operations ........................$NL
+# Perform various file operations and verify consistency
+bk mv test_repair_file renamed_repair_file || fail
+bk cp renamed_repair_file copied_repair_file || fail
+# Verify repository is still consistent
+bk check -ac || fail
+echo OK
+
+echo $N Test component repair scenarios ................................$NL
+cd gcc
+# Check component health
+bk check -ac || fail
+cd ../gdb
+# Check another component health
+bk check -ac || fail
+cd ..
+# Verify overall repository health
+bk repocheck || fail
+echo OK
+
+echo $N Test repair after complex operations ..........................$NL
+# Perform complex operations and verify repair capabilities
+for i in $(seq 1 3); do
+    echo "complex $i" > complex$i
+    bk new complex$i || fail
+    bk edit complex$i || fail
+    echo "complex content $i" > complex$i
+    bk delta -y"complex $i" complex$i || fail
+done
+# Verify repository can handle complex scenarios
+bk check -ac || fail
+bk checksum > GOT || fail
+test -s GOT || fail
+echo OK
+
+echo $N Test repair with nested changes ................................$NL
+cd gcc
+# Make changes in component
+bk edit ChangeSet || fail
+echo "nested repair test" >> ChangeSet
+bk delta -y"nested repair" ChangeSet || fail
+cd ..
+# Verify overall repository integrity
+bk check -ac || fail
+bk repocheck || fail
+echo OK
+
+echo $N Test long-term consistency verification ......................$NL
+# Test repository consistency after many operations
+for i in $(seq 4 10); do
+    echo "longterm $i" > longterm$i
+    bk new longterm$i || fail
+    bk edit longterm$i || fail
+    echo "longterm content $i" > longterm$i
+    bk delta -y"longterm $i" longterm$i || fail
+done
+# Final comprehensive check
+bk check -ac || fail
+bk repocheck || fail
+bk checksum > GOT || fail
+test -s GOT || fail
+echo OK
+
+echo "All repository repair tests completed successfully"

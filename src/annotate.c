@@ -132,7 +132,7 @@ err:			errors = 1;
 		}
 		if (pnames) {
 			printf("|FILE|%s|CRC|%lu\n", s->gfile,
-			    adler32(0, s->gfile, strlen(s->gfile)));
+			    adler32(0, (const Bytef *)s->gfile, strlen(s->gfile)));
 		}
 		if (whodel) {
 			unless (s->whodel = sccs_findrev(s, whodel)) {

@@ -470,7 +470,10 @@ bisect(opts *op, sccs *s,
 	assert(s && leftrevs && rightrev && next && nleft);
 	score = op->score;
 	assert(score);
-	candlist = walkrevs_collect(s, leftrevs, L(rightrev), 0);
+	{
+		ser_t rightrev_arr[2] = {rightrev, 0};
+		candlist = walkrevs_collect(s, leftrevs, rightrev_arr, 0);
+	}
 	assert(nLines(candlist));
 	*nleft = nLines(candlist);
 	if (*nleft == 1) {
@@ -494,7 +497,11 @@ bisect(opts *op, sccs *s,
 		FLAGS(s, d) |= D_SET;
 		e = PARENT(s, d);	// works if no parent: e = 0
 		n = score[e];		// note: e may be outside D_SET range
-		walkrevs_setup(&wd, s, L(e), L(d), 0);
+		{
+			ser_t e_arr[2] = {e, 0};
+			ser_t d_arr[2] = {d, 0};
+			walkrevs_setup(&wd, s, e_arr, d_arr, 0);
+		}
 		while (d1 = walkrevs(&wd)) if (FLAGS(s, d1) & D_SET) n++;
 		walkrevs_done(&wd);
 		score[d] = n;

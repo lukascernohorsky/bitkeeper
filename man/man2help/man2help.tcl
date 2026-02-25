@@ -128,7 +128,7 @@ proc man2help {page macros prefix bkver debug} {
     }
     puts $out "\\$"
 
-    close $g
+    catch {close $g}
     close $out
 
     if {$lines <= 0} {

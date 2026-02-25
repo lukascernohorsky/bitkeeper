@@ -50,10 +50,18 @@ safe_putenv(char *fmt, ...)
 	va_list	ptr;
 	int	rc;
 
+	/* Check if fmt is NULL */
+	if (fmt == NULL) {
+		return;
+	}
+
 	va_start(ptr, fmt);
 	rc = vasprintf(&new, fmt, ptr);
 	va_end(ptr);
-	assert(rc >= 0);
+	if (rc < 0) {
+		fprintf(stderr, "safe_putenv: vasprintf failed with rc=%d\n", rc);
+		exit(1);
+	}
 
 	p = strchr(new, '=');
 	unless (p) {

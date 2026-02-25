@@ -73,6 +73,6 @@ do_chksum(int fd, int off, int *sump)
 	while ((i = read(fd, buf, sizeof(buf))) > 0) {
 		for (p = buf; i--; sum += *p++);
 	}
-	*sump = (int)sum;
+	*sump = (int)(unsigned char)sum;
 	return (0);
 }

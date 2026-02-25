@@ -1,0 +1,269 @@
+make -C src all
+make[1]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/src'
+Using system PCRE
+make -C libc system.h
+make[2]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/src/libc'
+make[2]: 'system.h' is up to date.
+make[2]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/src/libc'
+make[2]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/src/libc'
+make[2]: 'libc.a' is up to date.
+make[2]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/src/libc'
+Building bkver.c
+CC bkver.c
+LINKING ./bk
+make[2]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/src/libc'
+make[2]: 'mtst' is up to date.
+make[2]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/src/libc'
+make[2]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/man/man2help'
+rm -f -- *.fmt *.sum* *.roff *.done helptxt* ALL UNIQUE tmp
+make[2]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/man/man2help'
+make[2]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/src/gui'
+make[3]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/src/gui'
+make[3]: 'lib' is up to date.
+make[3]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/src/gui'
+make[3]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/src/gui'
+make[3]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/src/gui'
+GUIs are up-to-date
+make[2]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/src/gui'
+Generating documentation using Tcl...
+make[2]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/man/man2help'
+tclsh ./verify-dspecs-debug.tcl ../man1/bk-log.1
+DEBUG: Starting verify-dspecs.tcl
+DEBUG: Input file: ../man1/bk-log.1
+DEBUG: Using temp files:
+DEBUG: definitive: /tmp/definitive_dspecs_22408
+DEBUG: links: /tmp/help_links_22408
+DEBUG: diffs: /tmp/diffs_22408
+DEBUG: Files opened successfully
+DEBUG: Total lines processed: 721
+DEBUG: Total .xx entries found: 108
+DEBUG: Files closed successfully
+DEBUG: Diff status: 0
+DEBUG: Exiting with code: 0
+Format ../man1/../man1/bk-Basics-Overview.1 ( bk-Basics-Overview . 1 )
+Format ../man1/../man1/bk-Howto-BAM.1 ( bk-Howto-BAM . 1 )
+Format ../man1/../man1/bk-Howto-bkd.1 ( bk-Howto-bkd . 1 )
+Format ../man1/../man1/bk-Howto-developer.1 ( bk-Howto-developer . 1 )
+Format ../man1/../man1/bk-Howto-setup.1 ( bk-Howto-setup . 1 )
+Format ../man1/../man1/bk-Howto.1 ( bk-Howto . 1 )
+Format ../man1/../man1/bk-abort.1 ( bk-abort . 1 )
+Format ../man1/../man1/bk-admin.1 ( bk-admin . 1 )
+Format ../man1/../man1/bk-alias.1 ( bk-alias . 1 )
+Format ../man1/../man1/bk-annotate.1 ( bk-annotate . 1 )
+Format ../man1/../man1/bk-attach.1 ( bk-attach . 1 )
+Format ../man1/../man1/bk-backups.1 ( bk-backups . 1 )
+Format ../man1/../man1/bk-bam.1 ( bk-bam . 1 )
+Format ../man1/../man1/bk-base64.1 ( bk-base64 . 1 )
+Format ../man1/../man1/bk-bin.1 ( bk-bin . 1 )
+Format ../man1/../man1/bk-bisect.1 ( bk-bisect . 1 )
+Format ../man1/../man1/bk-bk.1 ( bk-bk . 1 )
+Format ../man1/../man1/bk-bkd.1 ( bk-bkd . 1 )
+Format ../man1/../man1/bk-c2r.1 ( bk-c2r . 1 )
+Format ../man1/../man1/bk-cat.1 ( bk-cat . 1 )
+Format ../man1/../man1/bk-changes.1 ( bk-changes . 1 )
+Format ../man1/../man1/bk-check.1 ( bk-check . 1 )
+Format ../man1/../man1/bk-checksum.1 ( bk-checksum . 1 )
+Format ../man1/../man1/bk-chmod.1 ( bk-chmod . 1 )
+Format ../man1/../man1/bk-citool.1 ( bk-citool . 1 )
+Format ../man1/../man1/bk-clean.1 ( bk-clean . 1 )
+Format ../man1/../man1/bk-clone.1 ( bk-clone . 1 )
+Format ../man1/../man1/bk-cmdlog.1 ( bk-cmdlog . 1 )
+Format ../man1/../man1/bk-collapse.1 ( bk-collapse . 1 )
+Format ../man1/../man1/bk-comments.1 ( bk-comments . 1 )
+Format ../man1/../man1/bk-commit.1 ( bk-commit . 1 )
+Format ../man1/../man1/bk-comps.1 ( bk-comps . 1 )
+Format ../man1/../man1/bk-config-etc.1 ( bk-config-etc . 1 )
+Format ../man1/../man1/bk-config-gui.1 ( bk-config-gui . 1 )
+Format ../man1/../man1/bk-config.1 ( bk-config . 1 )
+Format ../man1/../man1/bk-conflicts.1 ( bk-conflicts . 1 )
+Format ../man1/../man1/bk-cp.1 ( bk-cp . 1 )
+Format ../man1/../man1/bk-credits.1 ( bk-credits . 1 )
+Format ../man1/../man1/bk-cset.1 ( bk-cset . 1 )
+Format ../man1/../man1/bk-csetprune.1 ( bk-csetprune . 1 )
+Format ../man1/../man1/bk-csets.1 ( bk-csets . 1 )
+Format ../man1/../man1/bk-csettool.1 ( bk-csettool . 1 )
+Format ../man1/../man1/bk-debugtool.1 ( bk-debugtool . 1 )
+Format ../man1/../man1/bk-delta.1 ( bk-delta . 1 )
+Format ../man1/../man1/bk-describe.1 ( bk-describe . 1 )
+Format ../man1/../man1/bk-detach.1 ( bk-detach . 1 )
+Format ../man1/../man1/bk-diff.1 ( bk-diff . 1 )
+Format ../man1/../man1/bk-difftool.1 ( bk-difftool . 1 )
+Format ../man1/../man1/bk-edit.1 ( bk-edit . 1 )
+Format ../man1/../man1/bk-editor.1 ( bk-editor . 1 )
+Format ../man1/../man1/bk-emacs.1 ( bk-emacs . 1 )
+Format ../man1/../man1/bk-export.1 ( bk-export . 1 )
+Format ../man1/../man1/bk-extras.1 ( bk-extras . 1 )
+Format ../man1/../man1/bk-fast-export.1 ( bk-fast-export . 1 )
+Format ../man1/../man1/bk-fast-import.1 ( bk-fast-import . 1 )
+Format ../man1/../man1/bk-features.1 ( bk-features . 1 )
+Format ../man1/../man1/bk-files.1 ( bk-files . 1 )
+Format ../man1/../man1/bk-filetypes.1 ( bk-filetypes . 1 )
+Format ../man1/../man1/bk-findkey.1 ( bk-findkey . 1 )
+Format ../man1/../man1/bk-findmerge.1 ( bk-findmerge . 1 )
+Format ../man1/../man1/bk-fixtool.1 ( bk-fixtool . 1 )
+Format ../man1/../man1/bk-flags.1 ( bk-flags . 1 )
+Format ../man1/../man1/bk-fm3tool.1 ( bk-fm3tool . 1 )
+Format ../man1/../man1/bk-fmtool.1 ( bk-fmtool . 1 )
+Format ../man1/../man1/bk-gate.1 ( bk-gate . 1 )
+Format ../man1/../man1/bk-gca.1 ( bk-gca . 1 )
+Format ../man1/../man1/bk-get.1 ( bk-get . 1 )
+Format ../man1/../man1/bk-gethost.1 ( bk-gethost . 1 )
+Format ../man1/../man1/bk-getuser.1 ( bk-getuser . 1 )
+Format ../man1/../man1/bk-gfiles.1 ( bk-gfiles . 1 )
+Format ../man1/../man1/bk-glob.1 ( bk-glob . 1 )
+Format ../man1/../man1/bk-gone.1 ( bk-gone . 1 )
+Format ../man1/../man1/bk-grep.1 ( bk-grep . 1 )
+Format ../man1/../man1/bk-help.1 ( bk-help . 1 )
+Format ../man1/../man1/bk-helptool.1 ( bk-helptool . 1 )
+Format ../man1/../man1/bk-here.1 ( bk-here . 1 )
+Format ../man1/../man1/bk-history.1 ( bk-history . 1 )
+Format ../man1/../man1/bk-id.1 ( bk-id . 1 )
+Format ../man1/../man1/bk-ignore.1 ( bk-ignore . 1 )
+Format ../man1/../man1/bk-import.1 ( bk-import . 1 )
+Format ../man1/../man1/bk-initscripts.1 ( bk-initscripts . 1 )
+Format ../man1/../man1/bk-isascii.1 ( bk-isascii . 1 )
+Format ../man1/../man1/bk-key2path.1 ( bk-key2path . 1 )
+Format ../man1/../man1/bk-key2rev.1 ( bk-key2rev . 1 )
+Format ../man1/../man1/bk-keywords.1 ( bk-keywords . 1 )
+Format ../man1/../man1/bk-latest.1 ( bk-latest . 1 )
+Format ../man1/../man1/bk-level.1 ( bk-level . 1 )
+Format ../man1/../man1/bk-lock.1 ( bk-lock . 1 )
+Format ../man1/../man1/bk-log.1 ( bk-log . 1 )
+Format ../man1/../man1/bk-makepatch.1 ( bk-makepatch . 1 )
+Format ../man1/../man1/bk-merge-binaries.1 ( bk-merge-binaries . 1 )
+Format ../man1/../man1/bk-merge.1 ( bk-merge . 1 )
+Format ../man1/../man1/bk-mv.1 ( bk-mv . 1 )
+Format ../man1/../man1/bk-names.1 ( bk-names . 1 )
+Format ../man1/../man1/bk-new.1 ( bk-new . 1 )
+Format ../man1/../man1/bk-newroot.1 ( bk-newroot . 1 )
+Format ../man1/../man1/bk-obscure.1 ( bk-obscure . 1 )
+Format ../man1/../man1/bk-parent.1 ( bk-parent . 1 )
+Format ../man1/../man1/bk-partition.1 ( bk-partition . 1 )
+Format ../man1/../man1/bk-patch.1 ( bk-patch . 1 )
+Format ../man1/../man1/bk-path.1 ( bk-path . 1 )
+Format ../man1/../man1/bk-pcre.1 ( bk-pcre . 1 )
+Format ../man1/../man1/bk-pending.1 ( bk-pending . 1 )
+Format ../man1/../man1/bk-port.1 ( bk-port . 1 )
+Format ../man1/../man1/bk-portal.1 ( bk-portal . 1 )
+Format ../man1/../man1/bk-prompt.1 ( bk-prompt . 1 )
+Format ../man1/../man1/bk-pull.1 ( bk-pull . 1 )
+Format ../man1/../man1/bk-push.1 ( bk-push . 1 )
+Format ../man1/../man1/bk-pwd.1 ( bk-pwd . 1 )
+Format ../man1/../man1/bk-r2c.1 ( bk-r2c . 1 )
+Format ../man1/../man1/bk-range.1 ( bk-range . 1 )
+Format ../man1/../man1/bk-receive.1 ( bk-receive . 1 )
+Format ../man1/../man1/bk-regex.1 ( bk-regex . 1 )
+Format ../man1/../man1/bk-relink.1 ( bk-relink . 1 )
+Format ../man1/../man1/bk-remerge.1 ( bk-remerge . 1 )
+Format ../man1/../man1/bk-renames.1 ( bk-renames . 1 )
+Format ../man1/../man1/bk-renametool.1 ( bk-renametool . 1 )
+Format ../man1/../man1/bk-renumber.1 ( bk-renumber . 1 )
+Format ../man1/../man1/bk-repocheck.1 ( bk-repocheck . 1 )
+Format ../man1/../man1/bk-repogca.1 ( bk-repogca . 1 )
+Format ../man1/../man1/bk-repos.1 ( bk-repos . 1 )
+Format ../man1/../man1/bk-repotype.1 ( bk-repotype . 1 )
+Format ../man1/../man1/bk-resolve.1 ( bk-resolve . 1 )
+Format ../man1/../man1/bk-resolving.1 ( bk-resolving . 1 )
+Format ../man1/../man1/bk-revtool.1 ( bk-revtool . 1 )
+Format ../man1/../man1/bk-rm.1 ( bk-rm . 1 )
+Format ../man1/../man1/bk-rmdir.1 ( bk-rmdir . 1 )
+Format ../man1/../man1/bk-rmgone.1 ( bk-rmgone . 1 )
+Format ../man1/../man1/bk-root.1 ( bk-root . 1 )
+Format ../man1/../man1/bk-rset.1 ( bk-rset . 1 )
+Format ../man1/../man1/bk-sane.1 ( bk-sane . 1 )
+Format ../man1/../man1/bk-sccslog.1 ( bk-sccslog . 1 )
+Format ../man1/../man1/bk-send.1 ( bk-send . 1 )
+Format ../man1/../man1/bk-sendbug.1 ( bk-sendbug . 1 )
+Format ../man1/../man1/bk-service.1 ( bk-service . 1 )
+Format ../man1/../man1/bk-set.1 ( bk-set . 1 )
+Format ../man1/../man1/bk-setup.1 ( bk-setup . 1 )
+Format ../man1/../man1/bk-setuptool.1 ( bk-setuptool . 1 )
+Format ../man1/../man1/bk-sfio.1 ( bk-sfio . 1 )
+Format ../man1/../man1/bk-smerge.1 ( bk-smerge . 1 )
+Format ../man1/../man1/bk-status.1 ( bk-status . 1 )
+Format ../man1/../man1/bk-stripdel.1 ( bk-stripdel . 1 )
+Format ../man1/../man1/bk-superset.1 ( bk-superset . 1 )
+Format ../man1/../man1/bk-support.1 ( bk-support . 1 )
+Format ../man1/../man1/bk-tag.1 ( bk-tag . 1 )
+Format ../man1/../man1/bk-takepatch.1 ( bk-takepatch . 1 )
+Format ../man1/../man1/bk-templates.1 ( bk-templates . 1 )
+Format ../man1/../man1/bk-terms.1 ( bk-terms . 1 )
+Format ../man1/../man1/bk-triggers.1 ( bk-triggers . 1 )
+Format ../man1/../man1/bk-undo.1 ( bk-undo . 1 )
+Format ../man1/../man1/bk-undos.1 ( bk-undos . 1 )
+Format ../man1/../man1/bk-unedit.1 ( bk-unedit . 1 )
+Format ../man1/../man1/bk-uninstall.1 ( bk-uninstall . 1 )
+Format ../man1/../man1/bk-unlock.1 ( bk-unlock . 1 )
+Format ../man1/../man1/bk-unpull.1 ( bk-unpull . 1 )
+Format ../man1/../man1/bk-unrm.1 ( bk-unrm . 1 )
+Format ../man1/../man1/bk-untag.1 ( bk-untag . 1 )
+Format ../man1/../man1/bk-unwrap.1 ( bk-unwrap . 1 )
+Format ../man1/../man1/bk-upgrade.1 ( bk-upgrade . 1 )
+Format ../man1/../man1/bk-url.1 ( bk-url . 1 )
+Format ../man1/../man1/bk-version.1 ( bk-version . 1 )
+Format ../man1/../man1/bk-what.1 ( bk-what . 1 )
+Format ../man1/../man1/bk-wrap.1 ( bk-wrap . 1 )
+Format ../man1/../man1/bk-xflags.1 ( bk-xflags . 1 )
+Format ../man1/../man1/bk-zone.1 ( bk-zone . 1 )
+make[2]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/man/man2help'
+make[2]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/man/man2help'
+tclsh ./verify-dspecs-debug.tcl ../man1/bk-log.1
+DEBUG: Starting verify-dspecs.tcl
+DEBUG: Input file: ../man1/bk-log.1
+DEBUG: Using temp files:
+DEBUG: definitive: /tmp/definitive_dspecs_23411
+DEBUG: links: /tmp/help_links_23411
+DEBUG: diffs: /tmp/diffs_23411
+DEBUG: Files opened successfully
+DEBUG: Total lines processed: 721
+DEBUG: Total .xx entries found: 108
+DEBUG: Files closed successfully
+DEBUG: Diff status: 0
+DEBUG: Exiting with code: 0
+make[2]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/man/man2help'
+Documentation generation complete
+bash version.sh > version
+Generating documentation using Tcl...
+make[2]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/man/man2help'
+tclsh ./verify-dspecs-debug.tcl ../man1/bk-log.1
+DEBUG: Starting verify-dspecs.tcl
+DEBUG: Input file: ../man1/bk-log.1
+DEBUG: Using temp files:
+DEBUG: definitive: /tmp/definitive_dspecs_23514
+DEBUG: links: /tmp/help_links_23514
+DEBUG: diffs: /tmp/diffs_23514
+DEBUG: Files opened successfully
+DEBUG: Total lines processed: 721
+DEBUG: Total .xx entries found: 108
+DEBUG: Files closed successfully
+DEBUG: Diff status: 0
+DEBUG: Exiting with code: 0
+make[2]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/man/man2help'
+make[2]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/man/man2help'
+tclsh ./verify-dspecs-debug.tcl ../man1/bk-log.1
+DEBUG: Starting verify-dspecs.tcl
+DEBUG: Input file: ../man1/bk-log.1
+DEBUG: Using temp files:
+DEBUG: definitive: /tmp/definitive_dspecs_23527
+DEBUG: links: /tmp/help_links_23527
+DEBUG: diffs: /tmp/diffs_23527
+DEBUG: Files opened successfully
+DEBUG: Total lines processed: 721
+DEBUG: Total .xx entries found: 108
+DEBUG: Files closed successfully
+DEBUG: Diff status: 0
+DEBUG: Exiting with code: 0
+make[2]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/man/man2help'
+Documentation generation complete
+Generating bkhelp.txt using Tcl script...
+generate_bkhelp.tcl: Starting bkhelp.txt generation...
+generate_bkhelp.tcl: Running: make pages
+generate_bkhelp.tcl: Running: make helptxt2
+generate_bkhelp.tcl: Running: make summaries
+generate_bkhelp.tcl: bkhelp.txt generated successfully
+bkhelp.txt generation complete
+building ../doc/bk_refcard.ps
+make[2]: Entering directory '/home/lukascernohorsky/Projects/bitkeeper/doc'
+make[2]: Nothing to be done for 'all'.
+make[2]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/doc'
+make[1]: Leaving directory '/home/lukascernohorsky/Projects/bitkeeper/src'

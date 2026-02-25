@@ -1550,8 +1550,11 @@ sfio(FILE *m, int files)
 			goto err;
 		}
 		/* mark remote-only deltas */
-		range_walkrevs(sr, L(d), 0, 0,
+		{
+			ser_t d_arr[2] = {d, 0};
+			range_walkrevs(sr, d_arr, 0, 0,
 		    walkrevs_setFlags, (void*)D_REMOTE);
+		}
 		/*
 		 * techically, FLAGS(s, d) |= D_LOCAL, but D_LOCAL goes away
 		 * in /home/bk/bk and the way resolveFiles is written, it
@@ -1824,7 +1827,7 @@ dosum:			st->sumR = strtoul(buf+17, 0, 16);
 	// write buf to outbuf and overflow to the fmembuf
 	len = strlen(buf);
 	st->bytecount += len;
-	unless (st->nosum) st->sumC = adler32(st->sumC, buf, len);
+	unless (st->nosum) st->sumC = adler32(st->sumC, (const Bytef *)buf, len);
 	count = min(len, left);
 	memcpy(outbuf, buf, count);
 	outbuf += count;

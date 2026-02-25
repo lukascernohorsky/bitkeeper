@@ -67,7 +67,7 @@ cat_main(int ac, char **av)
 		}
 		if (pnames) {
 			printf("|FILE|%s|CRC|%lu\n", s->gfile,
-			    adler32(0, s->gfile, strlen(s->gfile)));
+			    adler32(0, (const Bytef *)s->gfile, strlen(s->gfile)));
 			fflush(stdout);
 		}
 		if (gfile) {

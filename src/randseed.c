@@ -54,7 +54,7 @@ rand_setSeed(int setpid)
 
 	strcpy(out, "RANDSEED=");
 	outlen = sizeof(out) - strlen(out);
-	if ((err = base64_encode(buf, sizeof(buf), out + strlen(out), &outlen))
+	if ((err = base64_encode((const unsigned char *)buf, sizeof(buf), (unsigned char *)(out + strlen(out)), (unsigned long *)&outlen))
 	    != CRYPT_OK) {
 		fprintf(stderr, "rand_setSeed: %s\n", error_to_string(err));
 		exit(1);
@@ -81,7 +81,7 @@ rand_checkSeed(void)
 	assert((sizeof(now) + sizeof(pid)) == 8);
 	if (!(p = getenv("RANDSEED"))) return (-1);
 	outlen = sizeof(buf);
-	if (base64_decode(p, strlen(p), buf, &outlen) != CRYPT_OK) return (-2);
+	if (base64_decode((const unsigned char *)p, strlen(p), (unsigned char *)buf, (unsigned long *)&outlen) != CRYPT_OK) return (-2);
 	if (outlen != 8 + SEEDLEN) return (-3);
 	mangle(buf + 8, SEEDLEN, buf, 8);
 	memcpy(&now, buf, 4);

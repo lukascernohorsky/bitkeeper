@@ -210,7 +210,7 @@ seekBlock(fcrc *fc)
  * Returns -1 on error
  */
 private int
-readBlock(fcrc *fc, char *buf)
+readBlock(fcrc *fc, u8 *buf)
 {
 	u16	len;
 	u32	crc, crc2 = 0;
@@ -348,7 +348,7 @@ writeAfterSeek(fcrc *fc)
 	assert(len <= fc->rlen);	/* no gap when appending data */
 	fc->offset = fc->boff;
 	T_FS("keep old partial %d", len);
-	crcWrite(fc, fc->rbuf, len);
+	crcWrite(fc, (const char *)fc->rbuf, len);
 	return (0);
 }
 
@@ -387,7 +387,7 @@ crcRead(void *cookie, char *buf, int len)
 		/* optimize block boundary & block size with direct read */
 		if ((fc->offset == fc->boff) && (len >= fc->datasz)) {
 			T_FS("direct");
-			unless (n = readBlock(fc, buf)) break;
+			unless (n = readBlock(fc, (u8 *)buf)) break;
 			if (n < 0) return (-1);
 			fc->offset += n;
 			ret += n;
@@ -601,7 +601,7 @@ crcClose(void *cookie)
 	//fprintf(stderr, "%p: crcClose()\n", fc->fme);
 	if (fc->write) {
 		/* in case crcWrite not called, make sure header exists */
-		crcWrite(fc, fc->rbuf, 0);
+		crcWrite(fc, (const char *)fc->rbuf, 0);
 		/* add EOF block of null data */
 		len = fc->offset - fc->boff;
 		n = fc->datasz - len;

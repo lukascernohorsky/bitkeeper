@@ -346,7 +346,7 @@ err:			sccs_free(s);
 		}
 		if (pnames) {
 			printf("|FILE|%s|CRC|%lu\n", s->gfile,
-			    adler32(0, s->gfile, strlen(s->gfile)));
+			    adler32(0, (const Bytef *)s->gfile, strlen(s->gfile)));
 		}
 		if ((flags & (GET_DIFFS|GET_BKDIFFS))
 		    ? sccs_getdiffs(s, rev, flags, out)

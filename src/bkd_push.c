@@ -327,7 +327,7 @@ cmd_push_part3(int ac, char **av)
 {
 	int	fd2, pfd, c, rc = 0;
 	int	status, debug = 0;
-	int	inbytes, outbytes;
+	u32	inbytes, outbytes;
 	int	gzip = 0, product = 0, verbose = 0;
 	int	quiet = 0;
 	pid_t	pid;

@@ -279,7 +279,7 @@ matchInclude(opts *op, char *path)
 	EACH(op->inc_exc) {
 		pat = op->inc_exc[i];
 		isInc = (*pat++ == '+');
-		match = match_one(path, pat, 0);
+		match = match_one((u8 *)path, (u8 *)pat, 0);
 
 		/* default set by first pattern */
 		if (en < 0) en = !isInc;

@@ -50,9 +50,19 @@ proc main {} {
         exit 1
     }
     
-    # Generate help text
-    if {[catch {run_command [list make helptxt]} error]} {
-        puts stderr "Failed to generate help text: $error"
+    # Generate help text step by step
+    if {[catch {run_command [list make pages]} error]} {
+        puts stderr "Failed to generate pages: $error"
+        exit 1
+    }
+    
+    if {[catch {run_command [list make helptxt2]} error]} {
+        puts stderr "Failed to generate helptxt2: $error"
+        exit 1
+    }
+    
+    if {[catch {run_command [list make summaries]} error]} {
+        puts stderr "Failed to generate summaries: $error"
         exit 1
     }
     

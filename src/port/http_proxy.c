@@ -158,7 +158,7 @@ _get_http_proxy_reg(char **proxies, char *host)
 		q = buf;
 		while (q) {
 			if (p = strchr(q, ';')) *p++ = 0;
-			if (*q && match_one(host, q, 1)) goto done;
+			if (*q && match_one((u8 *)host, (u8 *)q, 1)) goto done;
 			q = p;
 		}
 	}

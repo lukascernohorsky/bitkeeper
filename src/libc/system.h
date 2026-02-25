@@ -256,7 +256,7 @@ void	getoptConsumed(int n);
 /* glob.c */
 char	*is_glob(char *glob);
 char*	match_globs(char *string, char **globs, int ignorecase);
-int	match_one(char *string, char *glob, int ignorecase);
+int	match_one(u8 *string, u8 *glob, int ignorecase);
 
 /* mkdir.c */
 int	mkdirp(char *dir);

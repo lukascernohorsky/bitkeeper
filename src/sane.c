@@ -312,10 +312,10 @@ mk_repoID(project *proj, char *repoid)
 	fprintf(f, "%s|", sccs_realuser());
 
 	/*randbits*/
-	rand_getBytes(buf, 3);
+	rand_getBytes((unsigned char *)buf, 3);
 
 	outlen = sizeof(rand);
-	if ((err =base64_encode(buf, 3, rand, &outlen)) != CRYPT_OK) {
+	if ((err =base64_encode((const unsigned char *)buf, 3, (unsigned char *)rand, (unsigned long *)&outlen)) != CRYPT_OK) {
 		fprintf(stderr, "mk_repoID: %s\n", error_to_string(err));
 		exit(1);
 	}

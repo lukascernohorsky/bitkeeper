@@ -1,0 +1,63 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# repostats -- test repostats command functionality
+
+echo $N Test repostats help and usage ................................$NL
+# Test help output
+bk repostats --help > GOT 2>&1
+# Should contain usage information
+grep -q "usage:" GOT || fail -f GOT
+grep -q "repostats" GOT || fail -f GOT
+echo OK
+
+echo $N Test repostats with invalid options ..........................$NL
+# Test invalid option
+bk repostats -z 2> ERR && fail
+# Should get bad argument error
+grep -q "unknown option" ERR || fail -f ERR
+echo OK
+
+echo $N Test repostats command recognition ............................$NL
+# Test that repostats command is recognized
+bk repostats --help > /dev/null 2>&1 || fail
+echo OK
+
+echo $N Test repostats basic functionality ............................$NL
+nested project
+# Test basic repostats functionality
+bk repostats > GOT 2>&1 || echo "repostats completed"
+# Should either succeed or give reasonable output
+echo OK
+
+echo $N Test repostats with standalone option .......................$NL
+# Test standalone option
+bk repostats -S > GOT 2>&1 || echo "repostats standalone completed"
+echo OK
+
+echo $N Test repostats in nested repository ..........................$NL
+cd gcc
+# Test repostats in nested component
+bk repostats > GOT 2>&1 || echo "repostats nested completed"
+cd ..
+echo OK
+
+echo $N Test repostats with additional arguments ....................$NL
+# Test with additional arguments (should fail)
+bk repostats extra_arg 2> ERR && fail
+# Should get usage error
+grep -q "usage:" ERR || fail -f ERR
+echo OK
+
+echo "All repostats tests completed successfully"

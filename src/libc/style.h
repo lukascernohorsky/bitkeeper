@@ -41,7 +41,7 @@
 #define	index(s, c)	strchr(s, c)
 #define	rindex(s, c)	strrchr(s, c)
 #define	notnull(s)	((s) ? (s) : "")
-#define	unless(e)	if (!(e))
+#define	unless(e)	if (!(e)) /* Use with braces: unless(cond) { ... } */
 #define	new(type)	(type*)calloc(1, sizeof(type))
 #define	verbose(x)	unless (flags&SILENT) fprintf x
 #define	strsz(s)	(sizeof(s) - 1)

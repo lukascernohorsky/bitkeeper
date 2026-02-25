@@ -335,7 +335,7 @@ cmd_rclone_part3(int ac, char **av)
 {
 	int	fd2, pfd, rc = 0;
 	int	status;
-	int	inbytes, outbytes;
+	u32	inbytes, outbytes;
 	pid_t	pid;
 	char	*path, *p;
 	opts	opts;

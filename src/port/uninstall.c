@@ -186,7 +186,7 @@ uninstall(char *path, int upgrade)
 	}
 	/* Search for all Scc plugin entries and delete them */
 	if (data = reg_get(SCCPKEY, "ProviderRegKey", 0)) {
-		if (match_one(data, "*bitkee*", 1)) {
+		if (match_one((u8 *)data, (u8 *)"*bitkee*", 1)) {
 			if (reg_delete(SCCPKEY, "ProviderRegKey")) {
 				if (dfd) {
 					fprintf(dfd,
@@ -199,7 +199,7 @@ uninstall(char *path, int upgrade)
 	}
 	if (values = reg_values(SCCPKEY "\\InstalledSCCProviders")) {
 		EACH(values) {
-			if (match_one(values[i], "*bitkee*", 1)) {
+			if (match_one((u8 *)values[i], (u8 *)"*bitkee*", 1)) {
 				if (reg_delete(SCCPKEY
 				    "\\InstalledSCCProviders", values[i])) {
 					if (dfd) {
@@ -217,7 +217,7 @@ uninstall(char *path, int upgrade)
 	}
 	if (values = reg_values(SCCPKEY "\\InstalledSCCProviders")) {
 		EACH(values) {
-			if (match_one(values[i], "*bitkee*", 1)) {
+			if (match_one((u8 *)values[i], (u8 *)"*bitkee*", 1)) {
 				if (reg_delete(SCCPKEY
 				    "\\InstalledSCCProviders", values[i])) {
 					if (dfd) {
@@ -286,7 +286,7 @@ path_sansBK(char *path)
 		/* We use bitkee instead of bitkeeper due to short paths.
 		 * E.g. c:\progra~1\bitkee~1
 		 */
-		if (match_one(components[i], "*bitkee*", 1) ||
+		if (match_one((u8 *)components[i], (u8 *)"*bitkee*", 1) ||
 		    patheq(components[i], bin)) {
 			removeLineN(components, i, free);
 			/* we left shifted one, go around again */

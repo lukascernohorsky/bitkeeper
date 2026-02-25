@@ -15,16 +15,17 @@
  */
 
 #include "sccs.h"
+#include "system.h"
 
 int
-glob_main(int ac, char **av)
+glob_main(int ac __attribute__((unused)), char **av)
 {
 	char	*glob = av[1];
 	int	i, matched = 0;
 
 	unless (av[1] && av[2]) usage();
 	for (i = 2; av[i]; i++) {
-		if (match_one(av[i], glob, 0)) {
+		if (match_one((u8 *)av[i], (u8 *)glob, 0)) {
 			printf("%s matches.\n", av[i]);
 			matched = 1;
 		}

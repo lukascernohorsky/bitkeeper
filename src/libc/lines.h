@@ -61,9 +61,9 @@
 })
 
 #define	EACH_START(x, s, i)				\
-	if ((i = (x)), (s)) for (; (i) <= _LLEN(s); i++)
-#define	EACH_INDEX(s, i)		EACH_START(1, s, i)
-#define	EACH(s)				EACH_START(1, s, i)
+	if ((i = (x)), (s)) for (; (u32)(i) <= _LLEN(s); i++)
+#define	EACH_INDEX(s, i)		EACH_START(1u, s, i)
+#define	EACH(s)				EACH_START(1u, s, i)
 #define	EACH_REVERSE_INDEX(s, i)	for (i = nLines(s); i > 0; i--)
 #define	EACH_REVERSE(s)			EACH_REVERSE_INDEX(s, i)
 
@@ -76,7 +76,7 @@
 #define	EACH_STRUCT(s, c, i)				\
 	if (((c) = 0), (i = 1), (s))			\
 		for (((c) = (void *)(s)[i]);		\
-		     ((i) <= _LLEN(s)) && ((c) = (void *)(s)[i]);	\
+		     ((u32)(i) <= _LLEN(s)) && ((c) = (void *)(s)[i]);	\
 		     ++(i))
 
 #define	LNEXT(s)					\

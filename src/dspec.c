@@ -646,7 +646,7 @@ match(char *s, char *pattern)
 		ret = search_either(s, search);
 		search_free(search);
 	} else {
-		ret = match_one(s, pattern, 1);
+		ret = match_one((u8 *)s, (u8 *)pattern, 1);
 	}
 	return (ret);
 }

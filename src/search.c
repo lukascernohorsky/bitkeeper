@@ -72,7 +72,7 @@ search_glob(char *str, search s)
 
 	unless (s.pattern) return (0);
 	glob = aprintf("*%s*", s.pattern);
-	ret = match_one(str, glob, s.ignorecase);
+	ret = match_one((u8 *)str, (u8 *)glob, s.ignorecase);
 	free(glob);
 	return (ret);
 }

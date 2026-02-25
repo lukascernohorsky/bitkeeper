@@ -1,0 +1,641 @@
+CC bkver.c
+CC libgraph.c
+libgraph.c: In function ‘graph_hasDups’:
+libgraph.c:333:15: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  333 |         (void)symdiff(s, L(PARENT(s, d)), d, 0, &dups, slist, 0, -1);
+      |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from libc/system.h:49,
+--
+  333 |         (void)symdiff(s, L(PARENT(s, d)), d, 0, &dups, slist, 0, -1);
+      |                          ^
+libgraph.c: In function ‘graph_fixMerge’:
+libgraph.c:430:25: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  430 |                 count = symdiff(s, L(PARENT(s, d)), d, 0,
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  431 |                     &dups, slist, cludes, -1);
+--
+libgraph.c:430:36: note: in expansion of macro ‘L’
+  430 |                 count = symdiff(s, L(PARENT(s, d)), d, 0,
+      |                                    ^
+libgraph.c:433:17: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  433 |                 comp(s, L(PARENT(s, d)), d, &dups, slist, count);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+libc/lines.h:60:31: note: unnamed temporary defined here
+--
+  433 |                 comp(s, L(PARENT(s, d)), d, &dups, slist, count);
+      |                         ^
+libgraph.c: In function ‘graph_convert’:
+libgraph.c:496:25: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  496 |                 count = symdiff(s, L(PARENT(s, d)), d, 0,
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  497 |                     &dups, slist, cludes, -1);
+--
+libgraph.c:496:36: note: in expansion of macro ‘L’
+  496 |                 count = symdiff(s, L(PARENT(s, d)), d, 0,
+      |                                    ^
+libgraph.c:500:17: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  500 |                 comp(s, L(PARENT(s, d)), d, &dups, slist, count);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+libc/lines.h:60:31: note: unnamed temporary defined here
+--
+      |                         ^
+CC librange.c
+librange.c: In function ‘range_cset’:
+librange.c:174:9: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  174 |         range_walkrevs(s, 0, L(d), 0, csetStop, &d);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from libc/system.h:49,
+--
+  174 |         range_walkrevs(s, 0, L(d), 0, csetStop, &d);
+      |                              ^
+librange.c: In function ‘range_process’:
+librange.c:350:21: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  350 |                 if (range_walkrevs(s, dlist, L(r2),
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  351 |                     0, walkrevs_setFlags, (void*)D_SET)) {
+--
+In file included from libc/system.h:48,
+                 from merge.c:17:
+merge.c: In function ‘do_setmerge’:
+merge.c:132:35: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+  132 |                         unless (p = mdbm_fetch_str(db, buf)) {
+      |                                   ^
+libc/style.h:44:31: note: in definition of macro ‘unless’
+   44 | #define unless(e)       if (!(e))
+      |                               ^
+merge.c:134:35: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+  134 |                                 p = mdbm_fetch_str(db, buf);
+      |                                   ^
+CC mklock.c
+--
+CC nested.c
+CC newroot.c
+newroot.c: In function ‘newroot_main’:
+newroot.c:61:24: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+   61 |                 for (p = ranbits; *p; p++) {
+      |                        ^
+newroot.c: In function ‘xorsyncroot’:
+newroot.c:218:9: warning: ignoring return value of ‘mp_init’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  218 |         mp_init(&a);
+      |         ^~~~~~~~~~~
+newroot.c:219:9: warning: ignoring return value of ‘mp_read_radix’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  219 |         mp_read_radix(&a, rand, 16);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+newroot.c:222:9: warning: ignoring return value of ‘mp_init’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  222 |         mp_init(&b);
+      |         ^~~~~~~~~~~
+newroot.c:223:9: warning: ignoring return value of ‘mp_read_radix’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  223 |         mp_read_radix(&b, rand, 16);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+newroot.c:225:9: warning: ignoring return value of ‘mp_xor’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  225 |         mp_xor(&a, &b, &a);
+      |         ^~~~~~~~~~~~~~~~~~
+newroot.c:226:9: warning: ignoring return value of ‘mp_to_radix’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  226 |         mp_to_radix(&a, buf, sizeof(buf), NULL, 16);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CC opark.c
+--
+CC proj.c
+CC poly.c
+poly.c: In function ‘poly_r2c’:
+poly.c:151:29: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  151 |                         if (range_walkrevs(
+      |                             ^~~~~~~~~~~~~~~
+  152 |                             cset, lower, L(d), 0, inrange, uint2p(orig))) {
+--
+  152 |                             cset, lower, L(d), 0, inrange, uint2p(orig))) {
+      |                                          ^
+poly.c: In function ‘poly_range’:
+poly.c:195:25: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  195 |                         range_walkrevs(s, lower, L(d), 0,
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  196 |                             walkrevs_setFlags, uint2p(D_SET));
+--
+  195 |                         range_walkrevs(s, lower, L(d), 0,
+      |                                                  ^
+poly.c: In function ‘findPoly’:
+poly.c:667:9: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  667 |         walkrevs_setup(&wd, s, L(local), L(remote), WR_GCA);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+libc/lines.h:60:31: note: unnamed temporary defined here
+--
+  667 |         walkrevs_setup(&wd, s, L(local), L(remote), WR_GCA);
+      |                                ^
+poly.c: In function ‘lowerBounds’:
+poly.c:878:9: warning: dangling pointer to an unnamed temporary may be used [-Wdangling-pointer=]
+  878 |         range_walkrevs(s, 0, L(d), 0, csetStop, &cs);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+libc/lines.h:60:31: note: unnamed temporary defined here
+--
+CC port/gethost.c
+CC port/getinput.c
+port/getinput.c: In function ‘sccs_getComments’:
+port/getinput.c:59:39: warning: pointer targets in passing argument 1 of ‘comments_checkStr’ differ in signedness [-Wpointer-sign]
+   59 |                 if (comments_checkStr(buf2, strlen(buf2))) {
+      |                                       ^~~~
+      |                                       |
+--
+CC pull.c
+CC push.c
+push.c: In function ‘push_part1’:
+push.c:650:54: warning: pointer targets in passing argument 6 of ‘prunekey’ differ in signedness [-Wpointer-sign]
+  650 |         ret = prunekey(s_cset, r, NULL, fd, pkflags, &lcsets, &rcsets, &rtags);
+      |                                                      ^~~~~~~
+      |                                                      |
+--
+bkd.h:174:18: note: expected ‘int *’ but argument is of type ‘u32 *’ {aka ‘unsigned int *’}
+  174 |             int *local_only, int *remote_csets, int *remote_tags);
+      |             ~~~~~^~~~~~~~~~
+push.c:650:63: warning: pointer targets in passing argument 7 of ‘prunekey’ differ in signedness [-Wpointer-sign]
+  650 |         ret = prunekey(s_cset, r, NULL, fd, pkflags, &lcsets, &rcsets, &rtags);
+      |                                                               ^~~~~~~
+      |                                                               |
+--
+bkd.h:174:35: note: expected ‘int *’ but argument is of type ‘u32 *’ {aka ‘unsigned int *’}
+  174 |             int *local_only, int *remote_csets, int *remote_tags);
+      |                              ~~~~~^~~~~~~~~~~~
+push.c:650:72: warning: pointer targets in passing argument 8 of ‘prunekey’ differ in signedness [-Wpointer-sign]
+  650 |         ret = prunekey(s_cset, r, NULL, fd, pkflags, &lcsets, &rcsets, &rtags);
+      |                                                                        ^~~~~~
+      |                                                                        |
+--
+  174 |             int *local_only, int *remote_csets, int *remote_tags);
+      |                                                 ~~~~~^~~~~~~~~~~
+push.c: In function ‘genpatch’:
+push.c:1065:13: warning: pointer targets in passing argument 4 of ‘gzipAll2fh’ differ in signedness [-Wpointer-sign]
+ 1065 |             &(opts.inBytes), &(opts.outBytes), 0);
+      |             ^~~~~~~~~~~~~~~
+      |             |
+--
+bkd.h:137:55: note: expected ‘int *’ but argument is of type ‘u32 *’ {aka ‘unsigned int *’}
+  137 | int     gzipAll2fh(int rfd, FILE *wf, int level, int *in, int *out,
+      |                                                  ~~~~~^~
+push.c:1065:30: warning: pointer targets in passing argument 5 of ‘gzipAll2fh’ differ in signedness [-Wpointer-sign]
+ 1065 |             &(opts.inBytes), &(opts.outBytes), 0);
+      |                              ^~~~~~~~~~~~~~~~
+      |                              |
+--
+  137 | int     gzipAll2fh(int rfd, FILE *wf, int level, int *in, int *out,
+      |                                                           ~~~~~^~~
+push.c: In function ‘send_BAM_sfio’:
+push.c:1215:38: warning: pointer targets in passing argument 5 of ‘gzipAll2fh’ differ in signedness [-Wpointer-sign]
+ 1215 |         gzipAll2fh(rfd, wf, gzip, 0, &n, 0);
+      |                                      ^~
+      |                                      |
+--
+CC randombits.c
+CC randseed.c
+randseed.c: In function ‘rand_setSeed’:
+randseed.c:55:16: warning: pointer targets in passing argument 1 of ‘strcpy’ differ in signedness [-Wpointer-sign]
+   55 |         strcpy(out, "RANDSEED=");
+      |                ^~~
+      |                |
+--
+/usr/include/string.h:141:39: note: expected ‘char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  141 | extern char *strcpy (char *__restrict __dest, const char *__restrict __src)
+      |                      ~~~~~~~~~~~~~~~~~^~~~~~
+randseed.c:56:39: warning: pointer targets in passing argument 1 of ‘strlen’ differ in signedness [-Wpointer-sign]
+   56 |         outlen = sizeof(out) - strlen(out);
+      |                                       ^~~
+      |                                       |
+--
+/usr/include/string.h:407:35: note: expected ‘const char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  407 | extern size_t strlen (const char *__s)
+      |                       ~~~~~~~~~~~~^~~
+randseed.c:57:106: warning: pointer targets in passing argument 1 of ‘strlen’ differ in signedness [-Wpointer-sign]
+   57 |         if ((err = base64_encode((const unsigned char *)buf, sizeof(buf), (unsigned char *)(out + strlen(out)), (unsigned long *)&outlen))
+      |                                                                                                          ^~~
+      |                                                                                                          |
+--
+  407 | extern size_t strlen (const char *__s)
+      |                       ~~~~~~~~~~~~^~~
+randseed.c: In function ‘rand_checkSeed’:
+randseed.c:82:17: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+   82 |         if (!(p = getenv("RANDSEED"))) return (-1);
+      |                 ^
+randseed.c:84:60: warning: pointer targets in passing argument 1 of ‘strlen’ differ in signedness [-Wpointer-sign]
+   84 |         if (base64_decode((const unsigned char *)p, strlen(p), (unsigned char *)buf, (unsigned long *)&outlen) != CRYPT_OK) return (-2);
+      |                                                            ^
+      |                                                            |
+--
+CC rcheck.c
+CC rclone.c
+rclone.c: In function ‘send_sfio’:
+rclone.c:774:44: warning: pointer targets in passing argument 4 of ‘gzipAll2fh’ differ in signedness [-Wpointer-sign]
+  774 |         gzipAll2fh(fileno(fh), fout, gzip, &opts.in, &opts.out, 0);
+      |                                            ^~~~~~~~
+      |                                            |
+--
+bkd.h:137:55: note: expected ‘int *’ but argument is of type ‘u32 *’ {aka ‘unsigned int *’}
+  137 | int     gzipAll2fh(int rfd, FILE *wf, int level, int *in, int *out,
+      |                                                  ~~~~~^~
+rclone.c:774:54: warning: pointer targets in passing argument 5 of ‘gzipAll2fh’ differ in signedness [-Wpointer-sign]
+  774 |         gzipAll2fh(fileno(fh), fout, gzip, &opts.in, &opts.out, 0);
+      |                                                      ^~~~~~~~~
+      |                                                      |
+--
+CC remap.c
+CC remote.c
+remote.c: In function ‘remote_cmd’:
+remote.c:186:14: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+  186 |         line = (getline2(r, buf, sizeof(buf)) > 0) ? buf : 0;
+      |              ^
+remote.c:199:22: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+  199 |                 line = (getline2(r, buf, sizeof(buf)) > 0) ? buf : 0;
+      |                      ^
+In file included from libc/system.h:48,
+                 from remote.c:17:
+libc/style.h:31:39: warning: pointer targets in passing argument 2 of ‘strncmp’ differ in signedness [-Wpointer-sign]
+   31 | #define strneq(a,b,n)   (!strncmp((a),(b),(n)))
+      |                                       ^~~
+      |                                       |
+--
+/usr/include/string.h:159:51: note: expected ‘const char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  159 | extern int strncmp (const char *__s1, const char *__s2, size_t __n)
+      |                                       ~~~~~~~~~~~~^~~~
+libc/style.h:31:39: warning: pointer targets in passing argument 2 of ‘strncmp’ differ in signedness [-Wpointer-sign]
+   31 | #define strneq(a,b,n)   (!strncmp((a),(b),(n)))
+      |                                       ^~~
+      |                                       |
+--
+/usr/include/string.h:159:51: note: expected ‘const char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  159 | extern int strncmp (const char *__s1, const char *__s2, size_t __n)
+      |                                       ~~~~~~~~~~~~^~~~
+remote.c:224:36: warning: pointer targets in passing argument 1 of ‘strchr’ differ in signedness [-Wpointer-sign]
+  224 |                 if (p = strchr(line+6, '\n')) *p = 0; /* terminate line */
+      |                                ~~~~^~
+      |                                    |
+--
+/usr/include/string.h:246:34: note: expected ‘const char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  246 | extern char *strchr (const char *__s, int __c)
+      |                      ~~~~~~~~~~~~^~~
+libc/style.h:30:38: warning: pointer targets in passing argument 2 of ‘strcmp’ differ in signedness [-Wpointer-sign]
+   30 | #define streq(a,b)      (!strcmp((a),(b)))
+      |                                      ^~~
+      |                                      |
+--
+/usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                                      ~~~~~~~~~~~~^~~~
+remote.c:238:22: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+  238 |                 line = fgetline(zin);
+      |                      ^
+libc/style.h:31:35: warning: pointer targets in passing argument 1 of ‘strncmp’ differ in signedness [-Wpointer-sign]
+   31 | #define strneq(a,b,n)   (!strncmp((a),(b),(n)))
+      |                                   ^~~
+      |                                   |
+--
+/usr/include/string.h:159:33: note: expected ‘const char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  159 | extern int strncmp (const char *__s1, const char *__s2, size_t __n)
+      |                     ~~~~~~~~~~~~^~~~
+libc/style.h:31:35: warning: pointer targets in passing argument 1 of ‘strncmp’ differ in signedness [-Wpointer-sign]
+   31 | #define strneq(a,b,n)   (!strncmp((a),(b),(n)))
+      |                                   ^~~
+      |                                   |
+--
+/usr/include/string.h:159:33: note: expected ‘const char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  159 | extern int strncmp (const char *__s1, const char *__s2, size_t __n)
+      |                     ~~~~~~~~~~~~^~~~
+libc/style.h:31:35: warning: pointer targets in passing argument 1 of ‘strncmp’ differ in signedness [-Wpointer-sign]
+   31 | #define strneq(a,b,n)   (!strncmp((a),(b),(n)))
+      |                                   ^~~
+      |                                   |
+--
+/usr/include/string.h:159:33: note: expected ‘const char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  159 | extern int strncmp (const char *__s1, const char *__s2, size_t __n)
+      |                     ~~~~~~~~~~~~^~~~
+remote.c:247:30: warning: pointer targets in passing argument 1 of ‘atoi’ differ in signedness [-Wpointer-sign]
+  247 |                 bytes = atoi(&line[8]);
+      |                              ^~~~~~~~
+      |                              |
+--
+/usr/include/stdlib.h:105:30: note: expected ‘const char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  105 | extern int atoi (const char *__nptr)
+      |                  ~~~~~~~~~~~~^~~~~~
+remote.c:270:30: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+  270 |                         line = fgetline(zin);
+      |                              ^
+remote.c:272:30: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+  272 |                         line = fnext(buf, r->rf) ? buf : 0;
+      |                              ^
+libc/style.h:31:39: warning: pointer targets in passing argument 2 of ‘strncmp’ differ in signedness [-Wpointer-sign]
+   31 | #define strneq(a,b,n)   (!strncmp((a),(b),(n)))
+      |                                       ^~~
+      |                                       |
+--
+/usr/include/string.h:159:51: note: expected ‘const char *’ but argument is of type ‘u8 *’ {aka ‘unsigned char *’}
+  159 | extern int strncmp (const char *__s1, const char *__s2, size_t __n)
+      |                                       ~~~~~~~~~~~~^~~~
+remote.c:280:24: warning: pointer targets in passing argument 1 of ‘bk_sscanf’ differ in signedness [-Wpointer-sign]
+  280 |         unless (sscanf(line, "@EXIT=%d@", &i)) i = 1<<5;
+      |                        ^~~~
+      |                        |
+--
+CC rset.c
+In file included from rset.c:17:
+rset.c: In function ‘dodiff’:
+sccs.h:1103:25: warning: pointer targets in initialization of ‘u8 *’ {aka ‘unsigned char *’} from ‘char *’ differ in signedness [-Wpointer-sign]
+ 1103 | #define HEAP(s, off)    ((s)->heap.buf + (off))
+      |                         ^
+rset.c:728:29: note: in expansion of macro ‘HEAP’
+  728 |         u8      *root_key = HEAP(s, rkoff);
+      |                             ^~~~
+rset.c:729:26: warning: pointer targets in initialization of ‘u8 *’ {aka ‘unsigned char *’} from ‘char *’ differ in signedness [-Wpointer-sign]
+  729 |         u8      *left =  loff ? HEAP(s, loff) : 0;
+      |                          ^~~~
+rset.c:730:27: warning: pointer targets in initialization of ‘u8 *’ {aka ‘unsigned char *’} from ‘char *’ differ in signedness [-Wpointer-sign]
+  730 |         u8      *right =  roff ? HEAP(s, roff) : 0;
+      |                           ^~~~
+CC sane.c
+--
+Building kw2val_lookup.c
+CC slib.c
+slib.c: In function ‘chk_nlbug’:
+slib.c:2446:20: warning: pointer targets in assignment from ‘u8 *’ {aka ‘unsigned char *’} to ‘char *’ differ in signedness [-Wpointer-sign]
+ 2446 |         while (buf = (u8 *)sccs_nextdata(s)) {
+      |                    ^
+slib.c: In function ‘fastsum_load’:
+slib.c:6764:19: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+ 6764 |                 n = (char *)&buf[3];
+      |                   ^
+slib.c: In function ‘sccs_patchDiffs’:
+slib.c:8280:20: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+ 8280 |         while (buf = (char *)sccs_nextdata(s)) {
+      |                    ^
+In file included from slib.c:24:
+slib.c: In function ‘delta_table’:
+libc/system.h:271:25: warning: pointer targets in passing argument 1 of ‘myatoi’ differ in signedness [-Wpointer-sign]
+  271 | #define getenv(s)       safe_getenv(s)
+      |                         ^~~~~~~~~~~~~~
+      |                         |
+--
+  451 | atoi(const u8 *s)
+      |      ~~~~~~~~~~^
+slib.c: In function ‘expandeq’:
+slib.c:9205:24: warning: pointer targets in assignment from ‘u8 *’ {aka ‘unsigned char *’} to ‘char *’ differ in signedness [-Wpointer-sign]
+ 9205 |                 e = e1 = (u8 *)expand(s, d, (char *)e, &sccs_expanded);
+      |                        ^
+slib.c:9211:24: warning: pointer targets in assignment from ‘u8 *’ {aka ‘unsigned char *’} to ‘char *’ differ in signedness [-Wpointer-sign]
+ 9211 |                 e = e2 = (u8 *)rcsexpand(s, d, (char *)e, &rcs_expanded);
+      |                        ^
+In file included from libc/system.h:48:
+slib.c: In function ‘_hasDiffs’:
+slib.c:9393:63: warning: pointer targets in passing argument 6 of ‘expandeq’ differ in signedness [-Wpointer-sign]
+ 9393 |                             expandeq(s, d, gline, glen, fbuf, &eflags)) {
+      |                                                               ^~~~~~~
+      |                                                               |
+--
+ 9196 | expandeq(sccs *s, ser_t d, char *gbuf, int glen, char *fbuf, int *flags)
+      |                                                              ~~~~~^~~~~
+slib.c: In function ‘sccs_getInit’:
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13577:17: note: in expansion of macro ‘unless’
+--
+slib.c:13577:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13577 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13583:17: note: in expansion of macro ‘unless’
+--
+slib.c:13583:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13583 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13589:17: note: in expansion of macro ‘unless’
+--
+slib.c:13589:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13589 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13595:17: note: in expansion of macro ‘unless’
+--
+slib.c:13595:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13595 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13608:17: note: in expansion of macro ‘unless’
+--
+slib.c:13608:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13608 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13613:17: note: in expansion of macro ‘unless’
+--
+13613 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+In file included from slib.c:25:
+slib.c:13618:44: warning: pointer targets in passing argument 1 of ‘myatoi’ differ in signedness [-Wpointer-sign]
+13618 |                 DATE_FUDGE_SET(sc, d, atoi(&buf[2]));
+      |                                            ^~~~~~~
+      |                                            |
+--
+slib.c:451:16: note: expected ‘const u8 *’ {aka ‘const unsigned char *’} but argument is of type ‘char *’
+  451 | atoi(const u8 *s)
+      |      ~~~~~~~~~~^
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13620:17: note: in expansion of macro ‘unless’
+--
+slib.c:13620:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13620 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13641:17: note: in expansion of macro ‘unless’
+--
+slib.c:13641:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13641 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13648:17: note: in expansion of macro ‘unless’
+--
+slib.c:13648:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13648 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13666:17: note: in expansion of macro ‘unless’
+--
+slib.c:13666:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13666 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13672:17: note: in expansion of macro ‘unless’
+--
+slib.c:13672:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13672 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13678:17: note: in expansion of macro ‘unless’
+--
+slib.c:13678:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13678 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13684:17: note: in expansion of macro ‘unless’
+--
+slib.c:13684:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13684 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13690:17: note: in expansion of macro ‘unless’
+--
+slib.c:13690:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13690 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13719:17: note: in expansion of macro ‘unless’
+--
+slib.c:13719:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13719 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13726:17: note: in expansion of macro ‘unless’
+--
+slib.c:13726:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13726 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+slib.c:13733:45: warning: pointer targets in passing argument 1 of ‘myatoi’ differ in signedness [-Wpointer-sign]
+13733 |                         int     vers = atoi(&buf[3]);
+      |                                             ^~~~~~~
+      |                                             |
+--
+slib.c:451:16: note: expected ‘const u8 *’ {aka ‘const unsigned char *’} but argument is of type ‘char *’
+  451 | atoi(const u8 *s)
+      |      ~~~~~~~~~~^
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13737:17: note: in expansion of macro ‘unless’
+--
+slib.c:13737:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13737 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13757:17: note: in expansion of macro ‘unless’
+--
+slib.c:13757:54: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+13757 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+libc/style.h:44:25: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+   44 | #define unless(e)       if (!(e))
+      |                         ^~
+slib.c:13763:17: note: in expansion of macro ‘unless’
+--
+13763 |                 unless (buf = fgetline(f)) goto out; lines++;
+      |                                                      ^~~~~
+slib.c: In function ‘sccs_delta’:
+slib.c:14378:24: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+14378 |                 for (t = SYMLINK(s, n); *t; t++) s->dsum += *t;
+      |                        ^
+slib.c: In function ‘kw2val’:
+slib.c:15436:27: warning: pointer targets in assignment from ‘char *’ to ‘unsigned char *’ differ in signedness [-Wpointer-sign]
+15436 |                 unless (p = COMMENTS(s, d)) return (nullVal);
+      |                           ^
+libc/style.h:44:31: note: in definition of macro ‘unless’
+   44 | #define unless(e)       if (!(e))
+      |                               ^
+slib.c: In function ‘sccs_getperfile’:
+slib.c:16895:40: warning: pointer targets in passing argument 1 of ‘myatoi’ differ in signedness [-Wpointer-sign]
+16895 |                 s->encoding_in |= atoi(&buf[4]) | E_ALWAYS;
+      |                                        ^~~~~~~
+      |                                        |
+--
+slib.c:451:16: note: expected ‘const u8 *’ {aka ‘const unsigned char *’} but argument is of type ‘char *’
+  451 | atoi(const u8 *s)
+      |      ~~~~~~~~~~^
+slib.c:16917:35: warning: pointer targets in passing argument 1 of ‘myatoi’ differ in signedness [-Wpointer-sign]
+16917 |                 s->version = atoi(&buf[2]);
+      |                                   ^~~~~~~
+      |                                   |
+--
+  451 | atoi(const u8 *s)
+      |      ~~~~~~~~~~^
+slib.c: In function ‘sccs_istagkey’:
+slib.c:17362:39: warning: pointer targets in passing argument 1 of ‘myatoi’ differ in signedness [-Wpointer-sign]
+17362 |         unless (parts[4] && atoi(parts[4])) return (1);
+      |                                  ~~~~~^~~
+      |                                       |
+--
+  451 | atoi(const u8 *s)
+      |      ~~~~~~~~~~^
+slib.c: In function ‘loadDB’:
+slib.c:17954:42: warning: pointer targets in passing argument 1 of ‘myatoi’ differ in signedness [-Wpointer-sign]
+17954 |                                 if (atoi(&buf[7]) == sum) {
+      |                                          ^~~~~~~
+      |                                          |
+--
+slib.c:451:16: note: expected ‘const u8 *’ {aka ‘const unsigned char *’} but argument is of type ‘char *’
+  451 | atoi(const u8 *s)
+      |      ~~~~~~~~~~^
+slib.c:17961:50: warning: pointer targets in passing argument 1 of ‘myatoi’ differ in signedness [-Wpointer-sign]
+17961 |                                             atoi(&buf[7]), sum);
+      |                                                  ^~~~~~~
+      |                                                  |
+--
+slib.c:451:16: note: expected ‘const u8 *’ {aka ‘const unsigned char *’} but argument is of type ‘char *’
+  451 | atoi(const u8 *s)
+      |      ~~~~~~~~~~^
+slib.c:17972:32: warning: pointer targets in assignment from ‘char *’ to ‘u8 *’ {aka ‘unsigned char *’} differ in signedness [-Wpointer-sign]
+17972 |                         for (u = buf; *u; sum += *u++);
+      |                                ^
+slib.c: In function ‘stripDeltas’:
+slib.c:18237:43: warning: pointer targets in passing argument 2 of ‘fputbumpserial’ differ in signedness [-Wpointer-sign]
+18237 |                         fputbumpserial(s, buf, d - ser);
+      |                                           ^~~
+      |                                           |
+--
+      |                         ~~~~^~~
+In file included from slib.c:14925:
+kw2val_lookup.c: At top level:
+kw2val_lookup.c:397:21: warning: ‘kw2val_hash’ defined but not used [-Wunused-function]
+  397 | static unsigned int kw2val_hash(const char *str, size_t len)
+      |                     ^~~~~~~~~~~
+CC smerge.c
+--
+CC unedit.c
+CC unique.c
+unique.c: In function ‘uniq_adjust’:
+unique.c:54:30: warning: pointer targets in passing argument 2 of ‘hash_keyencode’ differ in signedness [-Wpointer-sign]
+   54 |         hash_keyencode(fout, key);
+      |                              ^~~
+      |                              |
+--
+CC upgrade.c
+CC urlinfo.c
+urlinfo.c: In function ‘urlinfo_write’:
+urlinfo.c:260:34: warning: pointer targets in passing argument 2 of ‘webencode’ differ in signedness [-Wpointer-sign]
+  260 |                 webencode(f, data->url, strlen(data->url)+1);
+      |                              ~~~~^~~~~
+      |                                  |

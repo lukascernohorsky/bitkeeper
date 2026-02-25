@@ -360,7 +360,7 @@ mkinit(sccs *s, ser_t d, char *file, char *key)
 		fh = popen(p, "r");
 		free(p);
 		while (size = fread(buf, 1, sizeof(buf), fh)) {
-			randbits = adler32(randbits, buf, size);
+			randbits = adler32(randbits, (const Bytef *)buf, size);
 			for (i = 0; i < size; i++) {
 				unless (buf[i]) {
 					binary = 1;

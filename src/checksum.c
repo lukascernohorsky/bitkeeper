@@ -245,7 +245,7 @@ fileResum(sccs *s, ser_t d, int diags, int fix, int safefix)
 		e = getSymlnkCksumDelta(s, d);
 		if (!fix && !SUM(s, e)) return (0);
 
-		for (t = SYMLINK(s, d); *t; sum += *t++);
+		for (t = (u8 *)SYMLINK(s, d); *t; sum += *t++);
 		if (SUM(s, e) == sum) return (0);
 		unless (fix) {
 			fprintf(stderr, "Bad symlink checksum %05u:%05u "
@@ -478,7 +478,7 @@ do_chksum(int fd, int off, int *sump)
 	while ((i = read(fd, buf, sizeof(buf))) > 0) {
 		for (p = buf; i--; sum += *p++);
 	}
-	*sump = (int)sum;
+	*sump = (int)(unsigned char)sum;
 	return (0);
 }
 
@@ -571,14 +571,14 @@ cset_resum(sccs *s, int diags, int fix, int spinners, int takepatch)
 			addArray(&rkarray, 0);
 			rkid->index = cnt++;
 			sum = 0;
-			for (e = HEAP(s, rkoff); *e; e++) sum += *e;
+			for (e = (u8 *)HEAP(s, rkoff); *e; e++) sum += *e;
 			sum += ' ' + '\n';
 			rkid->sum = sum;
 		} else {
 			rkid = (rkinfo *)root2id->vptr;
 			sum = rkid->sum;
 		}
-		for (e = HEAP(s, dkoff); *e; e++) sum += *e;
+		for (e = (u8 *)HEAP(s, dkoff); *e; e++) sum += *e;
 		snew.ser = d;
 		snew.sum = sum;
 		addArray(&rkarray[rkid->index].sse, &snew);
@@ -610,14 +610,21 @@ cset_resum(sccs *s, int diags, int fix, int spinners, int takepatch)
 		d = order[orderIndex];
 
 		/* serialmap[i] = (slist[i] ^ symdiff[i]) & 1 */
-		bits = symdiff_expand(s, L(prev), d, symdiff);
+		{
+			ser_t prev_arr[2] = {prev, 0};
+			bits = symdiff_expand(s, prev_arr, d, symdiff);
+		}
 		start = (d > prev) ? d : prev;
 		/* closure[i] = (slist[i] ^ symdiff[i]) & 2 */
 		if (verify) {
 			wrdata	wr;
 			ser_t	tmpd;
 
-			walkrevs_setup(&wr, s, L(prev), L(d), WR_EITHER);
+			{
+				ser_t prev_arr[2] = {prev, 0};
+				ser_t d_arr[2] = {d, 0};
+				walkrevs_setup(&wr, s, prev_arr, d_arr, WR_EITHER);
+			}
 			while (tmpd = walkrevs(&wr)) {
 				unless (symdiff[tmpd]) bits++;
 				symdiff[tmpd] |= 2;

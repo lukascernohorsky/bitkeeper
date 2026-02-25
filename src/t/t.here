@@ -1,0 +1,83 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# here -- test here command functionality
+
+echo $N Test here help and usage ...................................$NL
+# Test help output
+bk here --help > GOT 2>&1
+# Should contain usage information
+grep -q "usage:" GOT || fail -f GOT
+grep -q "here" GOT || fail -f GOT
+echo OK
+
+echo $N Test here with invalid options .............................$NL
+# Test invalid option
+bk here -z 2> ERR && fail
+# Should get bad argument error
+grep -q "unknown option" ERR || fail -f ERR
+echo OK
+
+echo $N Test here command recognition ..............................$NL
+# Test that here command is recognized
+bk here --help > /dev/null 2>&1 || fail
+echo OK
+
+echo $N Test here in non-nested repository ..........................$NL
+simple project
+# Test here in simple repository (should fail)
+bk here 2> ERR && fail
+# Should get error about not being in nested repository
+grep -q "must be in a nested repository" ERR || fail -f ERR
+echo OK
+
+echo $N Test here basic functionality ................................$NL
+nested project
+# Test basic here functionality
+bk here > GOT || fail
+# Should show current here context
+test -s GOT || fail
+echo OK
+
+echo $N Test here list functionality ................................$NL
+# Test here list
+bk here list > GOT || fail
+# Should show list of here contexts
+test -s GOT || fail
+echo OK
+
+echo $N Test here with verbose option ...............................$NL
+# Test verbose option
+bk here -v > GOT || fail
+# Should show verbose here information
+test -s GOT || fail
+echo OK
+
+echo $N Test here with very verbose option ..........................$NL
+# Test very verbose option
+bk here -vv > GOT || fail
+# Should show very verbose here information
+test -s GOT || fail
+echo OK
+
+echo $N Test here in nested component ................................$NL
+cd gcc
+# Test here in nested component
+bk here > GOT || fail
+# Should show here context for component
+test -s GOT || fail
+cd ..
+echo OK
+
+echo "All here tests completed successfully"

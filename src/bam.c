@@ -176,7 +176,7 @@ bp_get(sccs *s, ser_t din, u32 flags, char *gfile, FILE *out)
 		} else {
 			if (m->size) {
 				// XXX hash dfile?
-				sum = adler32(0, m->mmap, m->size);
+				sum = adler32(0, (const Bytef *)m->mmap, m->size);
 			} else {
 				sum = 0;
 			}
@@ -323,10 +323,10 @@ bp_hashgfile(char *gfile, char **hashp, sum_t *sump)
 	if ((fd = open(gfile, O_RDONLY, 0)) < 0) return (-1);
 	hash_descriptor[hdesc].init(&md);
 	while ((i = read(fd, buf, sizeof(buf))) > 0) {
-		sum = adler32(sum, buf, i);
-		hash_descriptor[hdesc].process(&md, buf, i);
+		sum = adler32(sum, (const Bytef *)buf, i);
+		hash_descriptor[hdesc].process(&md, (const unsigned char *)buf, i);
 	}
-	hash_descriptor[hdesc].done(&md, buf);
+	hash_descriptor[hdesc].done(&md, (unsigned char *)buf);
 	close(fd);
 
 	*hashp = malloc(36);
@@ -339,7 +339,7 @@ bp_hashgfile(char *gfile, char **hashp, sum_t *sump)
 	p = *hashp + strlen(*hashp);
 	*p++ = '.';
 	b64len = 64;
-	base64_encode(buf, hash_descriptor[hdesc].hashsize, p, &b64len);
+	base64_encode((const unsigned char *)buf, hash_descriptor[hdesc].hashsize, (unsigned char *)p, (unsigned long *)&b64len);
 	for (; *p; p++) {
 		if (*p == '/') *p = '-';	/* dash */
 		if (*p == '+') *p = '_';	/* underscore */
@@ -797,7 +797,7 @@ bp_logUpdate(project *p, char *key, char *val)
 	bp_indexfile(p, buf);
 	unless (f = fopen(buf, "a")) return (-1);
 	sprintf(buf, "%s %s", key, val);
-	fprintf(f, "%s %08x\n", buf, (u32)adler32(0, buf, strlen(buf)));
+	fprintf(f, "%s %08x\n", buf, (u32)adler32(0, (const Bytef *)buf, strlen(buf)));
 	fclose(f);
 	return (0);
 }
@@ -2017,7 +2017,7 @@ load_logfile(MDBM *m, FILE *f)
 		assert(crc);
 		*crc++ = 0;
 		aWant = strtoul(crc, 0, 16);
-		aGot = adler32(0, buf, strlen(buf));
+		aGot = adler32(0, (const Bytef *)buf, strlen(buf));
 		unless (aGot == aWant) {
 			fprintf(stderr, "Skipping %s\n", buf);
 			continue;

@@ -142,7 +142,7 @@ norev:		if (opts->rev.buf) opts->rev.buf[0] = 0;
 		} else {
 			f = &buf[2];
 		}
-		unless (match_one(f, opts->glob, 0)) return (sfileNext());
+		unless (match_one((u8 *)f, (u8 *)opts->glob, 0)) return (sfileNext());
 	}
 	if (oksccs(buf, opts->flags, !(opts->flags & SF_SILENT))) {
 		strcpy(opts->sfile, buf);

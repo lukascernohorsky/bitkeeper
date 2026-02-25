@@ -1,0 +1,106 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Advanced edge cases -- test complex scenarios and edge conditions
+
+echo $N Test concurrent operations simulation ..........................$NL
+nested project
+# Simulate concurrent operations by creating multiple files quickly
+for i in $(seq 1 10); do
+    echo "content $i" > file$i
+    bk new file$i || fail
+done
+# Verify all files were created
+bk files | grep -q "file10" || fail
+echo OK
+
+echo $N Test large file handling ......................................$NL
+# Create a large file
+dd if=/dev/zero of=largefile bs=1M count=5 >/dev/null 2>&1 || fail
+bk new largefile || fail
+bk admin -y"large file" largefile > GOT 2>&1 || echo "large file handled"
+rm largefile
+echo OK
+
+echo $N Test special characters in filenames ..........................$NL
+# Test files with special characters
+for char in "&", "#", "$", "%", "(", ")", "[", "]", "{", "}", "|", ";"; do
+    filename="special${char}file"
+    echo "test" > "$filename"
+    bk new "$filename" || fail
+done
+# Verify special files exist
+bk files | grep -q "special" || fail
+echo OK
+
+echo $N Test deep directory structure .................................$NL
+# Create deep directory structure
+mkdir -p a/b/c/d/e/f/g/h/i/j
+cd a/b/c/d/e/f/g/h/i/j
+echo "deep content" > deepfile
+bk new deepfile || fail
+cd ../../../../../../../..
+# Verify deep file exists
+bk files | grep -q "deepfile" || fail
+echo OK
+
+echo $N Test symlink handling ..........................................$NL
+# Test symlink handling
+ln -s file1 symlink1
+bk new symlink1 2> ERR && fail
+# Should handle symlinks appropriately
+grep -q "symlink" ERR || fail -f ERR
+echo OK
+
+echo $N Test file permission edge cases ................................$NL
+# Test with read-only files
+ touch readonlyfile
+chmod 444 readonlyfile
+bk new readonlyfile 2> ERR && fail
+# Should handle read-only files
+grep -q "readonly" ERR || fail -f ERR
+chmod 644 readonlyfile
+echo OK
+
+echo $N Test command pipeline scenarios ...............................$NL
+# Test command piping
+bk files | bk admin -y"pipeline test" - 2> ERR && fail
+# Should handle piped input
+grep -q "usage" ERR || fail -f ERR
+echo OK
+
+echo $N Test environment variable handling ............................$NL
+# Test with custom environment variables
+BK_TEST_VAR="custom_value" bk admin -y"env test" file1 > GOT 2>&1 || echo "env vars handled"
+echo OK
+
+echo $N Test memory intensive operations ..............................$NL
+# Test with many small files
+for i in $(seq 1 50); do
+    echo "small $i" > small$i
+    bk new small$i || fail
+done
+# Verify all small files exist
+bk files | grep -q "small50" || fail
+echo OK
+
+echo $N Test complex nested component scenarios .......................$NL
+cd gcc
+# Test complex operations in nested component
+bk here -v > GOT || fail
+test -s GOT || fail
+cd ..
+echo OK
+
+echo "All advanced edge case tests completed successfully"

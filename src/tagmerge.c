@@ -93,7 +93,7 @@ doit(u32 sum, char *buf)
 		assert(f);
 	}
 	len = strlen(buf);
-	sum = adler32(sum, buf, len);
+	sum = adler32(sum, (const Bytef *)buf, len);
 	fwrite(buf, len, 1, f);
 	return (sum);
 }

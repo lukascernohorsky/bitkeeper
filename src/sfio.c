@@ -509,7 +509,7 @@ out_symlink(char *file, struct stat *sp, off_t *byte_count)
 	 * symlink as "SLNK001024".
 	 */
 	*byte_count += printf("SLNK%06u%s", n, buf);
-	sum += adler32(sum, buf, n);
+	sum += adler32(sum, (const Bytef *)buf, n);
 	*byte_count += printf("%010u", sum);
 	assert(opts->doModes);
 	*byte_count += printf("%03o", sp->st_mode & 0777);
@@ -531,7 +531,7 @@ out_hardlink(char *file, struct stat *sp, off_t *byte_count, char *linkMe)
 	 * hardlink as "HLNK001024".
 	 */
 	*byte_count += printf("HLNK%06u%s", n, linkMe);
-	sum += adler32(sum, linkMe, n);
+	sum += adler32(sum, (const Bytef *)linkMe, n);
 	*byte_count += printf("%010u", sum);
 	if (opts->doModes) *byte_count += printf("%03o", sp->st_mode & 0777);
 	print_status(file, 0);
@@ -558,7 +558,7 @@ out_xfile(char *file, int type, off_t *byte_count)
 		free(data);
 		return (1);
 	}
-	sum = adler32(0, data, sz);
+	sum = adler32(0, (const Bytef *)data, sz);
 	free(data);
 	*byte_count += sz;
 	*byte_count += printf("%010u", sum);
@@ -588,7 +588,7 @@ out_file(char *file, struct stat *sp, off_t *byte_count, int useDsum, u32 dsum)
 		data = sccs_scat(s, SCAT_SCCS, &len);
 		sz = (u32)len;
 		*byte_count += printf("%010u", sz);
-		sum = adler32(sum, data, sz);
+		sum = adler32(sum, (const Bytef *)data, sz);
 		if (fwrite(data, 1, len, stdout) != len) {
 			free(data);
 			if ((errno != EPIPE) || getenv("BK_SHOWPROC")) {
@@ -610,7 +610,7 @@ out_file(char *file, struct stat *sp, off_t *byte_count, int useDsum, u32 dsum)
 		while ((n = readn(fd, buf, sizeof(buf))) > 0) {
 			nread += n;
 			opts->done += n;
-			unless (useDsum) sum = adler32(sum, buf, n);
+			unless (useDsum) sum = adler32(sum, (const Bytef *)buf, n);
 			if (fwrite(buf, 1, n, stdout) != n) {
 				if ((errno != EPIPE) || getenv("BK_SHOWPROC")) {
 					perror(file);
@@ -983,7 +983,7 @@ in_bptuple(char *keys, char *datalen, int extract)
 		/* keys linked to older keys we load into file */
 		if (fread(file, 1, todo, stdin) != todo) return (1);
 		file[todo] = 0;
-		sum = adler32(0, file, todo);
+		sum = adler32(0, (const Bytef *)file, todo);
 		if (fread(tmp, 1, 10, stdin) != 10) {
 			perror("chksum read");
 			return (1);
@@ -1065,7 +1065,7 @@ in_symlink(char *file, int pathlen, int extract)
 	}
 	if (fread(buf, 1, pathlen, stdin) != pathlen) return (1);
 	buf[pathlen] = 0;
-	sum = adler32(0, buf, pathlen);
+	sum = adler32(0, (const Bytef *)buf, pathlen);
 	if (extract) {
 		if (symlink(buf, file)) {
 			mkdirf(file);
@@ -1117,7 +1117,7 @@ in_hardlink(char *file, int pathlen, int extract)
 	assert(pathlen > 0);
 	if (fread(buf, 1, pathlen, stdin) != pathlen) return (1);
 	buf[pathlen] = 0;
-	sum = adler32(0, buf, pathlen);
+	sum = adler32(0, (const Bytef *)buf, pathlen);
 	if (extract) {
 		if (fileLink(buf, file)) {
 			perror(file);
@@ -1176,7 +1176,7 @@ in_xfile(char *file, int type, u32 todo, int extract)
 		free(data);
 		return (1);
 	}
-	sum = adler32(0, data, todo);
+	sum = adler32(0, (const Bytef *)data, todo);
 	data[todo] = 0;
 
 	if (fread(buf, 1, 10, stdin) != 10) {
@@ -1238,7 +1238,7 @@ in_file(char *file, u32 todo, int extract)
 	while ((n = fread(buf, 1, min(todo, sizeof(buf)), stdin)) > 0) {
 		todo -= n;
 		opts->done += n;
-		sum = adler32(sum, buf, n);
+		sum = adler32(sum, (const Bytef *)buf, n);
 		if (exists || !extract) continue;
 		/*
 		 * This write statement accounts for 57% sfio's execution

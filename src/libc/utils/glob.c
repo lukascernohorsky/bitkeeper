@@ -75,7 +75,7 @@ is_glob(char *glob)
 
 /* Match a string against one glob pattern.  */
 int
-match_one(char *string, char *glob, int ignorecase)
+match_one(u8 *string, u8 *glob, int ignorecase)
 {
 	u8 	*p, *g;
 	int	invert, match;
@@ -90,7 +90,7 @@ match_one(char *string, char *glob, int ignorecase)
 		    case '[':
 			g++;
 			if (invert = (*g == '^')) g++;
-			unless (strchr(g, ']')) {
+			unless (strchr((const char *)g, ']')) {
 				fprintf(stderr, "bad glob: %s\n", glob);
 				return (0);
 			}
@@ -142,7 +142,7 @@ star:	while (*p) {
 			while (*p && C(*p) != C(*g)) p++;
 			unless (*p) return (0);
 		}
-		if (match_one(p, g, ignorecase)) return (1);
+		if (match_one((u8 *)p, (u8 *)g, ignorecase)) return (1);
 		p++;
 	}
 	return (0);
@@ -158,7 +158,7 @@ match_globs(char *string, char **globs, int ignorecase)
 	if (globs == NULL) return NULL;
 
 	EACH (globs) {
-		if (match_one(string, globs[i], ignorecase)) {
+		if (match_one((u8 *)string, (u8 *)globs[i], ignorecase)) {
 			return globs[i];
 		}
 	}

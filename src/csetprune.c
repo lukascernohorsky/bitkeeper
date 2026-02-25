@@ -175,7 +175,7 @@ k_err:			fprintf(stderr,
 			    "lower case hex digits\n", opts->ranbits);
 			usage();
 		}
-		for (p = opts->ranbits; *p; p++) {
+		for (p = (u8 *)opts->ranbits; *p; p++) {
 			if (!isxdigit(*p) || isupper(*p)) goto k_err;
 		}
 	}

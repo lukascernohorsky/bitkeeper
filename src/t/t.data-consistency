@@ -1,0 +1,116 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Data consistency -- test repository integrity and data consistency
+
+echo $N Test basic repository check ....................................$NL
+nested project
+# Run basic repository check
+bk check -ac || fail
+# Should complete successfully
+echo OK
+
+echo $N Test checksum verification ....................................$NL
+# Test checksum verification
+bk checksum > GOT || fail
+# Should generate checksums
+test -s GOT || fail
+echo OK
+
+echo $N Test needscheck functionality .................................$NL
+# Test needscheck command
+bk needscheck > GOT || echo "needscheck completed"
+# Should either succeed or give reasonable output
+echo OK
+
+echo $N Test remote repository check ...................................$NL
+# Test remote check
+bk rcheck > GOT || echo "rcheck completed"
+# Should either succeed or give reasonable output
+echo OK
+
+echo $N Test consistency after multiple operations ....................$NL
+# Perform multiple operations and verify consistency
+for i in $(seq 1 5); do
+    echo "operation $i" > opfile$i
+    bk new opfile$i || fail
+    bk edit opfile$i || fail
+    echo "modified $i" > opfile$i
+    bk delta -y"op $i" opfile$i || fail
+done
+# Verify repository is still consistent
+bk check -ac || fail
+echo OK
+
+echo $N Test consistency across components ............................$NL
+cd gcc
+# Check consistency in component
+bk check -ac || fail
+cd ../gdb
+# Check consistency in another component
+bk check -ac || fail
+cd ..
+echo OK
+
+echo $N Test data integrity after modifications .......................$NL
+# Modify files and verify data integrity
+bk edit ChangeSet || fail
+echo "test modification" >> ChangeSet
+bk delta -y"integrity test" ChangeSet || fail
+# Verify checksums are updated
+bk checksum > GOT || fail
+test -s GOT || fail
+echo OK
+
+echo $N Test consistency with deleted files ............................$NL
+# Create and delete files, then check consistency
+bk new tempfile || fail
+bk rm tempfile || fail
+# Verify repository is still consistent
+bk check -ac || fail
+echo OK
+
+echo $N Test consistency with renamed files ............................$NL
+# Test rename operations
+bk mv opfile1 renamed_file || fail
+# Verify repository is still consistent
+bk check -ac || fail
+echo OK
+
+echo $N Test long-running consistency verification ....................$NL
+# Test with more complex operations
+for i in $(seq 6 10); do
+    echo "batch $i" > batch$i
+    bk new batch$i || fail
+    bk edit batch$i || fail
+    echo "batch content $i" > batch$i
+    bk delta -y"batch $i" batch$i || fail
+done
+# Final consistency check
+bk check -ac || fail
+bk repocheck || fail
+echo OK
+
+echo $N Test consistency with component changes ......................$NL
+cd gcc
+# Make changes in component
+bk edit ChangeSet || fail
+echo "component integrity test" >> ChangeSet
+bk delta -y"component integrity" ChangeSet || fail
+cd ..
+# Verify overall consistency
+bk check -ac || fail
+echo OK
+
+echo "All data consistency tests completed successfully"

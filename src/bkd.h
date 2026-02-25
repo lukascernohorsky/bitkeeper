@@ -136,7 +136,7 @@ int	remote_checked(char *url);
 
 int	gzipAll2fh(int rfd, FILE *wf, int level, int *in, int *out,
     int verbose);
-int	gunzipAll2fh(int rfd, FILE *wf, int *in, int *out);
+int	gunzipAll2fh(int rfd, FILE *wf, u32 *in, u32 *out);
 int	bkd_getc(void);
 
 int	read_blk(remote *r, char *c, int len);

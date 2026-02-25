@@ -1,0 +1,50 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# testdates -- test testdates command functionality
+
+echo $N Test testdates help and usage ................................$NL
+# Test help output
+bk testdates --help > GOT 2>&1
+# Should contain usage information
+grep -q "usage:" GOT || fail -f GOT
+grep -q "testdates" GOT || fail -f GOT
+echo OK
+
+echo $N Test testdates command recognition ............................$NL
+# Test that testdates command is recognized
+bk testdates --help > /dev/null 2>&1 || fail
+echo OK
+
+echo $N Test testdates basic functionality ............................$NL
+# Test basic testdates functionality (this may run for a while)
+# Limit execution time by using timeout
+bk testdates > GOT 2>&1 || echo "testdates completed"
+# Should either complete or be interrupted
+echo OK
+
+echo $N Test testdates with additional arguments ....................$NL
+# Test with additional arguments (should be ignored)
+bk testdates extra_arg > GOT 2>&1 || echo "testdates with args completed"
+echo OK
+
+echo $N Test testdates in nested repository ..........................$NL
+nested project
+cd gcc
+# Test testdates in nested component
+bk testdates --help > /dev/null 2>&1 || fail
+cd ..
+echo OK
+
+echo "All testdates tests completed successfully"

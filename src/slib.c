@@ -448,7 +448,7 @@ sertoa(register char *buf, ser_t val)
 
 #define	atoi	myatoi
 private int
-atoi(u8 *s)
+atoi(const u8 *s)
 {
 	u8	c;
 	int	val = 0;
@@ -463,9 +463,9 @@ atoi(u8 *s)
 int
 atoi_p(char **sp)
 {
+	const u8	*s = (const u8 *)*sp;
 	u8	c;
 	int	val = 0;
-	u8	*s = *sp;
 
 	if (!s) return (0);
 	// stop at first non-digit including null
@@ -473,7 +473,7 @@ atoi_p(char **sp)
 		val = val * 10 + c;
 		++s;
 	}
-	*sp = s;
+	*sp = (char *)s;
 	return (val);
 }
 
@@ -1053,9 +1053,9 @@ correct:
 			sign = -1;	/* this is what I want */
 		}
 		if (*z == '+') z++;
-		tp->tm_hour += atoi(z) * sign;
+		tp->tm_hour += atoi((const u8 *)z) * sign;
 		while (*z++ != ':');
-		tp->tm_min += atoi(z) * sign;
+		tp->tm_min += atoi((const u8 *)z) * sign;
 	}
 }
 
@@ -1227,7 +1227,7 @@ scanrev(char *s, ser_t *a, ser_t *b, ser_t *c, ser_t *d)
 			*c = atoi_p(&s);
 			if (d && *s == '.') {
 				s++;
-				*d = atoi(s);
+				*d = atoi((const u8 *)s);
 				return (4);
 			} else return (3);
 		} else return (2);
@@ -1663,7 +1663,7 @@ findrev(sccs *s, char *rev)
 	if (streq(rev, "1.0")) return (TREE(s));
 
 	if ((*rev == '=') && isdigit(rev[1])) {
-		e = atoi(++rev);
+		e = atoi((const u8 *)++rev);
 		unless ((e >= TREE(s)) && (e <= TABLE(s))) {
 			fprintf(stderr, "Serial %s not found\n", rev);
 			return (0);
@@ -1969,7 +1969,7 @@ ok:
 		if (!c) {
 			/* Seems weird but makes -e -r2 -> 2.1 when tot is 1.x
 			 */
-			int	release = rev ? atoi(rev) : 1;
+			int	release = rev ? atoi((const u8 *)rev) : 1;
 
 			if (release > a) {
 				a = release;
@@ -2443,7 +2443,7 @@ chk_nlbug(sccs *s)
 	int	ret = 0;
 
 	sccs_rdweaveInit(s);
-	while (buf = sccs_nextdata(s)) {
+	while (buf = (u8 *)sccs_nextdata(s)) {
 		if (buf[0] == '\001' && buf[1] == 'E') {
 			p = buf + 3;
 			while (isdigit(*p)) p++;
@@ -3016,7 +3016,11 @@ sccs_tagConflicts(sccs *s)
 
 	h = hash_new(HASH_U32HASH, sizeof(u32), sizeof(struct tcpair));
 	db = mdbm_mem();
-	walkrevs_setup(&wr, s, L(l1), L(l2), WR_EITHER);
+	{
+		ser_t l1_arr[2] = {l1, 0};
+		ser_t l2_arr[2] = {l2, 0};
+		walkrevs_setup(&wr, s, l1_arr, l2_arr, WR_EITHER);
+	}
 	sym = 0;
 	while (d = walktagrevs(&wr)) {
 	    /* Want active in two contexts, so disable active in walkTags */
@@ -3396,7 +3400,7 @@ meta(sccs *s, ser_t d, char *buf)
 		break;
 	    case 'F':
 		/* Do not add to date here, done in inherit */
-		DATE_FUDGE_SET(s, d, atoi(&buf[3]));
+		DATE_FUDGE_SET(s, d, atoi((const u8 *)&buf[3]));
 		break;
 	    case 'H':
 		hostArg(s, d, &buf[3]);
@@ -3424,7 +3428,7 @@ meta(sccs *s, ser_t d, char *buf)
 		/* ignored, used to be d->text */
 		break;
 	    case 'V':
-		s->version = atoi(&buf[3]);
+		s->version = atoi((const u8 *)&buf[3]);
 		unless (s->version <= SCCS_VERSION) {
 			fprintf(stderr,
 			    "Later file format version %d, forcing read only\n",
@@ -3825,7 +3829,7 @@ first:		if (streq(buf, "\001u")) break;
 			goto bad;
 		}
 		p++;
-		PARENT_SET(s, d, atoi(p));
+		PARENT_SET(s, d, atoi((const u8 *)p));
 		debug((stderr, "mkgraph(%s)\n", rev));
 		revArg(s, d, rev);
 		if (FLAGS(s, d) & D_BADFORM) {
@@ -3860,14 +3864,14 @@ first:		if (streq(buf, "\001u")) break;
 				p = &buf[3];
 				while (q = eachstr(&p, &i)) {
 					sccs_saveNum(
-					    fcludes, atoi(q), 1);
+					    fcludes, atoi((const u8 *)q), 1);
 				}
 				break;
 			    case 'x':
 				p = &buf[3];
 				while (q = eachstr(&p, &i)) {
 					sccs_saveNum(
-					    fcludes, atoi(q), -1);
+					    fcludes, atoi((const u8 *)q), -1);
 				}
 				break;
 			    case 'g':
@@ -4031,19 +4035,19 @@ misc(sccs *s)
 			}
 			continue;
 		} else if (strneq(buf, "\001f e ", 5)) {
-			switch (atoi(&buf[5]) & ~E_BKMERGE) {
+			switch (atoi((const u8 *)&buf[5]) & ~E_BKMERGE) {
 			    case E_ASCII:
 			    case E_ASCII|E_GZIP:
 			    case E_UUENCODE:
 			    case E_UUENCODE|E_GZIP:
 			    case E_BAM:
-				s->encoding_in |= atoi(&buf[5]);
+				s->encoding_in |= atoi((const u8 *)&buf[5]);
 				break;
 			    default:
 				fprintf(stderr,
 				    "sccs: don't know encoding %d, "
 				    "assuming ascii\n",
-				    atoi(&buf[5]));
+				    atoi((const u8 *)&buf[5]));
 				s->encoding_in |= E_ASCII;
 				return (-1);
 			}
@@ -4232,18 +4236,18 @@ filter(char *buf)
 	char	*root;
 
 	r = pref_parse(buf);
-	if ((r->user) && !match_one(sccs_getuser(), r->user, 0)) {
+	if ((r->user) && !match_one((u8 *)sccs_getuser(), (u8 *)r->user, 0)) {
 no_match:	remote_free(r);
 		return (0);
 	}
 
 	if (r->host) {
 		h = sccs_gethost();
-		unless (h && match_one(h, r->host, 1)) goto no_match;
+		unless (h && match_one((u8 *)h, (u8 *)r->host, 1)) goto no_match;
 	}
 
 	if (r->path && (root = proj_root(0))) {
-		unless (match_one(root, r->path, !mixedCasePath())) {
+		unless (match_one((u8 *)root, (u8 *)r->path, !mixedCasePath())) {
 			goto no_match;
 		}
 	}
@@ -4884,7 +4888,7 @@ sccs_init(char *name, u32 flags)
 		glob = getenv("BK_SHOWINIT");
 		show = glob != 0;
 	}
-	if (show && match_one(name, glob, 0)) {
+	if (show && match_one((u8 *)name, (u8 *)glob, 0)) {
 		ttyprintf("init(%s) [%s]\n", name, prog);
 		gdb_backtrace();
 	}
@@ -5076,7 +5080,7 @@ sccs_init(char *name, u32 flags)
 		while (t = sccs_nextdata(s)) {
 			unless (isData(t)) {
 				if (t[1] == 'I') {
-					d = atoi(t+3);
+					d = atoi((const u8 *)t+3);
 					assert(WEAVE_INDEX(s, d) == 0);
 				} else if (keys) {
 					// \001E <ser>
@@ -6111,7 +6115,7 @@ fputbumpserial(sccs *s, u8 *buf, int inc)
 	ser_t	ser;
 
 	if (isData(buf) || !inc) {
-		fputs(buf, s->outfh);
+		fputs((const char *)buf, s->outfh);
 		return;
 	}
 	/* ^AI \d+
@@ -6120,7 +6124,7 @@ fputbumpserial(sccs *s, u8 *buf, int inc)
 	ser = atoi(&buf[3]);
 	fprintf(s->outfh, "\001%c %u", buf[1], ser + inc);
 	for (t = &buf[3]; isdigit(*t); t++);
-	fputs(t, s->outfh);
+	fputs((const char *)t, s->outfh);
 }
 
 private sum_t
@@ -6184,13 +6188,13 @@ uuencode_sum(sccs *s, FILE *in, FILE *out)
 			}
 			length -= n;
 			uuencode1(inp, obuf, n);
-			s->dsum += str_cksum(obuf);
+			s->dsum += str_cksum((u8 *)obuf);
 			fputs(obuf, out);
 			inp += n;
 			added++;
 		}
 	}
-	s->dsum += str_cksum(" \n");
+	s->dsum += str_cksum((u8 *)" \n");
 	fputs(" \n", out);
 	return (++added);
 }
@@ -6259,8 +6263,8 @@ uudecode(FILE *in, FILE *out)
 	char	obuf[450];
 	int	n, moved = 0;
 
-	while (fnext(ibuf, in)) {
-		n = uudecode1(ibuf, obuf);
+	while (fnext((char *)ibuf, in)) {
+		n = uudecode1((char *)ibuf, (uchar *)obuf);
 		moved += n;
 		fwrite(obuf, n, 1, out);
 	}
@@ -6704,8 +6708,8 @@ fastsum_load(sccs *s)
 	hash	*h = hash_new(HASH_MEMHASH);	/* var length key hash */
 	sumdata	*data;		/* data for next stage */
 	char	**stack = 0;	/* hash value correspond to no LF */
-	u8	*buf, *p;	/* need u8 for summing so no sign extend */
-	char	type, *n;	/* u8 but get api type matching */
+	u8	*buf, *p, *n;/* need u8 for summing so no sign extend */
+	char	type;		/* u8 but get api type matching */
 	ser_t	ser, cur = 0;	/* control data ser and what block in */
 	u32	len;
 	char	**blocks = 0;
@@ -6757,8 +6761,8 @@ fastsum_load(sccs *s)
 			linecount = 0;
 		}
 		type = buf[1];
-		n = &buf[3];
-		ser = atoi_p(&n);
+		n = (char *)&buf[3];
+		ser = atoi_p((char **)&n);
 		state = changestate(state, type, ser);
 		switch (type) {
 		    case 'E':
@@ -6868,7 +6872,10 @@ _whodisabled(sccs *s, ser_t d, void *token)
 	 * become set and stop the first time it does.  So no reason to clear
 	 * whole list after each iteration.  Pretty slick.
 	 */
-	symdiff_expand(s, L(PARENT(s, d)), d, who->slist);
+	{
+		ser_t parent_arr[2] = {PARENT(s, d), 0};
+		symdiff_expand(s, parent_arr, d, who->slist);
+	}
 	if (who->slist[who->base]) {
 		who->base = d;
 		return (1);	/* found; terminate walkrevs */
@@ -6893,12 +6900,16 @@ whodisabled(sccs *s, ser_t tip, ser_t serial, u8 *slist)
 	if ((tip < serial) || !isReachable(s, serial, tip)) return (0);
 	who.base = serial;
 	who.slist = calloc(TABLE(s) + 1, 1);
-	if (range_walkrevs(s, L(serial), L(tip), 0, _whodisabled, &who)) {
+	{
+		ser_t serial_arr[2] = {serial, 0};
+		ser_t tip_arr[2] = {tip, 0};
+		if (range_walkrevs(s, serial_arr, tip_arr, 0, _whodisabled, &who)) {
 		free(who.slist);
 		return (who.base);
 	}
 	free(who.slist);
 	return (serial);	/* not really an answer -- it -x itself? */
+	}
 }
 
 private int
@@ -7086,7 +7097,7 @@ out:			if (slist) free(slist);
 			goto out;
 		}
 	}
-	seq = (buf = getenv("_BK_SEQ_START")) ? atoi(buf) : 0;
+	seq = (buf = getenv("_BK_SEQ_START")) ? atoi((const u8 *)buf) : 0;
 	sum = 0;
 	added = 0;
 	deleted = 0;
@@ -7094,7 +7105,7 @@ out:			if (slist) free(slist);
 	other = 0;
 	counter = &other;
 	sccs_rdweaveInit(s);
-	while (buf = sccs_nextdata(s)) {
+	while (buf = (char *)sccs_nextdata(s)) {
 		register u8 *e, *e1, *e2;
 
 		e1= e2 = 0;
@@ -7131,7 +7142,7 @@ out:			if (slist) free(slist);
 				lf_pend = 0;
 			}
 			if (flags & NEWCKSUM) {
-				for (e = buf; *e; sum += *e++);
+				for (e = (u8 *)buf; *e; sum += *e++);
 				sum += '\n';
 			}
 			if (flags & GET_PREFIX) {
@@ -7162,29 +7173,29 @@ out:			if (slist) free(slist);
 				continue;
 			}
 
-			e = buf;
+			e = (u8 *)buf;
 			sccs_expanded = rcs_expanded = 0;
 			unless (flags & GET_EXPAND) goto write;
 			if (xflags & X_SCCS) {
-				for (e = buf; *e && (*e != '%'); e++);
+				for (e = (u8 *)buf; *e && (*e != '%'); e++);
 				if (*e == '%') {
 					e = e1 =
-					    expand(s, d, buf, &sccs_expanded);
+					    (u8 *)expand(s, d, buf, &sccs_expanded);
 					if (sccs_expanded &&
 					    (xflags & X_EXPAND1)) {
 						flags &= ~GET_EXPAND;
 					}
 				} else {
-					e = buf;
+					e = (u8 *)buf;
 				}
 			}
 			if (xflags & X_RCS) {
 				char	*t;
 
-				for (t = e; *t && (*t != '$'); t++);
+				for (t = (char *)e; *t && (*t != '$'); t++);
 				if (*t == '$') {
 					e = e2 =
-					    rcsexpand(s, d, e, &rcs_expanded);
+					    (u8 *)rcsexpand(s, d, (char *)e, &rcs_expanded);
 					if (rcs_expanded &&
 					    (xflags & X_EXPAND1)) {
 						flags &= ~GET_EXPAND;
@@ -7200,14 +7211,14 @@ write:
 				int	n;
 
 				unless (flags & GET_SUM) {
-					n = uudecode1(e, obuf);
+					n = uudecode1((char *)e, obuf);
 					fwrite(obuf, n, 1, out);
 				}
 				break;
 			    }
 			    case E_ASCII:
 			    case E_ASCII|E_GZIP:
-				unless (flags & GET_SUM) fputs(e, out);
+				unless (flags & GET_SUM) fputs((char *)e, out);
 				if (flags & NEWCKSUM) sum -= '\n';
 				lf_pend = print;
 				if (sccs_expanded) free(e1);
@@ -7221,7 +7232,7 @@ write:
 		}
 
 		debug2((stderr, "%s", buf));
-		serial = atoi(&buf[3]);
+		serial = atoi((const u8 *)&buf[3]);
 		/* seek out E which closes text block for last line
 		 * printed.  serial for that block is in lf_pend.
 		 * whatstate returns serial of current text block
@@ -7238,7 +7249,7 @@ write:
 		 */
 		if (buf[1] == 'E' && lf_pend == serial &&
 		    whatstate(state) == serial) {
-			char	*n = &buf[3];
+			u8	*n = (u8 *)&buf[3];
 			while (isdigit(*n)) n++;
 			if (*n != 'N') {
 				unless (flags & GET_SUM) fputs(eol, out);
@@ -7464,7 +7475,7 @@ get_link(sccs *s, char *printOut, FILE *out, int flags, ser_t d, int *ln)
 	e = getSymlnkCksumDelta(s, d);
 	if ((SUM(s, e) != 0) &&
 	    !streq(REV(s, e), "1.1") && !strneq(REV(s, e), "1.1.", 4)) {
-		for (t = SYMLINK(s, d); *t; t++) dsum += *t;
+		for (t = (u8 *)SYMLINK(s, d); *t; t++) dsum += *t;
 		if (SUM(s, e) != dsum) {
 			fprintf(stderr,
 				"get: bad delta cksum %u:%d for %s in %s, %s\n",
@@ -8132,14 +8143,14 @@ sccs_getdiffs(sccs *s, char *rev, u32 flags, char *printOut)
 	side = NEITHER;
 	nextside = NEITHER;
 
-	while (buf = sccs_nextdata(s)) {
+	while (buf = (char *)sccs_nextdata(s)) {
 		unless (isData(buf)) {
 			debug2((stderr, "%s", buf));
-			serial = atoi(&buf[3]);
+			serial = atoi((const u8 *)&buf[3]);
 			if (buf[1] == 'E' && serial == with &&
 			    serial == d)
 			{
-				char	*n = &buf[3];
+				u8	*n = (u8 *)&buf[3];
 				while (isdigit(*n)) n++;
 				if (*n == 'N') no_lf = 1;
 			}
@@ -8266,11 +8277,11 @@ sccs_patchDiffs(sccs *s, ser_t *pmap, char *printOut)
 	sccs_rdweaveInit(s);
 
 	fputs("F\n", out);
-	while (buf = sccs_nextdata(s)) {
+	while (buf = (char *)sccs_nextdata(s)) {
 		unless (isData(buf)) {
 			debug2((stderr, "%s", buf));
 			type = buf[1];
-			n = &buf[3];
+			n = (char *)&buf[3];
 			d = atoi_p(&n);
 			if (CSET(s) && (d < oldest)) break;
 			if (pmap[d] && (pmap[d] != D_INVALID)) {
@@ -8332,7 +8343,7 @@ badcksum(sccs *s, int flags)
 	}
 	assert(s);
 	rewind(s->fh);
-	t = sccs_nextdata(s);
+	t = (u8 *)sccs_nextdata(s);
 	s->cksum = filesum = atoi(&t[2]);
 	s->cksumdone = 1;
 	debug((stderr, "File says sum is %d\n", filesum));
@@ -8529,7 +8540,7 @@ delta_table(sccs *s, int willfix)
 	assert(sizeof(buf) >= 1024);	/* see comment code */
 	sprintf(buf, "\001%cXXXXX\n", BITKEEPER(s) ? 'H' : 'h');
 	fputs(buf, out);
-	s->cksum -= str_cksum(buf);
+	s->cksum -= str_cksum((u8 *)buf);
 
 	if (BITKEEPER(s)) {
 		/* add compat marker if any features are enabled.
@@ -8580,7 +8591,7 @@ delta_table(sccs *s, int willfix)
 			firstadded = 0;
 		}
 		fputs(buf, out);
-		if (first) s->cksum -= str_cksum(buf);
+		if (first) s->cksum -= str_cksum((u8 *)buf);
 		p = fmts(buf, "\001d ");
 		*p++ = TAG(s, d) ? 'R' : 'D';
 		*p++ = ' ';
@@ -8675,7 +8686,7 @@ delta_table(sccs *s, int willfix)
 			fputs("\001cK", out);
 			s->sumOff = ftell(out);
 			fputs("XXXXX", out);
-			s->cksum -= str_cksum("XXXXX");
+			s->cksum -= str_cksum((u8 *)"XXXXX");
 			fputc('\n', out);
 		} else if (!TAG(s, d)) {
 			/*
@@ -9191,13 +9202,13 @@ expandeq(sccs *s, ser_t d, char *gbuf, int glen, char *fbuf, int *flags)
 	if (BINARY(s)) return (0);
 	unless (*flags & GET_EXPAND) return (0);
 	if (xflags & X_SCCS) {
-		e = e1 = expand(s, d, e, &sccs_expanded);
+		e = e1 = (u8 *)expand(s, d, (char *)e, &sccs_expanded);
 		if ((xflags & X_EXPAND1) && sccs_expanded) {
 			*flags &= ~GET_EXPAND;
 		}
 	}
 	if (xflags & X_RCS) {
-		e = e2 = rcsexpand(s, d, e, &rcs_expanded);
+		e = e2 = (u8 *)rcsexpand(s, d, (char *)e, &rcs_expanded);
 		if ((xflags & X_EXPAND1) && rcs_expanded) {
 			*flags &= ~GET_EXPAND;
 		}
@@ -9386,7 +9397,7 @@ _hasDiffs(sccs *s, ser_t d, u32 flags, int inex, pfile *pf)
 			debug2((stderr, "SAME %s", fbuf));
 			continue;
 		}
-		serial = atoi(&fbuf[3]);
+		serial = atoi((const u8 *)&fbuf[3]);
 		if (fbuf[1] == 'E' && lf_pend == serial &&
 		    whatstate(state) == serial) {
 			char	*n = &fbuf[3];
@@ -10800,7 +10811,7 @@ out:		sccs_abortWrite(s);
 					}
 				}
 				t[len] = 0;
-				s->dsum += str_cksum(t) + '\n';
+				s->dsum += str_cksum((u8 *)t) + '\n';
 				fputs(t, sfile);
 				fputc('\n', sfile);
 				added++;
@@ -10810,7 +10821,7 @@ out:		sccs_abortWrite(s);
 		} else if (S_ISLNK(s->mode)) {
 			u8	*t;
 
-			for (t = s->symlink; t && *t; s->dsum += *t++);
+			for (t = (u8 *)s->symlink; t && *t; s->dsum += *t++);
 		}
 	}
 	fprintf(sfile, "\001E %d", n);
@@ -11244,7 +11255,7 @@ private int
 getval(char *arg)
 {
 	if (!arg || !*arg || !isdigit(*arg)) return (-1);
-	return (atoi(arg));
+	return (atoi((const u8 *)arg));
 }
 
 /*
@@ -11486,7 +11497,7 @@ mergeArg(sccs *s, ser_t d, char *arg)
 	if (!d) d = sccs_newdelta(s);
 	assert(MERGE(s, d) == 0);
 	assert(isdigit(arg[0]));
-	MERGE_SET(s, d, atoi(arg));
+	MERGE_SET(s, d, atoi((const u8 *)arg));
 	return (d);
 }
 
@@ -11509,13 +11520,13 @@ symArg(sccs *s, ser_t d, char *name)
 	 */
 	if (isdigit(*name)) {
 		FLAGS(s, d) |= D_SYMGRAPH;
-		PTAG_SET(s, d, atoi(name));
+		PTAG_SET(s, d, atoi((const u8 *)name));
 		while (isdigit(*name)) name++;
 		unless (*name++ == ' ') {
 			return;
 		}
 		if (isdigit(*name)) {
-			MTAG_SET(s, d, atoi(name));
+			MTAG_SET(s, d, atoi((const u8 *)name));
 			while (isdigit(*name)) name++;
 			unless (*name++ == ' ') {
 				return;
@@ -11985,7 +11996,7 @@ sccs_eachNum(char **linep, int *signp)
 			neg = 1;
 		}
 	}
-	return (neg * atoi(p));
+	return (neg * atoi((const u8 *)p));
 }
 
 /*
@@ -12026,7 +12037,7 @@ short_random(char *str, int len)
 	char	b64[64];
 
 	md5len = sizeof(md5);
-	if (hash_memory(hash, str, len, md5, &md5len)) return (0);
+	if (hash_memory(hash, (const u8 *)str, len, (u8 *)md5, &md5len)) return (0);
 	assert(sizeof(b64) > md5len*2+1);
 	if (md5len > 8) md5len = 8;	/* for random, just 16 char max */
 	for (n = 0; n < md5len; n++) {
@@ -12560,12 +12571,12 @@ user:	for (i = 0; u && u[i].flags; ++i) {
 	if (BWEAVE_OUT(sc)) goto skip_weave;
 	sccs_wrweaveInit(sc);
 	sccs_rdweaveInit(sc);
-	while (buf = sccs_nextdata(sc)) {
+	while (buf = (char *)sccs_nextdata(sc)) {
 		if (obscure_it) {
 			buf = obscure(UUENCODE(sc), buf);
 		}
 		if (!CSET(sc) && (flags & ADMIN_ADD1_0)) {
-			fputbumpserial(sc, buf, 1);
+			fputbumpserial(sc, (u8 *)buf, 1);
 		} else if (!CSET(sc) && (flags & ADMIN_RM1_0)) {
 			if (streq(buf, "\001I 1")) {
 				buf = sccs_nextdata(sc);
@@ -12573,7 +12584,7 @@ user:	for (i = 0; u && u[i].flags; ++i) {
 				assert(!sccs_nextdata(sc));
 				break;
 			}
-			fputbumpserial(sc, buf, -1);
+			fputbumpserial(sc, (u8 *)buf, -1);
 		} else {
 			fputs(buf, sc->outfh);
 		}
@@ -12870,7 +12881,7 @@ doFast(fweave *w, ser_t *patchmap, FILE *diffs)
 		if (*b == '>') {
 			if (inpatch) {
 				fix_cntl_a(w->s, p);
-				w->sum += str_cksum(p) + '\n';
+				w->sum += str_cksum((u8 *)p) + '\n';
 				fputs(p, out);
 				fputc('\n', out);
 				w->line++;
@@ -12974,7 +12985,7 @@ weaveMove(fweave *w, int line, ser_t patchserial, u32 flags)
 			}
 			if (print && !delmode) {
 				w->no_lf = print;
-				w->sum += str_cksum(buf) + '\n';
+				w->sum += str_cksum((u8 *)buf) + '\n';
 				if (buf[0] == CNTLA_ESCAPE) {
 					w->sum -= CNTLA_ESCAPE;
 				}
@@ -12986,7 +12997,7 @@ weaveMove(fweave *w, int line, ser_t patchserial, u32 flags)
 			continue;
 		}
 		type = buf[1];
-		n = &buf[3];
+		n = (char *)&buf[3];
 		serial = atoi_p(&n);
 		assert(serial);
 		if (w->wmap && (serial > w->wmap[0])) {
@@ -13010,7 +13021,7 @@ weaveMove(fweave *w, int line, ser_t patchserial, u32 flags)
 		} else if (print && !w->slist[print]) {
 			print = 0;
 		}
-	} while (buf = sccs_nextdata(s));
+	} while (buf = (char *)sccs_nextdata(s));
 	assert(!buf);
 	unless (finish && !whatstate(w->state)) {
 eof:		fprintf(stderr, "Unexpected EOF in %s\n", s->sfile);
@@ -13042,7 +13053,7 @@ after:	skipblock = 0;
 		}
 		type = buf[1];
 		if (!skipblock && (type == 'D')) goto end;
-		n = &buf[3];
+		n = (char *)&buf[3];
 		serial = atoi_p(&n);
 		assert(serial);
 		if (w->wmap && (serial > w->wmap[0])) {
@@ -13063,7 +13074,7 @@ after:	skipblock = 0;
 		} else if (print = whatstate(w->state)) {
 			unless (w->slist[print]) print = 0;
 		}
-	} while (buf = sccs_nextdata(s));
+	} while (buf = (char *)sccs_nextdata(s));
 	assert(!buf);
 	/* assert(patchserial == 1); kind of strong, but should be true */
 	if (nLines(w->state)) goto eof;
@@ -13122,7 +13133,10 @@ sccs_slowWeave(sccs *s)
 			rewind(diffs);
 		}
 		/* incremental serialmap() call */
-		symdiff_expand(s, L(prev), d, w.slist);
+		{
+			ser_t prev_arr[2] = {prev, 0};
+			symdiff_expand(s, prev_arr, d, w.slist);
+		}
 		prev = d;
 		unless (first) {
 			s->fh = fh[pingpong];
@@ -13141,7 +13155,7 @@ sccs_slowWeave(sccs *s)
 				u8	*t;
 
 				w.sum = 0;
-				for (t = SYMLINK(s, d); *t; t++) w.sum += *t;
+				for (t = (u8 *)SYMLINK(s, d); *t; t++) w.sum += *t;
 				if (SUM(s, e) != w.sum) {
 					fprintf(stderr,
 					    "%s:\n\tcomputed symlink sum %u "
@@ -13240,8 +13254,8 @@ weaveDiffs(fweave *w, ser_t d, FILE *diffs, int *fixdelp)
 	/*
 	 * Do the actual delta.
 	 */
-	if (diffs) while (b = fgetline(diffs)) {
-		if (scandiff(b, &where, &what, &howmany) != 0) {
+	if (diffs) while (b = (u8 *)fgetline(diffs)) {
+		if (scandiff((char *)b, &where, &what, &howmany) != 0) {
 			fprintf(stderr,
 			    "delta: Must use RCS diff format (diff -n).  "
 			    "Found '%s'\n", b);
@@ -13281,7 +13295,7 @@ weaveDiffs(fweave *w, ser_t d, FILE *diffs, int *fixdelp)
 			if (no_lf = (what == 'N')) what = 'I';
 			doctrl(s, "\001I ", d, "");
 			while (howmany--) {
-				unless (b = fgetln(diffs, &len)) {
+				unless (b = (u8 *)fgetln(diffs, &len)) {
 					fprintf(stderr,
 					    "Unexpected EOF in diffs\n");
 					return (1);
@@ -13308,9 +13322,9 @@ weaveDiffs(fweave *w, ser_t d, FILE *diffs, int *fixdelp)
 					}
 					b[len] = 0;
 				}
-				fix_cntl_a(s, b);
-				w->sum += str_cksum(b) + '\n';
-				fputs(b, out);
+				fix_cntl_a(s, (char *)b);
+				w->sum += str_cksum((u8 *)b) + '\n';
+				fputs((char *)b, out);
 				fputc('\n', out);
 				debug2((stderr, "INS %s\n", b));
 				added++;
@@ -13324,7 +13338,7 @@ weaveDiffs(fweave *w, ser_t d, FILE *diffs, int *fixdelp)
 	}
 	if (addthis) {
 		lastdel = 0;
-		w->sum += str_cksum(addthis) + '\n';
+		w->sum += str_cksum((u8 *)addthis) + '\n';
 		if (*addthis == CNTLA_ESCAPE) w->sum -= CNTLA_ESCAPE;
 		doctrl(s, "\001I ", d, "");
 		fputs(addthis, out);
@@ -13521,11 +13535,11 @@ sccs_getInit(sccs *sc, ser_t d, FILE *f, u32 flags, int *errorp, int *linesp,
 	}
 	if (flags & DELTA_PATCH) {
 		if ((*s == '+') && !ADDED(sc, d)) {
-			ADDED_SET(sc, d, atoi(s+1));
+			ADDED_SET(sc, d, atoi((const u8 *)s+1));
 			while (*s && (*s++ != ' '));
-			if (*s == '-') DELETED_SET(sc, d, atoi(s+1));
+			if (*s == '-') DELETED_SET(sc, d, atoi((const u8 *)s+1));
 			while (*s && (*s++ != ' '));
-			if (*s == '=') SAME_SET(sc, d, atoi(s+1));
+			if (*s == '=') SAME_SET(sc, d, atoi((const u8 *)s+1));
 		}
 		goto skip;	/* skip the rest of this line */
 	}
@@ -13535,23 +13549,23 @@ sccs_getInit(sccs *sc, ser_t d, FILE *f, u32 flags, int *errorp, int *linesp,
 	while (*s && (*s++ != ' '));	/* pserial */
 	unless (PARENT(sc, d)) {
 		if (s[-1] == ' ') s[-1] = 0;
-		PARENT_SET(sc, d, atoi(t));
+		PARENT_SET(sc, d, atoi((const u8 *)t));
 	}
 	while (*s == ' ') s++;
 	t = s;
 	while (*s && (*s++ != '/'));	/* added */
 	unless (ADDED(sc, d)) {		// XXX - test a patch with > 99999 lines in a delta
 		if (s[-1] == '/') s[-1] = 0;
-		ADDED_SET(sc, d, atoi(t));
+		ADDED_SET(sc, d, atoi((const u8 *)t));
 	}
 	t = s;
 	while (*s && (*s++ != '/'));	/* deleted */
 	unless (DELETED(sc, d)) {
 		if (s[-1] == '/') s[-1] = 0;
-		DELETED_SET(sc, d, atoi(t));
+		DELETED_SET(sc, d, atoi((const u8 *)t));
 	}
 	unless (SAME(sc, d)) {
-		SAME_SET(sc, d, atoi(s));
+		SAME_SET(sc, d, atoi((const u8 *)s));
 	}
 
 skip:
@@ -13991,7 +14005,7 @@ abort:		sccs_abortWrite(s);
 	unless (BWEAVE_OUT(s)) {
 		sccs_rdweaveInit(s);
 		sfile = sccs_wrweaveInit(s);
-		while (buf = sccs_nextdata(s)) {
+		while (buf = (char *)sccs_nextdata(s)) {
 			fputs(buf, sfile);
 			fputc('\n', sfile);
 		}
@@ -14418,7 +14432,7 @@ end(sccs *s, ser_t n, int flags, int add, int del, int same)
 		for (i = strlen(buf); i < 43; i++) buf[i] = ' ';
 		strcpy(buf+i, "\n");
 		fputs(buf, s->outfh);
-		s->cksum += str_cksum(buf);
+		s->cksum += str_cksum((u8 *)buf);
 	}
 	if (BITKEEPER(s)) {
 		if (!BAM(s) && (add || del || same) && (FLAGS(s, n) & D_ICKSUM)) {
@@ -14480,7 +14494,7 @@ Breaks up citool
 			}
 			sprintf(buf, "%05u", SUM(s, n));
 			fputs(buf, s->outfh);
-			s->cksum += str_cksum(buf);
+			s->cksum += str_cksum((u8 *)buf);
 		}
 		FLAGS(s, n) &= ~D_FIXUPS; /* that shouldn't stay set in memory */
 	}
@@ -16121,7 +16135,7 @@ kw2val(FILE *out, char *kw, int len, sccs *s, ser_t d)
 	case KW_FUDGE: /* FUDGE */ {
 		char	buf[20];
 
-		sprintf(buf, "%d", (int)DATE_FUDGE(s, d));
+		sprintf(buf, "%ld", (long)DATE_FUDGE(s, d));
 		fs(buf);
 		return (strVal);
 	}
@@ -16154,7 +16168,7 @@ kw2val(FILE *out, char *kw, int len, sccs *s, ser_t d)
 		if (s->cksumok) {
 			char	buf[20];
 
-			sprintf(buf, "%d", (int)s->cksum);
+			sprintf(buf, "%u", s->cksum);
 			fs(buf);
 			return (strVal);
 		}
@@ -16667,7 +16681,7 @@ kw2val(FILE *out, char *kw, int len, sccs *s, ser_t d)
 			q = aprintf("%s %s %s %s", BAMHASH(s, d), key, b64, t);
 			fs(q);
 			fc(' ');
-			sprintf(key, "%08x", (u32)adler32(0, q, strlen(q)));
+			sprintf(key, "%08x", (u32)adler32(0, (const Bytef *)q, strlen(q)));
 			fs(key);
 			free(p);
 			free(q);
@@ -16888,7 +16902,7 @@ err:		fprintf(stderr,
 		line++;
 	}
 	if (FLAG('w')) {
-		s->rkeyHead = atoi(&buf[4]);
+		s->rkeyHead = atoi((const u8 *)&buf[4]);
 		unless (buf = fgetline(in)) goto err;
 		line++;
 	}
@@ -16945,7 +16959,7 @@ sccs_prsPatch(sccs *s, ser_t d, u32 flags, FILE *out)
 
 	t = COMMENTS(s, d);
 	while (p = eachline(&t, &len)) fprintf(out, "c %.*s\n", len, p);
-	if (DATE_FUDGE(s, d)) fprintf(out, "F %d\n", (int)DATE_FUDGE(s, d));
+	if (DATE_FUDGE(s, d)) fprintf(out, "F %ld\n", (long)DATE_FUDGE(s, d));
 	p = CLUDES(s, d);
 	while (e = sccs_eachNum(&p, &sign)) {
 		unless (sign > 0) continue;
@@ -17136,7 +17150,11 @@ gca3(sccs *s, ser_t left, ser_t right, char **inc, char **exc)
 	*inc = *exc = 0;
 	unless (s && TABLE(s) && left && right) return (0);
 
-	glist = walkrevs_collect(s, L(left), L(right), WR_GCA);
+	{
+		ser_t left_arr[2] = {left, 0};
+		ser_t right_arr[2] = {right, 0};
+		glist = walkrevs_collect(s, left_arr, right_arr, WR_GCA);
+	}
 	count = nLines(glist);
 	assert(count);
 	gca = glist[1];
@@ -18213,7 +18231,7 @@ stripDeltas(sccs *s, ser_t *remap)
 			continue;
 		}
 		debug2((stderr, "%s", buf));
-		ser = atoi(&buf[3]);
+		ser = atoi((const u8 *)&buf[3]);
 		d = (remap && ser) ? remap[ser] : ser;
 		unless (!d || (FLAGS(s, d) & D_SET)) {
 			fputbumpserial(s, buf, d - ser);

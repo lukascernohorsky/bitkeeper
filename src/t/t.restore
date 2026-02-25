@@ -1,0 +1,68 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# restore -- test restore command functionality
+
+echo $N Test restore help and usage ...................................$NL
+# Test help output
+bk restore --help > GOT 2>&1
+# Should contain usage information
+grep -q "usage:" GOT || fail -f GOT
+grep -q "restore" GOT || fail -f GOT
+echo OK
+
+echo $N Test restore command recognition ..............................$NL
+# Test that restore command is recognized
+bk restore --help > /dev/null 2>&1 || fail
+echo OK
+
+echo $N Test restore with missing backup file .........................$NL
+# Test missing backup file
+bk restore nonexistent.backup 2> ERR && fail
+# Should get error about missing backup
+grep -q "unable to read backup" ERR || fail -f ERR
+echo OK
+
+echo $N Test restore with invalid backup file .........................$NL
+# Create invalid backup file
+echo "invalid backup data" > invalid.backup
+bk restore invalid.backup 2> ERR && fail
+# Should get error about invalid backup
+grep -q "restore_failed" ERR || fail -f ERR
+rm invalid.backup
+echo OK
+
+echo $N Test restore in nested repository ..............................$NL
+nested project
+cd gcc
+# Test restore in nested component
+bk restore --help > /dev/null 2>&1 || fail
+cd ..
+echo OK
+
+echo $N Test restore with directory instead of file ..................$NL
+# Test with directory
+bk restore . 2> ERR && fail
+# Should get error about invalid backup
+grep -q "unable to read backup" ERR || fail -f ERR
+echo OK
+
+echo $N Test restore options validation ...............................$NL
+# Test that restore doesn't accept options (simple command)
+bk restore -x nonexistent 2> ERR && fail
+# Should get usage error
+grep -q "usage:" ERR || fail -f ERR
+echo OK
+
+echo "All restore tests completed successfully"

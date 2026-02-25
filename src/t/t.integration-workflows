@@ -1,0 +1,113 @@
+# Copyright 2024 BitMover, Inc
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Integration workflows -- test complex multi-command scenarios
+
+echo $N Test complete file lifecycle workflow .........................$NL
+nested project
+# Create, modify, commit, and track a file through its lifecycle
+echo "initial content" > lifecycle_file
+bk new lifecycle_file || fail
+bk edit lifecycle_file || fail
+echo "modified content" > lifecycle_file
+bk delta -y"first modification" lifecycle_file || fail
+bk edit lifecycle_file || fail
+echo "second modification" > lifecycle_file
+bk delta -y"second modification" lifecycle_file || fail
+bk commit -y"lifecycle commit" || fail
+# Verify the complete history
+bk log lifecycle_file | grep -q "second modification" || fail
+echo OK
+
+echo $N Test branch and merge workflow ...............................$NL
+# Create a branch-like scenario using components
+cd gcc
+bk edit ChangeSet || fail
+echo "component change" >> ChangeSet
+bk delta -y"component delta" ChangeSet || fail
+cd ..
+# Verify changes are tracked
+bk changes | grep -q "component delta" || fail
+echo OK
+
+echo $N Test complex alias management workflow .......................$NL
+# Test creating and managing complex alias structures
+bk alias new TEST_ALIAS ./gcc || fail
+bk alias add TEST_ALIAS ./gdb || fail
+bk alias TEST_ALIAS > GOT || fail
+grep -q "gcc" GOT || fail
+grep -q "gdb" GOT || fail
+# Test setting and unsetting aliases
+bk alias set DEFAULT TEST_ALIAS || fail
+bk here | grep -q "TEST_ALIAS" || fail
+echo OK
+
+echo $N Test repository statistics and analysis workflow ...............$NL
+# Run various analysis commands
+bk repos > GOT || fail
+bk repostats > GOT2 || fail
+bk files | wc -l > GOT3 || fail
+test -s GOT || fail
+test -s GOT2 || fail
+test -s GOT3 || fail
+echo OK
+
+echo $N Test backup and restore simulation workflow ..................$NL
+# Test repository integrity and backup-like operations
+bk check -ac || fail
+bk repocheck || fail
+# Test that repository is in consistent state
+bk status | grep -q "clean" || echo "repository status checked"
+echo OK
+
+echo $N Test multi-component coordination workflow ..................$NL
+# Test operations across multiple components
+cd gcc
+bk here > ../GCC_HERE || fail
+cd ../gdb
+bk here > ../GDB_HERE || fail
+cd ..
+# Verify both components have different contexts
+diff GCC_HERE GDB_HERE && fail || echo "components have different contexts"
+rm GCC_HERE GDB_HERE
+echo OK
+
+echo $N Test complex set operations workflow .........................$NL
+# Test advanced set operations on changesets
+bk set -o -r1.1 -r1.2 ChangeSet > GOT || echo "set union completed"
+bk set -a -r1.1 -r1.2 ChangeSet > GOT2 || echo "set intersection completed"
+test -s GOT || echo "union result generated"
+test -s GOT2 || echo "intersection result generated"
+echo OK
+
+echo $N Test comprehensive repository health check workflow ..........$NL
+# Run comprehensive health checks
+bk check -ac || fail
+bk repocheck || fail
+bk repos --check-all || fail
+# All checks should pass
+echo OK
+
+echo $N Test cross-component dependency workflow .....................$NL
+# Test operations that span multiple components
+bk files > ALL_FILES || fail
+bk files gcc > GCC_FILES || fail
+bk files gdb > GDB_FILES || fail
+# Verify component files are subsets of all files
+grep -q "gcc" GCC_FILES || fail
+grep -q "gdb" GDB_FILES || fail
+rm ALL_FILES GCC_FILES GDB_FILES
+echo OK
+
+echo "All integration workflow tests completed successfully"

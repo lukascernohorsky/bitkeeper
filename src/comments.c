@@ -35,7 +35,7 @@ comments_save(char *s)
 	if (saved) freeLines(saved, free);
 	saved = 0;
 	while (p = eachline(&s, &len)) {
-		if (comments_checkStr(p, len)) {
+		if (comments_checkStr((u8 *)p, len)) {
 			freeLines(saved, free);
 			saved = 0;
 			return (-1);

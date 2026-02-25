@@ -66,7 +66,7 @@ str2base64(const char *s)
 	len = strlen(s);
 	len2 = (4 * ((len + 2) / 3)) + 1;
 	buf = p = malloc(len2);
-	if ((err = base64_encode(s, len, buf, &len2)) != CRYPT_OK) {
+	if ((err = base64_encode((const unsigned char *)s, len, (unsigned char *)buf, (unsigned long *)&len2)) != CRYPT_OK) {
 		fprintf(stderr, "%s", error_to_string(err));
 		exit(1);
 	}
@@ -289,7 +289,7 @@ in_no_proxy(char *host)
 	p = list = strdup(list);
 	while (p) {
 		if (e = strchr(p, ',')) *e++ = 0;
-		if (*p && match_one(host, p, 1)) {
+		if (*p && match_one((u8 *)host, (u8 *)p, 1)) {
 			found = 1;
 			break;
 		}

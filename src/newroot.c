@@ -223,7 +223,7 @@ xorsyncroot(sccs *s, char *buf)
 	mp_read_radix(&b, rand, 16);
 
 	mp_xor(&a, &b, &a);
-	mp_toradix(&a, buf, 16);
+	mp_to_radix(&a, buf, sizeof(buf), NULL, 16);
 
 	/* hex will be upper case; and randbits produces lower */
 	for (rand = buf; *rand; rand++) *rand = tolower(*rand);

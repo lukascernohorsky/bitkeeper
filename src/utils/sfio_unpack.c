@@ -162,7 +162,7 @@ in_link(char *file, int pathlen, int extract)
 	}
 	if (readn(0, buf, pathlen) != pathlen) return (1);
 	buf[pathlen] = 0;
-	sum = adler32(0, buf, pathlen);
+	sum = adler32(0, (const Bytef *)buf, pathlen);
 	if (extract) {
 		if (symlink(buf, file)) {
 			mkdirf(file);
@@ -230,7 +230,7 @@ in_file(char *file, int todo, int extract)
 	unless (todo) goto done;
 	while ((n = readn(0, buf, min(todo, sizeof(buf)))) > 0) {
 		todo -= n;
-		sum = adler32(sum, buf, n);
+		sum = adler32(sum, (const Bytef *)buf, n);
 		if (exists || !extract) continue;
 		/*
 		 * This write statement accounts for 57% sfio's execution

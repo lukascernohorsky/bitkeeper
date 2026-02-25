@@ -307,7 +307,7 @@ testlines(FILE *f)
 		}
 		if (lines) {
 			out = joinLines(" ", lines);
-			sum = adler32(sum, out, strlen(out));
+			sum = adler32(sum, (const Bytef *)out, strlen(out));
 			free(out);
 			freeLines(lines, free);
 		}
@@ -335,7 +335,7 @@ testdata(FILE *f)
 			if (i > 0) data_append(&d, " ", 1);
 			data_appendStr(&d, p);
 		}
-		if (d.len) sum = adler32(sum, d.buf, d.len);
+		if (d.len) sum = adler32(sum, (const Bytef *)d.buf, d.len);
 		free(d.buf);
 	}
 	printf("%x\n", sum);
@@ -364,7 +364,7 @@ testfmem(FILE *f)
 			fputs(p, f1);
 		}
 		d = fmem_close(f1, &len);
-		sum = adler32(sum, d, len);
+		sum = adler32(sum, (const Bytef *)d, len);
 		free(d);
 	}
 	printf("%x\n", sum);
@@ -393,7 +393,7 @@ testfmemopt(FILE *f)
 			fputs(p, f1);
 		}
 		d = fmem_peek(f1, &len);
-		sum = adler32(sum, d, len);
+		sum = adler32(sum, (const Bytef *)d, len);
 		ftrunc(f1, 0);
 	}
 	fclose(f1);
@@ -538,7 +538,7 @@ chksum_main(int ac, char **av)
 	}
 	setmode(0, _O_BINARY);
 	while ((c = fread(buf, 1, sizeof(buf), stdin)) > 0) {
-		if (do_adler32) sum_adler = adler32(sum_adler, buf, c);
+		if (do_adler32) sum_adler = adler32(sum_adler, (const Bytef *)buf, c);
 		if (do_crc32c) sum_crc = crc32c(sum_crc, buf, c);
 	}
 	if (do_adler32) printf("adler32: %08x\n", sum_adler);

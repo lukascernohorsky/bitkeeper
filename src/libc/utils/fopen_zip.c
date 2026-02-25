@@ -127,7 +127,7 @@ zRead(void *cookie, char *buf, int len)
 
 	if (zf->eof) return (0);
 
-	zf->z.next_out = buf;
+	zf->z.next_out = (Bytef *)buf;
 	zf->z.avail_out = len;
 	while (zf->z.avail_out) {
 		unless (zf->z.avail_in) {
@@ -179,7 +179,7 @@ zWrite(void *cookie, const char *buf, int len)
 	int	err;
 
 	assert(len > 0);
-	zf->z.next_in = (char *)buf;
+	zf->z.next_in = (Bytef *)buf;
 	zf->z.avail_in = len;
 	do {
 		if (err = deflate(&zf->z, Z_NO_FLUSH)) {
