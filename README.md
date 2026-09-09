@@ -76,7 +76,7 @@ automatically populated and included.
 If you are building on a Debian based Linux then the following
 packages are required:
 
-  sudo apt-get install make gperf groff bison flex libxft2-dev libtommath-dev libtomcrypt-dev libpcre3-dev zlib1g-dev liblz4-dev
+  sudo apt-get install make gperf groff bison flex libxft-dev libtommath-dev libtomcrypt-dev zlib1g-dev liblz4-dev
 
 For Fedora and related versions of Linux the following works:
 
