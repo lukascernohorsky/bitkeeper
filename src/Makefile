@@ -43,11 +43,13 @@ URL     := $(shell echo bk://work/$(ROOT) | sed s,/home/bk/,,)
 LOG	= $(shell echo LOG-`bk getuser`)
 OSTYPE  := $(shell bash -c 'echo $$OSTYPE')
 
-# Check if system Tcl/Tk is available and meets the minimum version requirement
-TCL_VERSION := $(shell echo 'puts [info tclversion]' | tclsh 2>/dev/null)
-ifneq ($(filter 8.6%, $(TCL_VERSION)),8.6)
-$(warning System Tcl/Tk version 8.6 or higher is required)
-$(error System Tcl/Tk version 8.6 or higher is required)
+# Zjištění dostupné verze tclsh (zkouší tclsh, tclsh8.6, tclsh9.0)
+TCLSH := $(shell command -v tclsh || command -v tclsh8.6 || command -v tclsh9.0 2>/dev/null)
+TCL_VERSION := $(shell echo 'puts [info tclversion]' | $(TCLSH) 2>/dev/null)
+
+# Kontrola verze (akceptuje 8.6, 8.7 nebo 9.x)
+ifeq ($(shell echo "$(TCL_VERSION)" | awk '{if ($$1 >= 8.6) print "OK"}'),)
+$(error System Tcl/Tk version 8.6 or higher is required (found: '$(TCL_VERSION)'))
 endif
 
 include conf.mk

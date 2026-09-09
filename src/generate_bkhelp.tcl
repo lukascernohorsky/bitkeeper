@@ -7,6 +7,15 @@ proc log {message} {
     puts "generate_bkhelp.tcl: $message"
 }
 
+# Detekce správného příkazu Make (gmake na BSD, make na Linuxu)
+proc get_make_cmd {} {
+    set gmake_path [auto_execok gmake]
+    if {$gmake_path ne ""} {
+        return "gmake"
+    }
+    return "make"
+}
+
 proc run_command {command} {
     global env
     log "Running: $command"
@@ -15,20 +24,24 @@ proc run_command {command} {
         set full_command [list env BK=$env(BK) {*}$command]
         exec {*}$full_command
     } output]
-    
+
     if {$result != 0} {
         puts stderr "Error: $output"
         return -code error "Command failed: $command"
     }
-    
+
     return $output
 }
 
 proc main {} {
     global argv0 env
-    
+
     log "Starting bkhelp.txt generation..."
-    
+
+    # Dynamické zjištění make příkazu
+    set make_cmd [get_make_cmd]
+    log "Using make utility: $make_cmd"
+
     # Set BK environment variable if not already set
     if {![info exists env(BK)]} {
         # Try to find bk in the current directory
@@ -41,40 +54,40 @@ proc main {} {
             exit 1
         }
     }
-    
+
     # Change to the man2help directory
     set man2help_dir "../man/man2help"
-    
+
     if {[catch {cd $man2help_dir} error]} {
         puts stderr "Cannot change to directory $man2help_dir: $error"
         exit 1
     }
-    
-    # Generate help text step by step
-    if {[catch {run_command [list make pages]} error]} {
+
+    # Generate help text step by step using detected make tool
+    if {[catch {run_command [list $make_cmd pages]} error]} {
         puts stderr "Failed to generate pages: $error"
         exit 1
     }
-    
-    if {[catch {run_command [list make helptxt2]} error]} {
+
+    if {[catch {run_command [list $make_cmd helptxt2]} error]} {
         puts stderr "Failed to generate helptxt2: $error"
         exit 1
     }
-    
-    if {[catch {run_command [list make summaries]} error]} {
+
+    if {[catch {run_command [list $make_cmd summaries]} error]} {
         puts stderr "Failed to generate summaries: $error"
         exit 1
     }
-    
+
     # Copy the result to bkhelp.txt
     set src_file "helptxt"
     set dest_file "../../src/bkhelp.txt"
-    
+
     if {[catch {file copy -force $src_file $dest_file} error]} {
         puts stderr "Failed to copy $src_file to $dest_file: $error"
         exit 1
     }
-    
+
     log "bkhelp.txt generated successfully"
     return 0
 }

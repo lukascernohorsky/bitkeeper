@@ -58,7 +58,7 @@ k_err:			fprintf(stderr,
 			    "hex digits\n");
 			usage();
 		}
-		for (p = ranbits; *p; p++) {
+		for (p = (u8 *)ranbits; *p; p++) {
 			unless (isxdigit(*p)) break;
 			if (isupper(*p)) break;
 		}
@@ -223,7 +223,7 @@ xorsyncroot(sccs *s, char *buf)
 	mp_read_radix(&b, rand, 16);
 
 	mp_xor(&a, &b, &a);
-	mp_to_radix(&a, buf, sizeof(buf), NULL, 16);
+	mp_toradix(&a, buf, 36);
 
 	/* hex will be upper case; and randbits produces lower */
 	for (rand = buf; *rand; rand++) *rand = tolower(*rand);

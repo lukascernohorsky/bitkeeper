@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Generate helptxt2 from fmt files
 
 # Get the BK path from environment or use default
