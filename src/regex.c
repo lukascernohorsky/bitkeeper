@@ -14,29 +14,37 @@
  * limitations under the License.
  */
 
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
 #include "system.h"
 #include "sccs.h"
 
 int
 regex_main(int ac, char **av)
 {
-	pcre	*re;
-	int	i, off;
-	const char	*error;
-	int	matched = 0;
+        pcre2_code      *re;
+        pcre2_match_data *match_data;
+        int             i, errcode;
+        PCRE2_SIZE      off;
+        char            errbuffer[256];
+        int             matched = 0;
 
-	unless (av[1] && av[2]) usage();
-	unless (re = pcre_compile(av[1], 0, &error, &off, 0)) {
-		fprintf(stderr, "pcre_compile returned 0: %s\n", error);
-		return(1);
-	}
-	for (i = 2; av[i]; i++) {
-		unless (pcre_exec(re, 0, av[i], strlen(av[i]), 0, 0, 0, 0)) {
-			printf("%s matches.\n", av[i]);
-			matched = 1;
-		}
-	}
-	unless (matched) printf("No match.\n");
-	free(re);
-	return (matched ? 0 : 1);
+        unless (av[1] && av[2]) usage();
+        re = pcre2_compile_8((PCRE2_SPTR)av[1], PCRE2_ZERO_TERMINATED, 0, &errcode, &off, 0);
+        unless (re) {
+                pcre2_get_error_message_8(errcode, (PCRE2_UCHAR *)errbuffer, sizeof(errbuffer));
+                fprintf(stderr, "pcre2_compile returned error: %s\n", errbuffer);
+                return(1);
+        }
+        match_data = pcre2_match_data_create_from_pattern_8(re, 0);
+        for (i = 2; av[i]; i++) {
+                if (pcre2_match_8(re, (PCRE2_SPTR)av[i], strlen(av[i]), 0, 0, match_data, 0) >= 0) {
+                        printf("%s matches.\n", av[i]);
+                        matched = 1;
+                }
+        }
+        unless (matched) printf("No match.\n");
+        pcre2_match_data_free_8(match_data);
+        pcre2_code_free_8(re);
+        return (matched ? 0 : 1);
 }
