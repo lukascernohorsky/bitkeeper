@@ -93,13 +93,13 @@ if [ "$CHECK" ]; then
 
 	# then look for tm_gmtoff, and if that doesn't exist, altzone/localzone
 	#
-	echo "#include <time.h>" 	                   > $$.c
+	echo "#include <time.h>" 	            > $$.c
 	echo "main() { struct tm *now; now->tm_gmtoff; }" >> $$.c
 
 	if $CC -o $$ $$.c 1>/dev/null 2>/dev/null; then
 		CCXTRA="$CCXTRA -DHAVE_GMTOFF"
 	else
-		echo "main() { extern int localzone, altzone;"  > $$.c
+		echo "main() { extern int localzone, altzone;" > $$.c
 		echo "         localzone; altzone; }"          >> $$.c
 		if $CC -o $$ $$.c 1>/dev/null 2>/dev/null; then
 			CCXTRA="$CCXTRA -DHAVE_LOCALZONE"
@@ -127,7 +127,7 @@ test -f ./conf.mk.local && . ./conf.mk.local
 
 set_libcfg() {
 	NAME=$1      # name of config
-	PC=$2	     # name of pkg-config package
+	PC=$2        # name of pkg-config package
 	COMPONENT=$3 # name of bk component (might be empty if no component)
 	local LDFLAGS=${NAME}_LDFLAGS
 	local CPPFLAGS=${NAME}_CPPFLAGS
@@ -174,26 +174,43 @@ set_libcfg() {
 }
 
 PCRE_test() {
-	# test for pcre library
-	if pcre-config --libs > /dev/null 2>&1
-	then	PCRE_CPPFLAGS=`pcre-config --cflags`
-		PCRE_LDFLAGS=`pcre-config --libs`
+	# test for pcre2 library using pkg-config, pcre2-config or direct compilation
+	if pkg-config --exists libpcre2-8 > /dev/null 2>&1
+	then
+		PCRE_CPPFLAGS=`pkg-config --cflags libpcre2-8`
+		PCRE_LDFLAGS=`pkg-config --libs libpcre2-8`
 		true
-	else	false
+	elif pcre2-config --8 --libs > /dev/null 2>&1
+	then
+		PCRE_CPPFLAGS=`pcre2-config --8 --cflags`
+		PCRE_LDFLAGS=`pcre2-config --8 --libs`
+		true
+	else
+		# fallback test for FreeBSD where headers might be in /usr/local/include
+		echo "#define PCRE2_CODE_UNIT_WIDTH 8" > $$.c
+		echo "#include <pcre2.h>" >> $$.c
+		echo "main() { pcre2_compile(0,0,0,0,0,0); }" >> $$.c
+		if $CC $CCXTRA -I/usr/local/include -o $$ $$.c -L/usr/local/lib -lpcre2-8 >/dev/null 2>&1; then
+			PCRE_CPPFLAGS="-I/usr/local/include"
+			PCRE_LDFLAGS="-L/usr/local/lib -lpcre2-8"
+			true
+		else
+			false
+		fi
 	fi
 }
+
 PCRE_builtin() {
-	# Use system PCRE instead of built-in
-	if pcre-config --libs > /dev/null 2>&1
-	then	PCRE_CPPFLAGS=`pcre-config --cflags`
-		PCRE_LDFLAGS=`pcre-config --libs`
+	if PCRE_test
+	then
+		:
 	else
-		echo "PCRE library not found, please install it" 1>&2
+		echo "PCRE2 library not found, please install libpcre2-dev (Debian) or pcre2 (FreeBSD)" 1>&2
 		exit 1
 	fi
 }
 
-set_libcfg PCRE libpcre PCRE
+set_libcfg PCRE libpcre2-8 PCRE
 
 trap "rm -f $$ $$.c" 0
 TOMCRYPT_test() {

@@ -20,7 +20,9 @@
 #include "system.h"
 #include "diff.h"
 #define	PCRE_STATIC		/* for win32 */
-#include "pcre.h"
+#include "pcre2.h"
+
+typedef pcre2_code pcre;
 
 #define	mdbm_mem()	mdbm_open(NULL, 0, 0, GOOD_PSIZE)
 #define	EACH_KV(d)	for (kv = mdbm_first(d); \
@@ -530,7 +532,7 @@ typedef struct delta {
 	u32	comments;		/* delta comments (\n sep string) */
 	u32	bamhash;		/* hash of gfile for BAM.
 					 * Also reused for weave in
-					 * ChangeSet file. See
+						 * ChangeSet file. See
 					 * WEAVE_INDEX.
 					 */
 	u32	random;			/* random bits for file ID */
