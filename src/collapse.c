@@ -707,79 +707,105 @@ savedeltas(sccs *s, ser_t d, void *data)
  * a line with '---' and any existing contents of that file will be
  * presevered at the end.
  */
+
+/*
+ * Write the SCCS/c.file will all the delta comments for deltas that
+ * will be removed from this file.  Each delta will be seperated by
+ * a line with '---' and any existing contents of that file will be
+ * presevered at the end.
+ */
 private int
 fix_setupcomments(sccs *s, ser_t *rmdeltas)
 {
-	ser_t	d;
-	int	i;
-	char	**comments = 0;
-	const	char *perr;
-	int	poff;
-	char	*cmts;
-	char	*p;
-	FILE	*f;
-	pcre	*re;
-	char	skippat[] =
-	    "^Rename: .* ->|"
-	    "^Merge rename: .* ->|"
-	    "^Delete:|"
-	    "^Change mode to|"
-	    "^Turn o[nf]+ [A-Z0-9_]+ flag\n$|"
-	    "^Auto merged\n$|"
-	    "^SCCS merged\\.*\n$|"
-	    "^[mM]erged*\\.*\n$|"  /* merge merged merge. merged. */
-	    "^auto-union\n$";
+        ser_t   d;
+        int     i;
+        char    **comments = 0;
+        int     perr;
+        PCRE2_SIZE poff;
+        char    *cmts;
+        char    *p;
+        FILE    *f;
+        pcre2_code *re;
+        pcre2_match_data *match_data;
+        char    skippat[] =
+            "^Rename: .* ->|"
+            "^Merge rename: .* ->|"
+            "^Delete:|"
+            "^Change mode to|"
+            "^Turn o[nf]+ [A-Z0-9_]+ flag\n$|"
+            "^Auto merged\n$|"
+            "^SCCS merged\\.*\n$|"
+            "^[mM]erged*\\.*\n$|"   /* merge merged merge. merged. */
+            "^auto-union\n$";
 
-	/* generate the list of delta comments we skip */
-	unless (re = pcre_compile(skippat, 0, &perr, &poff, 0)) {
-		fprintf(stderr, "%s: regex failed %s\npat = %s\n",
-		    me, perr, skippat);
-		return (1);
-	}
-	EACH (rmdeltas) {
-		d = rmdeltas[i];
+        /* generate the list of delta comments we skip using PCRE2 */
+        re = pcre2_compile(
+            (PCRE2_SPTR)skippat,
+            PCRE2_ZERO_TERMINATED,
+            0,
+            &perr,
+            &poff,
+            NULL
+        );
+        unless (re) {
+            fprintf(stderr, "%s: regex failed error code %d at offset %zu\npat = %s\n",
+                me, perr, poff, skippat);
+            return (1);
+        }
 
-		if (d == TREE(d)) continue;
-		unless (HAS_COMMENTS(s, d)) continue;
+        /* Create match data block for PCRE2 */
+        match_data = pcre2_match_data_create_from_pattern(re, NULL);
+        unless (match_data) {
+            pcre2_code_free(re);
+            return (1);
+        }
 
-		/*
-		 * If the comments are just one line and then match our
-		 * pattern, then ignore these comments.
-		 */
-		cmts = COMMENTS(s, d);
-		if ((strcnt(cmts, '\n') == 1) &&
-		    !pcre_exec(re, 0, cmts, strlen(cmts), 0, 0, 0, 0)) {
-			continue;
-		}
+        EACH (rmdeltas) {
+                d = rmdeltas[i];
 
-		p = strdup(cmts);
-		chomp(p);
-		comments = addLine(comments, p);
-	}
-	if (p = xfile_fetch(s->gfile, 'c')) {
-		chomp(p);
-		comments = addLine(comments, strdup(p));
-		free(p);
-	}
-	free(re);
+                if (d == TREE(d)) continue;
+                unless (HAS_COMMENTS(s, d)) continue;
 
-	if (comments) {
-		f = fmem();
-		assert(f);
-		EACH (comments) {
-			if (i > 1) fputs("---\n", f);
-			fputs(comments[i], f);
-			fputc('\n', f);
-			free(comments[i]);
-		}
-		freeLines(comments, 0);
-		if (p = fmem_peek(f, 0)) {
-			xfile_store(s->gfile, 'c', p);
-		}
-		fclose(f);
-	}
-	return (0);
+                /*
+                 * If the comments are just one line and then match our
+                 * pattern, then ignore these comments.
+                 */
+                cmts = COMMENTS(s, d);
+                if ((strcnt(cmts, '\n') == 1) &&
+                    pcre2_match(re, (PCRE2_SPTR)cmts, strlen(cmts), 0, 0, match_data, NULL) < 0) {
+                        continue;
+                }
 
+                p = strdup(cmts);
+                chomp(p);
+                comments = addLine(comments, p);
+        }
+        if (p = xfile_fetch(s->gfile, 'c')) {
+                chomp(p);
+                comments = addLine(comments, strdup(p));
+                free(p);
+        }
+        
+        /* Free PCRE2 resources */
+        pcre2_match_data_free(match_data);
+        pcre2_code_free(re);
+
+        if (comments) {
+                f = fmem();
+                assert(f);
+                EACH (comments) {
+                        if (i > 1) fputs("---\n", f);
+                        fputs(comments[i], f);
+                        fputc('\n', f);
+                        free(comments[i]);
+                }
+                freeLines(comments, 0);
+                if (p = fmem_peek(f, 0)) {
+                        xfile_store(s->gfile, 'c', p);
+                }
+                fclose(f);
+        }
+        return (0);
 }
 
 /* Return the parent of the tip delta if the tip is not a merge. */

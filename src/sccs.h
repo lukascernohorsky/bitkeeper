@@ -20,6 +20,7 @@
 #include "system.h"
 #include "diff.h"
 #define	PCRE_STATIC		/* for win32 */
+#define PCRE2_CODE_UNIT_WIDTH 8
 #include "pcre2.h"
 
 typedef pcre2_code pcre;
